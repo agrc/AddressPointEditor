@@ -1,6 +1,7 @@
 @import '../../agrc/themes/standard/map/BaseMap.css';
 @import '../../ijit/themes/standard/layout/SideBarToggler.css';
 @import '../../ijit/themes/standard/layout/PaneStack.css';
+@import '../../components/bootstrap/css/bootstrap.css';
 
 body, html, .app {
     width: 100%;
