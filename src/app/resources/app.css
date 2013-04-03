@@ -1,7 +1,8 @@
 @import '../../agrc/themes/standard/map/BaseMap.css';
+@import '../../agrc/themes/standard/locate/FindGeneric.css';
 @import '../../ijit/themes/standard/layout/SideBarToggler.css';
 @import '../../ijit/themes/standard/layout/PaneStack.css';
-@import '../../components/bootstrap/css/bootstrap.css';
+@import '../../components/bootstrap/css/normalize.css';
 
 body, html, .app {
     width: 100%;
@@ -9,8 +10,11 @@ body, html, .app {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: Arial, sans-serif;
-    color: #444;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333333;
+    background-color: #ffffff;
 }
 .app .main-container {
     width: 100%;
