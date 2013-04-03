@@ -21,6 +21,7 @@ define([
     'dojo/dom-construct',
     'dijit/TitlePane',
     'agrc/widgets/locate/FindGeneric',
+    'dojo/_base/window',
 
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane'],
@@ -47,7 +48,8 @@ config,
 geomService,
 construct,
 titlePane,
-findGeneric) {
+findGeneric,
+win) {
     return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
         //      The main widget for the app
@@ -161,8 +163,6 @@ findGeneric) {
             });
 
             this.map.addLayers([this.editLayer]);
-
-            return true;
         },
         initEditing: function(layer) {
             // sumamry:
@@ -184,19 +184,17 @@ findGeneric) {
                 settings: settings
             };
 
-            var editorWidget = new editor(params);
-
-            if (this.editingpane) 
-                this.paneStack.remove(this.editingpane);
+            if (this.editingpane) this.paneStack.remove(this.editingpane);
 
             this.editingpane = new titlePane({
                 title: "Edit Address Points",
-                content: editorWidget,
                 open: true
             });
 
             this.countypane.toggle();
             this.paneStack.add(this.editingpane);
+
+            var editorWidget = new editor(params, this.editingpane.containerNode);          
 
             editorWidget.startup();
         }
