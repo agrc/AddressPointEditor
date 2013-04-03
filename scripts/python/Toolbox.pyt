@@ -14,18 +14,20 @@ class Tool(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "Validate Address Point Upload"
-        self.description = "Unzips an uploaded file and runs validation checks. Appends the data to the correct county address point layer."
+        self.description = ("Unzips an uploaded file and runs validation checks. "
+                           "Appends the data to the correct county address point layer.")
         self.canRunInBackground = True
 
     def getParameterInfo(self):
         """Define parameter definitions"""
         upload_param = arcpy.Parameter(displayName="Address point zip file",
                                        name="zip",
-                                       datatype="DEFile",
+                                       datatype="File",
                                        parameterType="Required",
                                        direction="Input")
+                                       
+        upload_param.value="The zip file containing your shapefile information or file geodatabase."
         
-                
         return [upload_param]
 
     def isLicensed(self):
@@ -46,3 +48,10 @@ class Tool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         return
+    
+def main():
+    tool = Tool()
+    tool.execute(tool.getParameterInfo(), None)
+        
+if __name__ == '__main__':
+    main()
