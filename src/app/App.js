@@ -21,7 +21,6 @@ define([
     'dojo/dom-construct',
     'dijit/TitlePane',
     'agrc/widgets/locate/FindGeneric',
-    'dojo/_base/window',
 
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane'],
@@ -48,8 +47,7 @@ config,
 geomService,
 construct,
 titlePane,
-findGeneric,
-win) {
+findGeneric) {
     return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
         //      The main widget for the app
@@ -159,7 +157,8 @@ win) {
             if (this.editLayer) this.map.removeLayer(this.editLayer);
 
             this.editLayer = new featureLayer("/arcgis/rest/services/demo/AddressPoints_Kane/FeatureServer/" + id, {
-                mode: featureLayer.MODE_ONDEMAND
+                mode: featureLayer.MODE_ONDEMAND,
+                outFields: ['HouseAddr', 'FullAddr', 'HouseNum', 'PreDir', 'StreetName', 'StreetType', 'SufDir', 'UnitNumber', 'City', 'ZipCode']
             });
 
             this.map.addLayers([this.editLayer]);
