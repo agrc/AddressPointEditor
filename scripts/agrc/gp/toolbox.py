@@ -1,4 +1,5 @@
 import arcpy
+from os import path
 
 class Toolbox(object):
     def __init__(self):
@@ -50,11 +51,35 @@ class Tool(object):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
         return
+    
+    def set_return_value(self, parameters, message):
+        pass
+    
+    def validate_input(self, file_location):
+        message = None
+        
+        is_file = path.isfile(file_location)
+        
+        if not is_file:
+            message = "Please upload a *.zip file containing your address points."
+            return message
+        
+        ftype = file_location.split('.')[2]
+#        ms = magic.open(magic.MAGIC_NONE)
+#        ms.load()
+#        ftype =  ms.file(file_location)
+        
+        if ftype.lower() != "zip":
+            message = "Please upload a *.zip file containing your address points."
+            return message
+            
+        return message
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        arcpy.AddMessage(parameters[0].value)
         file_location = parameters[0].value
-        parameters[1].value = "hello"
+        message = self.validate_input(file_location)
         
-        return file_location
+        
+        
+        return message

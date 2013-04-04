@@ -1,16 +1,34 @@
 from unittest import TestCase, main
-from agrc.gp.toolbox import Tool
-from agrc.gp.models import Parameters
+from agrc.gp.Toolbox import Tool
+from os import path
 
-class Tests(TestCase):
+class TestFileInput(TestCase):
+    tool = None
     
-    def test_output_is_path(self):
-        tool = Tool()
-        p1 = Parameters('test')
-        p2 = Parameters('test2')
+    def setUp(self):
+        self.tool = Tool()    
     
-        value = tool.execute([p1,p2], None)
-        self.assertEqual(value, 'test', 'messages arent euqal')
+    def test_bad_file_input(self):
+        location = path.join(path.abspath(path.dirname(__file__)), r"data\bad\bad.somethingNotZip")
+        
+        value = self.tool.validate_input(location)
+        
+        self.assertEqual(value, "Please upload a *.zip file containing your address points.", "wrong message")       
     
+    def test_empty_file_input(self):
+        location = ""
+        
+        value = self.tool.validate_input(location)
+        
+        self.assertEqual(value, "Please upload a *.zip file containing your address points.", "wrong message")       
+    
+    
+    def test_zip_file_input_expands_to_new_folder(self):
+        location = path.join(path.abspath(path.dirname(__file__)), r'data\good\KaneAddressPoints.zip')
+        
+        value = self.tool.validate_input(location)
+        
+        self.assertEqual(value, None, "shoult not get error sinze ends with zip")
+
 if __name__=='__main__':
     main()
