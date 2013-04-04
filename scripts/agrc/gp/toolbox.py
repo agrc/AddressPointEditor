@@ -25,10 +25,16 @@ class Tool(object):
                                        datatype="File",
                                        parameterType="Required",
                                        direction="Input")
-                                       
-        upload_param.value="The zip file containing your shapefile information or file geodatabase."
         
-        return [upload_param]
+        output = arcpy.Parameter(displayName="output",
+                                      name='output',
+                                      datatype='String',
+                                      parameterType="Derived",
+                                      direction="Output")
+                                       
+        upload_param.value = "*.zip"
+        
+        return [upload_param, output]
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -47,11 +53,8 @@ class Tool(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        return
-    
-def main():
-    tool = Tool()
-    tool.execute(tool.getParameterInfo(), None)
+        arcpy.AddMessage(parameters[0].value)
+        file_location = parameters[0].value
+        parameters[1].value = "hello"
         
-if __name__ == '__main__':
-    main()
+        return file_location
