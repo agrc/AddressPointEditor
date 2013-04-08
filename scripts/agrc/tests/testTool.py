@@ -38,7 +38,7 @@ class TestFileInput(TestCase):
         
         self.assertEqual(value, None, "shoult not get error sinze ends with zip")
 
-class TestDecompress(TestCase):
+class TestDecompression(TestCase):
             
     def setUp(self):
         self.tool = Tool()
@@ -60,7 +60,7 @@ class TestDecompress(TestCase):
 
         self.assertEqual(len(listdir(location)), 7, 'unzipped count is off') 
 
-class TestValidateGeodata(TestCase):
+class TestShapefileParts(TestCase):
     
     def setUp(self):
         self.tool = Tool()
