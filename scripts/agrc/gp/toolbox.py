@@ -65,9 +65,6 @@ class Tool(object):
         
         parts = file_location.split('.')
         ftype = parts[len(parts) - 1]
-#        ms = magic.open(magic.MAGIC_NONE)
-#        ms.load()
-#        ftype =  ms.file(file_location)
         
         if ftype.lower() != "zip":
             message = "Please upload a *.zip file containing your address points."
@@ -76,10 +73,13 @@ class Tool(object):
         return message
     
     def unzip(self, file_location):
+        unzip_location = None
+        
         with zipfile.ZipFile(file_location) as zf:
             for member in zf.infolist():
                 words = member.filename.split('\\')
                 parts = file_location.split('\\')
+                
                 destination_dir = "\\".join(parts[:-1])
                 
                 path = destination_dir
@@ -92,7 +92,12 @@ class Tool(object):
                         continue
                     path = os.path.join(path, word)
                     
+                if unzip_location is None:
+                    unzip_location = os.path.join(path,words[0])
+                    
                 zf.extract(member, path)
+        
+        return unzip_location
 
     def execute(self, parameters, messages):
         """The source code of the tool."""

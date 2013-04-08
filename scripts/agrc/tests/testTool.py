@@ -2,7 +2,6 @@ from unittest import TestCase, main
 from agrc.gp.Toolbox import Tool
 import os
 from shutil import copy, rmtree
-from time import sleep
 
 class TestFileInput(TestCase):
     
@@ -25,8 +24,12 @@ class TestFileInput(TestCase):
         copy(os.path.join(os.path.abspath(os.path.dirname(__file__)), r'data\bad.somethingNotZip'), self.create_directory(self.bad_file_directory))
     
     def tearDown(self):
-        rmtree(self.good_file_directory)
-        rmtree(self.bad_file_directory)
+        if os.path.exists(self.good_file_directory):
+            rmtree(self.good_file_directory)
+        
+        if os.path.exists(self.bad_file_directory):
+            rmtree(self.bad_file_directory)
+        
     
     def test_bad_file_input(self):
         value = self.tool.validate_input(self.bad_file)
@@ -63,16 +66,18 @@ class TestDecompress(TestCase):
         
         copy(os.path.join(os.path.abspath(os.path.dirname(__file__)), r'data\KaneAddressPoints.zip'), self.create_directory(self.good_file_directory))
         copy(os.path.join(os.path.abspath(os.path.dirname(__file__)), r'data\bad.somethingNotZip'), self.create_directory(self.bad_file_directory))
-        sleep(1)
         
     def tearDown(self):
-        rmtree(self.good_file_directory)
-        rmtree(self.bad_file_directory)
+        if os.path.exists(self.good_file_directory):
+            rmtree(self.good_file_directory)
+        
+        if os.path.exists(self.bad_file_directory):
+            rmtree(self.bad_file_directory)
         
     def test_can_decompress(self):
-        self.tool.unzip(self.good_file)
-        pass
-    
-    
+        location = self.tool.unzip(self.good_file)
+        print location
+        self.assertEqual(len(os.listdir(location)), 7, 'unzipped count is off') 
+        
 if __name__=='__main__':
     main()
