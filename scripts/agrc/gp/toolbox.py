@@ -1,5 +1,4 @@
-import arcpy
-from os import path
+import arcpy, os, zipfile
 
 class Toolbox(object):
     def __init__(self):
@@ -58,13 +57,14 @@ class Tool(object):
     def validate_input(self, file_location):
         message = None
         
-        is_file = path.isfile(file_location)
+        is_file = os.path.isfile(file_location)
         
         if not is_file:
             message = "Please upload a *.zip file containing your address points."
             return message
         
-        ftype = file_location.split('.')[2]
+        parts = file_location.split('.')
+        ftype = parts[len(parts) - 1]
 #        ms = magic.open(magic.MAGIC_NONE)
 #        ms.load()
 #        ftype =  ms.file(file_location)
@@ -74,12 +74,29 @@ class Tool(object):
             return message
             
         return message
+    
+    def unzip(self, file_location):
+        with zipfile.ZipFile(file_location) as zf:
+            for member in zf.infolist():
+                words = member.filename.split('\\')
+                parts = file_location.split('\\')
+                destination_dir = "\\".join(parts[:-1])
+                
+                path = destination_dir
+                
+                for word in words[:-1]:
+                    drive, word = os.path.splitdrive(word)
+                    head, word = os.path.split(word)
+                    
+                    if word in (os.curdir, os.pardir, ''):
+                        continue
+                    path = os.path.join(path, word)
+                    
+                zf.extract(member, path)
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
         file_location = parameters[0].value
         message = self.validate_input(file_location)
-        
-        
         
         return message
