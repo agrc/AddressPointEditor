@@ -11,12 +11,16 @@ class Toolbox(object):
         self.tools = [Tool]
 
 class Tool(object):
+    
+    shapefile_parts = None
+    
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "Validate Address Point Upload"
         self.description = ("Unzips an uploaded file and runs validation checks. "
                            "Appends the data to the correct county address point layer.")
         self.canRunInBackground = True
+        self.shapefile_parts = ['.shp', '.shx', '.dbf', '.prj']
 
     def getParameterInfo(self):
         """Define parameter definitions"""
@@ -63,14 +67,23 @@ class Tool(object):
             message = "Please upload a *.zip file containing your address points."
             return message
         
-        parts = file_location.split('.')
-        ftype = parts[len(parts) - 1]
+        ftype = self.get_extension(file_location)
         
-        if ftype.lower() != "zip":
+        if ftype != ".zip":
             message = "Please upload a *.zip file containing your address points."
             return message
             
         return message
+    
+    def validate_shapefile_parts(self, file_location):
+        parts = [f for f in os.listdir(file_location) if os.path.isfile(os.path.join(file_location,f)) and self.get_extension(f) in self.shapefile_parts]
+        
+        return len(parts) == 4
+        
+    def get_extension(self, f):
+        file_name, file_extension = os.path.splitext(f)
+        
+        return file_extension.lower()
     
     def unzip(self, file_location):
         unzip_location = None
