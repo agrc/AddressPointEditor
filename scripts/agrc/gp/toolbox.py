@@ -13,7 +13,7 @@ class Toolbox(object):
 class Tool(object):
     
     shapefile_parts = None
-    schema = set([('Shape', 'Geometry'),
+    required_schema = set([('Shape', 'Geometry'),
                   ('HouseAddr', 'String', 100),
                   ('FullAddr', 'String', 100),
                   ('Modified', 'Date'),
@@ -98,7 +98,7 @@ class Tool(object):
             elif field.type == 'Double':
                 input_schema.add((field.name, field.type, field.scale, field.precision))
             
-        return self.schema - input_schema
+        return self.required_schema - input_schema
      
     def get_extension(self, f):
         file_name, file_extension = os.path.splitext(f)
