@@ -85,7 +85,19 @@ class Tool(object):
         
         return len(parts) == 4
     
+    def get_featureclass_from_fgdb(self, file_location):
+        arcpy.env.workspace = file_location
+        classes = arcpy.ListFeatureClasses(None, "Point")
+        
+        if len(classes) < 1:
+            return None
+        
+        return os.path.join(file_location, classes[0])
+    
     def validate_schema(self, file_location):
+        if self.get_extension(file_location) != ".shp":
+            file_location = self.get_featureclass_from_fgdb(file_location)
+            
         properties = arcpy.Describe(file_location)
         
         input_schema = set([])

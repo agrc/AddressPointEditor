@@ -112,7 +112,7 @@ class TestInputSchema(TestCase):
         self.assertEqual(len(errors), 0, "schema is valid")
         
     def test_valid_fgdb_schema(self):
-        errors = self.tool.validate_schema(path.join(self.valid_fgdb, 'Kane_Address_Points'))
+        errors = self.tool.validate_schema(self.valid_fgdb)
         
         self.assertEqual(len(errors), 0, "schema is valid")
         
