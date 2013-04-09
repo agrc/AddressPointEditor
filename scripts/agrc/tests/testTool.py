@@ -67,13 +67,13 @@ class TestShapefileParts(TestCase):
     
         self.valid_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
         self.missing_schema_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\incompleteshapefile')
-        self.parent_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
+        self.parent_shapefile_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
         
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.valid_shapefile)
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\incompleteshapefile'), self.missing_schema_shapefile)
 
     def tearDown(self):
-        helpers.delete_directory(self.parent_directory)
+        helpers.delete_directory(self.parent_shapefile_directory)
             
     def test_valid_shapefile_parts(self):
         is_valid = self.tool.validate_shapefile_parts(self.valid_shapefile)
@@ -91,17 +91,28 @@ class TestInputSchema(TestCase):
         self.tool = Tool()
     
         self.valid_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
+        self.valid_fgdb = path.join(path.abspath(path.dirname(__file__)), r'data\good\KaneAddressPoints.gdb')
+        
         self.missing_schema_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\missingschemashapefile')
-        self.parent_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
+        
+        self.parent_shapefile_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
+        self.parent_fgdb_directory = path.join(path.abspath(path.dirname(__file__)), r'data\good')
         
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.valid_shapefile)
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\missingschemashapefile'), self.missing_schema_shapefile)
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\KaneAddressPoints.gdb'), self.valid_fgdb)
 
     def tearDown(self):
-        helpers.delete_directory(self.parent_directory)
+        helpers.delete_directory(self.parent_shapefile_directory)
+        helpers.delete_directory(self.parent_fgdb_directory)
     
     def test_valid_shapefile_schema(self):
         errors = self.tool.validate_schema(path.join(self.valid_shapefile, 'Kane Address Points.shp'))
+        
+        self.assertEqual(len(errors), 0, "schema is valid")
+        
+    def test_valid_fgdb_schema(self):
+        errors = self.tool.validate_schema(path.join(self.valid_fgdb, 'Kane_Address_Points'))
         
         self.assertEqual(len(errors), 0, "schema is valid")
         

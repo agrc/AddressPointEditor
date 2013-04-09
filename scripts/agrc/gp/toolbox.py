@@ -17,7 +17,7 @@ class Tool(object):
                   ('HouseAddr', 'String', 100),
                   ('FullAddr', 'String', 100),
                   ('Modified', 'Date'),
-                  ('X', 'Double', 8, 18)]) 
+                  ('X', 'Double')]) 
     
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
@@ -96,7 +96,7 @@ class Tool(object):
             elif field.type == 'Date' or field.type == 'Geometry':
                 input_schema.add((field.name, field.type))
             elif field.type == 'Double':
-                input_schema.add((field.name, field.type, field.scale, field.precision))
+                input_schema.add((field.name, field.type))
             
         return self.required_schema - input_schema
      
