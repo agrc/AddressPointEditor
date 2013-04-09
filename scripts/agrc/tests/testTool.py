@@ -92,19 +92,23 @@ class TestInputSchema(TestCase):
     
         self.valid_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
         self.valid_fgdb = path.join(path.abspath(path.dirname(__file__)), r'data\good\KaneAddressPoints.gdb')
+        self.no_points_fgdb = path.join(path.abspath(path.dirname(__file__)), r'data\bad\NoPoints.gdb')
         
         self.missing_schema_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\missingschemashapefile')
         
         self.parent_shapefile_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
         self.parent_fgdb_directory = path.join(path.abspath(path.dirname(__file__)), r'data\good')
+        self.parent_fgdb_directory2 = path.join(path.abspath(path.dirname(__file__)), r'data\bad')
         
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.valid_shapefile)
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\missingschemashapefile'), self.missing_schema_shapefile)
         helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\KaneAddressPoints.gdb'), self.valid_fgdb)
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\NoPoints.gdb'), self.no_points_fgdb)
 
     def tearDown(self):
         helpers.delete_directory(self.parent_shapefile_directory)
         helpers.delete_directory(self.parent_fgdb_directory)
+        helpers.delete_directory(self.parent_fgdb_directory2)
     
     def test_valid_shapefile_schema(self):
         errors = self.tool.validate_schema(path.join(self.valid_shapefile, 'Kane Address Points.shp'))
@@ -115,7 +119,12 @@ class TestInputSchema(TestCase):
         errors = self.tool.validate_schema(self.valid_fgdb)
         
         self.assertEqual(len(errors), 0, "schema is valid")
+    
+    def test_fgdb_schema_with_no_point_fcs(self):
+        errors = self.tool.validate_schema(self.no_points_fgdb)
         
+        self.assertEqual(errors, False, "should be false")
+    
     def test_invalid_shapefile_schema(self):
         errors = self.tool.validate_schema(path.join(self.missing_schema_shapefile, 'Kane Address Points.shp'))
         

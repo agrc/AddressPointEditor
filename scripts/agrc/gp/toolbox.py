@@ -98,6 +98,9 @@ class Tool(object):
         if self.get_extension(file_location) != ".shp":
             file_location = self.get_featureclass_from_fgdb(file_location)
             
+        if file_location is None:
+            return False
+            
         properties = arcpy.Describe(file_location)
         
         input_schema = set([])
