@@ -65,25 +65,51 @@ class TestShapefileParts(TestCase):
     def setUp(self):
         self.tool = Tool()
     
-        self.good_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
-        self.bad_shapefile_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\incompleteshapefile')
-        self.good_parent_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
+        self.valid_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
+        self.missing_schema_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\incompleteshapefile')
+        self.parent_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
         
-        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.good_directory)
-        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\incompleteshapefile'), self.bad_shapefile_directory)
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.valid_shapefile)
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\incompleteshapefile'), self.missing_schema_shapefile)
 
     def tearDown(self):
-        helpers.delete_directory(self.good_parent_directory)
+        helpers.delete_directory(self.parent_directory)
             
     def test_valid_shapefile_parts(self):
-        is_valid = self.tool.validate_shapefile_parts(self.good_directory)
+        is_valid = self.tool.validate_shapefile_parts(self.valid_shapefile)
         
         self.assertEqual(is_valid, True, "this shapefile should be seen as valid")
         
     def test_incomplete_shapefile_parts(self):
-        is_valid = self.tool.validate_shapefile_parts(self.bad_shapefile_directory)
+        is_valid = self.tool.validate_shapefile_parts(self.missing_schema_shapefile)
         
         self.assertEqual(is_valid, False, "missing dbf and prj")    
+    
+class TestInputSchema(TestCase):
+    
+    def setUp(self):
+        self.tool = Tool()
+    
+        self.valid_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\shapefile')
+        self.missing_schema_shapefile = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped\missingschemashapefile')
+        self.parent_directory = path.join(path.abspath(path.dirname(__file__)), r'data\unzipped')
+        
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\shapefile'), self.valid_shapefile)
+        helpers.copy(path.join(path.abspath(path.dirname(__file__)), r'data\source\missingschemashapefile'), self.missing_schema_shapefile)
+
+    def tearDown(self):
+        helpers.delete_directory(self.parent_directory)
+    
+    def test_valid_shapefile_schema(self):
+        errors = self.tool.validate_schema(path.join(self.valid_shapefile, 'Kane Address Points.shp'))
+        
+        self.assertEqual(len(errors), 0, "schema is valid")
+        
+    def test_invalid_shapefile_schema(self):
+        errors = self.tool.validate_schema(path.join(self.missing_schema_shapefile, 'Kane Address Points.shp'))
+        
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors.pop()[0], 'HouseAddr', 'house addr is missing from schema')
     
 if __name__=='__main__':
     main()

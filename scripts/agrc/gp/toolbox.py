@@ -13,6 +13,11 @@ class Toolbox(object):
 class Tool(object):
     
     shapefile_parts = None
+    schema = set([('Shape', 'Geometry'),
+                  ('HouseAddr', 'String', 100),
+                  ('FullAddr', 'String', 100),
+                  ('Modified', 'Date'),
+                  ('X', 'Double', 8, 18)]) 
     
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
@@ -79,7 +84,22 @@ class Tool(object):
         parts = [f for f in os.listdir(file_location) if os.path.isfile(os.path.join(file_location,f)) and self.get_extension(f) in self.shapefile_parts]
         
         return len(parts) == 4
+    
+    def validate_schema(self, file_location):
+        properties = arcpy.Describe(file_location)
         
+        input_schema = set([])
+        
+        for field in properties.fields:
+            if field.type == 'String':
+                input_schema.add((field.name, field.type, field.length))
+            elif field.type == 'Date' or field.type == 'Geometry':
+                input_schema.add((field.name, field.type))
+            elif field.type == 'Double':
+                input_schema.add((field.name, field.type, field.scale, field.precision))
+            
+        return self.schema - input_schema
+     
     def get_extension(self, f):
         file_name, file_extension = os.path.splitext(f)
         
