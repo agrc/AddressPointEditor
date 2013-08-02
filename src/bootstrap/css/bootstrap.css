@@ -876,11 +876,6 @@ pre code {
 .col-12 {
   width: 100%;
 }
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 728px;
-  }
   .col-sm-1,
   .col-sm-2,
   .col-sm-3,
@@ -999,10 +994,6 @@ pre code {
   }
 }
 
-@media (min-width: 992px) {
-  .container {
-    max-width: 940px;
-  }
   .col-lg-1,
   .col-lg-2,
   .col-lg-3,
@@ -1085,12 +1076,6 @@ pre code {
   }
   .col-offset-11 {
     margin-left: 91.66666666666666%;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1170px;
   }
 }
 
