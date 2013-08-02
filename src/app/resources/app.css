@@ -1,78 +1,33 @@
-@import '../../agrc/themes/standard/map/BaseMap.css';
-@import '../../agrc/themes/standard/locate/FindGeneric.css';
-@import '../../ijit/themes/standard/layout/SideBarToggler.css';
-@import '../../ijit/themes/standard/layout/PaneStack.css';
-@import '../../components/bootstrap/css/normalize.css';
+@import '../../agrc/resources/map/BaseMap.css';
+@import '../../agrc/resources/locate/FindAddress.css';
+@import '../../ijit/resources/notify/ChangeRequest.css';
+@import 'SlideInSidebar.css';
 
-body, html, .app {
+body {
+    overflow: hidden;
+}
+.app, .agrc-container, .map-div {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
-    color: #333333;
-    background-color: #ffffff;
 }
-.app .main-container {
-    width: 100%;
-    height: 100%;
+.navbar .navbar-brand {
+    font-weight: bold;
+    font-size: 25px;
+    color: white;
+    max-width: 300px;
 }
-
-/* TITLE PANE */
-.app .title-pane {
-    border: none;
+.navbar {
+    opacity: 0.975;
 }
-.app h1 {
-    margin: 5px 0 0 0;
-    font-size: 40px;
-    letter-spacing: -2px;
-    font-weight: normal;
+.app .esriSimpleSlider {
+    top: 60px;
 }
-.app .version {
-    font-size: 16px;
-    text-decoration: none;
-    color: gray;
-    letter-spacing: 0;
+.app .dropdown-menu {
+    padding: 15px;
 }
-.app .version:hover {
-    text-decoration: underline !important;
-}
-
-/* SIDE BAR */
-.app .side-bar {
-    width: 300px;
-    padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-.app .side-bar-sizer {
-    width: 302px;
-    margin: -1px;
-}
-.app .padder {
-    padding: 8px;
-}
-.app .side-bar h3 {
-    margin-bottom: 3px;
-}
-.app .first-header {
-    margin-top: 0px;
-}
-
-/* CENTER (MAP) */
-.app .center-container {
-    padding: 0;
-}
-.app .map-div {
-    width: 100%;
-    height: 100% !important;
-}
-
-/* GENERAL STUFF */
-/* remove orange outline in chrome */
-*:focus {
-    outline: none;
+.app .dropdown-menu .control-group {
+    margin: 0;
 }

@@ -1,34 +1,85 @@
 <div>
-    <div data-dojo-attach-point='mainContainer' class='main-container' data-dojo-type='dijit.layout.BorderContainer'>
-        <div class='title-pane' data-dojo-type='dijit.layout.ContentPane' region='top'>
-            <h1>
-                <span class='title'>Address Points (beta)</span>
-                <a data-dojo-attach-point='version' class='version' href='ChangeLog.html' target="_blank"></a>
-            </h1>
-        </div>
-        <div data-dojo-attach-point='sideBar' class='side-bar' data-dojo-type='dijit.layout.ContentPane' region='left'>
-            <div class='side-bar-sizer'>
-                <div class='padder'>
-                    <ol>
-                        <li>Choose a county</li>
-                        <li>Edit Points</li>
-                        <li></li>
-                        <li></li>
-                    </ol>
-                </div>
-                
-                <div data-dojo-attach-point='paneStackContainer'>
-                    <!-- <div title='Pane 1'>
-                        <div data-dojo-attach-point='editorContainer'></div>
-                    </div> -->
-                </div>
-                <div data-dojo-attach-point="test"></div>
-                <div data-dojo-attach-point="test2"></div>
+  <div class="navbar navbar-inverse navbar-fixed-top" >
+    <div class="container">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Address Point Editor</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" id='suggest-change-dropdown' class='dropdown-toggle' data-toggle='dropdown'>Suggest Change <b class="caret"></b></a>
+            <div class='dropdown-menu'>
+              <div data-dojo-attach-point="suggestChangeDiv"></div>
             </div>
-        </div>
-        <div data-dojo-attach-point='centerContainer' class='center-container' data-dojo-type='dijit.layout.ContentPane' region='center'>
-            <div data-dojo-attach-point='sidebarToggle'></div>
-            <div data-dojo-attach-point='mapDiv' class='map-div'></div>
-        </div>
+          </li>
+          <li class="dropdown">
+            <a href="#" class='dropdown-toggle' data-toggle='dropdown'>Find Address <b class="caret"></b></a>
+            <div class='dropdown-menu'>
+              <div data-dojo-attach-point="findAddressDiv"></div>
+            </div>
+          </li>
+          <li><a data-toggle="modal" href="#loginModal">Login</a></li>
+        </ul>
+      </div>
     </div>
+  </div>
+  <div data-dojo-attach-point="mapDiv" class="map-div"></div>
+  <div data-dojo-attach-point='sideBar'></div>
+  <!-- Modal -->
+  <div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Login</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="exampleInputEmail">Email address</label>
+              <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <a href="#registerModal" class="btn btn-warning" data-toggle="modal" data-dismiss="modal">Register</a>
+         <button type="submit" class="btn btn-success">Sign in</button>
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+ <div class="modal fade" id="registerModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Register</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="exampleInputEmail">Email address</label>
+            <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+       <button type="submit" class="btn btn-success">Sign in</button>
+     </div>
+   </div><!-- /.modal-content -->
+ </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </div>
