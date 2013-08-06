@@ -31,3 +31,9 @@ body {
 .app .dropdown-menu .control-group {
     margin: 0;
 }
+
+.atiSaveButton, .atiDeleteButton
+{
+    float: left;
+    margin: 0.2em !important;
+}
