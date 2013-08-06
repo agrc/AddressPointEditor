@@ -81,9 +81,7 @@ define([
                                 width: (domGeom.getMarginBox(this.map.container).w - this.width).toString()
                             },
                             onEnd: function() {
-                                that.map.resize(true);
-
-                                that.map.setExtent(that.map.graphics.graphics[0].geometry.getExtent(), true);
+                                //that.map.resize(true);
                             }
                         })
                     ]);
@@ -105,7 +103,7 @@ define([
                                 }
                             },
                             onEnd: function() {
-                                that.map.resize(true);
+                                //that.map.resize(true);
                             }
                         })
                     ]);
