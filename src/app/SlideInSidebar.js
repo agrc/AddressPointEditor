@@ -42,7 +42,7 @@ define([
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
-        return declare(
+        return declare("ijit.SlideInSidebar",
             [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
                 widgetsInTemplate: true,
                 templateString: template,
@@ -67,7 +67,7 @@ define([
                     this.resize();
 
                     this.width = domGeom.getMarginBox(this.domNode).w;
-                    var that = this;
+
                     this.showAni = coreFx.combine([
                         fx.animateProperty({
                             node: this.domNode,

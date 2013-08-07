@@ -9,6 +9,7 @@ define([
         'dojo/on',
         'dojo/dom-construct',
         'dojo/aspect',
+        'dojo/query',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
@@ -45,6 +46,7 @@ define([
         on,
         domConstruct,
         aspect,
+        query,
         _WidgetBase,
         _TemplatedMixin,
         _WidgetsInTemplateMixin,
@@ -135,7 +137,7 @@ define([
                     on(window, 'resize', lang.hitch(this, this.resize)),
 
                     on(this.map, "LayersAddResult", lang.hitch(this, 'initEditing')),
-                    
+
                     aspect.after(this.changeRequest, 'onDrawStart', function() {
                         console.log('on draw start');
                         var ddl = $('#suggest-change-dropdown');
@@ -143,26 +145,31 @@ define([
                         ddl.blur();
                         $('.dropdown').blur();
                     }),
-                    
+
                     aspect.after(this.changeRequest, 'onDrawEnd', function() {
                         console.log('on draw end');
                         setTimeout(function() {
                             $('#suggest-change-dropdown').dropdown('toggle');
                         }, 100);
                     }),
-                    
-                    on(this.editLayer, "click", lang.hitch(this, function(evt) {
+
+                    on(this.editLayer, "EditsComplete", function(response) {
+                        console.log("onEditsComplete");
+                        console.log(response);
+                    }),
+
+                    this.map.on("click", lang.hitch(this, function(evt) {
                         this.sideContent.show();
                         this.selectQuery.geometry = this._screenPointToEnvelope(evt);
-                        this.editLayer.selectFeatures(this.selectQuery, esri.layers.FeatureLayer.SELECTION_NEW, function(features) {
-                            console.log(features);
+                        this.editLayer.selectFeatures(this.selectQuery, esri.layers.FeatureLayer.SELECTION_NEW, lang.hitch(this, function(features) {
                             if (features.length > 0) {
-                                console.log(features.length);
-                                //store the current feature
+                                this.updateFeature = features[0];
                             } else {
-
+                                this.updateFeature = null;
+                                this.editLayer.clearSelection();
+                                this.sideContent.hide();
                             }
-                        });
+                        }));
                     }))
                 );
             },
@@ -235,6 +242,13 @@ define([
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
+                var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
+                globe = "<div class='esriSimpleSliderGlyphButton'><span class='glyphicon glyphicon-globe'></span></div>",
+                marker = "<div class='esriSimpleSliderGlyphButton'><span class='glyphicon glyphicon-map-marker'></span></div>";
+                
+                domConstruct.place(globe + marker, 
+                    node, "after");
+
                 var featureLayerInfos = array.map(layer, function(result) {
                     return {
                         "featureLayer": result.layer
@@ -265,28 +279,65 @@ define([
                 }, domConstruct.create("div", null, this.sideContent.contentDiv, "first"));
 
                 this.saveButton = new Button({
-                        label: "Save",
-                        "class": "atiSaveButton"
-                    }); 
+                    label: "Save",
+                    "class": "atiSaveButton"
+                });
 
                 domConstruct.place(this.saveButton.domNode, this.attributeEditor.editButtons, "first");
+                var that = this;
 
-                this.own(on(this.saveButton, "Click", function() {
-                        this.updateFeature.getLayer().applyEdits(null, [this.updateFeature], null);
+                this.own(
+                    this.saveButton.on("click", function() {
+                        that.saveButton.set('disabled', true);
+                        that.attributeEditor.deleteBtn.set('disabled', true);
+                        that.attributeEditor.deleteBtn.set('disabled', true);
+
+                        that.saveButton.set('innerHTML', 'Saving Edits.');
+
+                        that.updateFeature.getLayer().applyEdits(null, [that.updateFeature], null)
+                            .then(function(response) {
+                                that.saveButton.set('disabled', false);
+                                that.attributeEditor.deleteBtn.set('disabled', false);
+                                that.saveButton.set('innerHTML', 'Save');
+
+                                console.log('save response');
+                                console.log(response);
+                            }, function(response) {
+                                console.log('save error response');
+                                console.log(response);
+                            });
                     }),
 
-                    on(this.attributeEditor, "AttributeChange", function(feature, fieldName, newFieldValue) {
-                        //store the updates to apply when the save button is clicked 
-                        this.updateFeature.attributes[fieldName] = newFieldValue;
+                    this.attributeEditor.on("attribute-change", function(evt) {
+                        that.updateFeature.attributes[evt.fieldName] = evt.fieldValue;
+                        console.log('attribute-change');
                     }),
 
-                    on(this.attributeEditor, "Next", function(feature) {
-                        this.updateFeature = feature;
+                    this.attributeEditor.on("next", function(evt) {
+                        that.updateFeature = evt.feature;
+                        console.log('next');
                     }),
 
-                    on(this.attributeEditor, "Delete", function(feature) {
-                        feature.getLayer().applyEdits(null, null, [feature]);
-                        this.sideContent.hide();
+                    this.attributeEditor.on("delete", function(evt) {
+                        var feature = evt.feature;
+
+                        that.saveButton.set('disabled', true);
+                        that.attributeEditor.deleteBtn.set('disabled', true);
+                        that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
+
+                        feature.getLayer().applyEdits(null, null, [feature])
+                            .then(function(response) {
+                                that.saveButton.set('disabled', false);
+                                that.attributeEditor.deleteBtn.set('disabled', false);
+                                that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
+                                that.sideContent.hide();
+
+                                console.log('delete response');
+                                console.log(response);
+                            }, function(response) {
+                                console.log('delete error response');
+                                console.log(response);
+                            });
                     }));
                 // var settings = {
                 //     map: this.map,

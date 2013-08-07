@@ -37,3 +37,11 @@ body {
     float: left;
     margin: 0.2em !important;
 }
+
+.esriSimpleSliderGlyphButton{
+    border-bottom-color: rgb(102, 102, 102);
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    font-size: 20px !important;
+    line-height: 1.428571429 !important;
+}
