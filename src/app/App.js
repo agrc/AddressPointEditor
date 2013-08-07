@@ -8,8 +8,10 @@ define([
         'dojo/dom',
         'dojo/on',
         'dojo/dom-construct',
+        'dojo/dom-class',
         'dojo/aspect',
         'dojo/query',
+        'dojo/parser',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
@@ -45,8 +47,10 @@ define([
         dom,
         on,
         domConstruct,
+        domClass,
         aspect,
         query,
+        parser,
         _WidgetBase,
         _TemplatedMixin,
         _WidgetsInTemplateMixin,
@@ -136,9 +140,11 @@ define([
                 this.own(
                     on(window, 'resize', lang.hitch(this, this.resize)),
 
-                    on(this.map, "LayersAddResult", lang.hitch(this, 'initEditing')),
+                    //on(this.map, "LayersAddResult", lang.hitch(this, 'initEditing')),
 
-                    aspect.after(this.changeRequest, 'onDrawStart', function() {
+                    this.map.on("layers-add-result", lang.hitch(this, 'initEditing')),
+
+                    this.changeRequest.on('draw-start', function() {
                         console.log('on draw start');
                         var ddl = $('#suggest-change-dropdown');
                         ddl.dropdown('toggle');
@@ -146,14 +152,14 @@ define([
                         $('.dropdown').blur();
                     }),
 
-                    aspect.after(this.changeRequest, 'onDrawEnd', function() {
+                    this.changeRequest.on('draw-end', function() {
                         console.log('on draw end');
                         setTimeout(function() {
                             $('#suggest-change-dropdown').dropdown('toggle');
                         }, 100);
                     }),
 
-                    on(this.editLayer, "EditsComplete", function(response) {
+                    this.editLayer.on("edits-complete", function(response) {
                         console.log("onEditsComplete");
                         console.log(response);
                     }),
@@ -237,17 +243,39 @@ define([
 
                 this.map.addLayers([this.editLayer]);
             },
-            initEditing: function(layer) {
+            fullExtent: function() {
+                console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
+            },
+            initEditing: function(evt) {
                 // sumamry:
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
-                globe = "<div class='esriSimpleSliderGlyphButton'><span class='glyphicon glyphicon-globe'></span></div>",
-                marker = "<div class='esriSimpleSliderGlyphButton'><span class='glyphicon glyphicon-map-marker'></span></div>";
-                
-                domConstruct.place(globe + marker, 
-                    node, "after");
+                // var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
+                //     //globe = "<div class='esriSimpleSliderGlyphButton' data-dojo-attach-event='click:fullExtent'><span class='glyphicon glyphicon-globe'></span></div>",
+                //     //marker = "<div class='esriSimpleSliderGlyphButton' data-dojo-attach-event='click:fullExtent'><span class='glyphicon glyphicon-map-marker'></span></div>";
+
+                //     globe = domConstruct.create("span", {
+                //         "class": "glyphicon"
+                //     }),
+                //     marker = domConstruct.create("span", {
+                //         "class": "glyphicon"
+                //     });
+
+                // domClass.add(globe, "glyphicon-globe");
+                // domClass.add(marker, "glyphicon-map-marker");
+
+                // domConstruct.place(globe + marker,
+                //     node, "after");
+
+                // console.log(node.parentNode);
+                // parser.parse(node.parentNode);
+
+                console.log(evt);
+
+                var layer = evt.layers;
+
+                console.log(layer);
 
                 var featureLayerInfos = array.map(layer, function(result) {
                     return {
@@ -325,19 +353,7 @@ define([
                         that.attributeEditor.deleteBtn.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
 
-                        feature.getLayer().applyEdits(null, null, [feature])
-                            .then(function(response) {
-                                that.saveButton.set('disabled', false);
-                                that.attributeEditor.deleteBtn.set('disabled', false);
-                                that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
-                                that.sideContent.hide();
-
-                                console.log('delete response');
-                                console.log(response);
-                            }, function(response) {
-                                console.log('delete error response');
-                                console.log(response);
-                            });
+                        feature.getLayer().applyEdits(null, null, [feature]);
                     }));
                 // var settings = {
                 //     map: this.map,
