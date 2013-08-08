@@ -5,6 +5,7 @@ define([
         'dojo/_base/lang',
         'dojo/_base/declare',
         'dojo/_base/Color',
+        'dojo/_base/event',
         'dojo/dom',
         'dojo/on',
         'dojo/dom-construct',
@@ -36,6 +37,7 @@ define([
         'esri/symbols/SimpleLineSymbol',
         'esri/toolbars/edit',
         'esri/toolbars/draw',
+        'esri/graphic',
 
         'app/SlideInSidebar'
     ],
@@ -46,6 +48,7 @@ define([
         lang,
         declare,
         Color,
+        event,
         dom,
         on,
         domConstruct,
@@ -73,6 +76,7 @@ define([
         SimpleLineSymbol,
         Edit,
         Draw,
+        Graphic,
         SlideInSidebar
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -113,6 +117,9 @@ define([
             //editingToolbar: esri/toolbars/edit
             editingToolbar: null,
 
+            //boolean: flag for knowing to start/finish editing session
+            isEditing: null,
+
             constructor: function() {
                 // summary:
                 //      first function to fire after page loads
@@ -145,16 +152,21 @@ define([
                 this.sideContent = new SlideInSidebar({
                     map: this.map
                 }, this.sideBar);
+
+                this.isEditing = false;
+
+                this.drawingToolbar = new Draw(this.map);
+                this.editingToolbar = new Edit(this.map);
             },
             wireEvents: function() {
+                console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
+
                 this.own(
                     on(window, 'resize', lang.hitch(this, this.resize)),
 
-                    //on(this.map, "LayersAddResult", lang.hitch(this, 'initEditing')),
-
                     this.map.on("layers-add-result", lang.hitch(this, 'initEditing')),
 
-                    this.changeRequest.on('draw-start', function() {
+                    on(this.changeRequest, 'drawStart', function() {
                         console.log('on draw start');
                         var ddl = $('#suggest-change-dropdown');
                         ddl.dropdown('toggle');
@@ -162,7 +174,7 @@ define([
                         $('.dropdown').blur();
                     }),
 
-                    this.changeRequest.on('draw-end', function() {
+                    on(this.changeRequest, 'drawEnd', function() {
                         console.log('on draw end');
                         setTimeout(function() {
                             $('#suggest-change-dropdown').dropdown('toggle');
@@ -173,6 +185,14 @@ define([
                         console.log("onEditsComplete");
                         console.log(response);
                     }),
+
+                    // this.drawingToolbar.on("draw-end", lang.hitch(this, function(evt) {
+                    //     this.drawingToolbar.deactivate();
+                    //     this.editingToolbar.deactivate();
+
+                    //     var newGraphic = new Graphic(evt.geometry, null, null);
+                    //     this.editLayer.applyEdits([newGraphic], null, null);
+                    // })),
 
                     this.map.on("click", lang.hitch(this, function(evt) {
                         this.sideContent.show();
@@ -188,6 +208,8 @@ define([
                         }));
                     }))
                 );
+
+                console.log('events wired');
             },
             _screenPointToEnvelope: function(evt) {
                 var centerPoint = new Point(evt.mapPoint.x, evt.mapPoint.y, evt.mapPoint.spatialReference);
@@ -266,6 +288,12 @@ define([
                     }
                 }));
             },
+            addNewPoint: function() {
+                console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
+
+                this.editingToolbar.deactivate();
+                this.drawingToolbar.activate(Draw.POINT);
+            },
             initEditing: function(evt) {
                 // sumamry:
                 //      initializes the editing settings/widget
@@ -273,8 +301,29 @@ define([
 
                 this._createSliderTools();
 
-                var layer = evt.layers;
+                this._initializeAttributeInspector(evt.layers);
 
+                this.own(
+                    this.editingToolbar.on("deactivate", lang.hitch(this, function(evt) {
+                        console.log('editingToolbar::deactivate::saving edits');
+                        this.editLayer.applyEdits(null, [evt.graphic], null);
+                    })),
+
+                    this.editLayer.on("dbl-click", lang.hitch(this, function(evt) {
+                        event.stop(evt);
+                        if (this.isEditing === false) {
+                            this.isEditing = true;
+                            this.editingToolbar.activate(Edit.MOVE, evt.graphic);
+                            console.log('editingToolbar::activating');
+                        } else {
+                            this.editingToolbar.deactivate();
+                            console.log('editingToolbar::deactivating');
+                            this.isEditing = false;
+                        }
+                    }))
+                );
+            },
+            _initializeAttributeInspector: function(layer) {
                 var featureLayerInfos = array.map(layer, function(result) {
                     return {
                         "featureLayer": result.layer
@@ -371,7 +420,7 @@ define([
                     }, markerContainer);
 
                 on(globeContainer, 'click', lang.hitch(this, 'fullExtent'));
-                on(markerContainer, 'click', lang.hitch(this, 'fullExtent'));
+                on(markerContainer, 'click', lang.hitch(this, 'addNewPoint'));
 
                 domClass.add(globe, "glyphicon-globe");
                 domClass.add(marker, "glyphicon-map-marker");
