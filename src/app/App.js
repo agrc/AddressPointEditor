@@ -34,6 +34,8 @@ define([
         'esri/tasks/query',
         'esri/symbols/SimpleMarkerSymbol',
         'esri/symbols/SimpleLineSymbol',
+        'esri/toolbars/edit',
+        'esri/toolbars/draw',
 
         'app/SlideInSidebar'
     ],
@@ -69,6 +71,8 @@ define([
         Query,
         SimpleMarkerSymbol,
         SimpleLineSymbol,
+        Edit,
+        Draw,
         SlideInSidebar
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -102,6 +106,12 @@ define([
 
             //updateFeature: esri/graphic
             updateFeature: null,
+
+            //drawingToolbar: esri/toolbars/draw
+            drawingToolbar: null,
+
+            //editingToolbar: esri/toolbars/edit
+            editingToolbar: null,
 
             constructor: function() {
                 // summary:
@@ -245,45 +255,31 @@ define([
             },
             fullExtent: function() {
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
+
+                this.map.setExtent(new Extent({
+                    xmin: 81350,
+                    ymin: 3962431,
+                    xmax: 800096,
+                    ymax: 4785283,
+                    spatialReference: {
+                        wkid: 26912
+                    }
+                }));
             },
             initEditing: function(evt) {
                 // sumamry:
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                // var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
-                //     //globe = "<div class='esriSimpleSliderGlyphButton' data-dojo-attach-event='click:fullExtent'><span class='glyphicon glyphicon-globe'></span></div>",
-                //     //marker = "<div class='esriSimpleSliderGlyphButton' data-dojo-attach-event='click:fullExtent'><span class='glyphicon glyphicon-map-marker'></span></div>";
-
-                //     globe = domConstruct.create("span", {
-                //         "class": "glyphicon"
-                //     }),
-                //     marker = domConstruct.create("span", {
-                //         "class": "glyphicon"
-                //     });
-
-                // domClass.add(globe, "glyphicon-globe");
-                // domClass.add(marker, "glyphicon-map-marker");
-
-                // domConstruct.place(globe + marker,
-                //     node, "after");
-
-                // console.log(node.parentNode);
-                // parser.parse(node.parentNode);
-
-                console.log(evt);
+                this._createSliderTools();
 
                 var layer = evt.layers;
-
-                console.log(layer);
 
                 var featureLayerInfos = array.map(layer, function(result) {
                     return {
                         "featureLayer": result.layer
                     };
                 });
-
-                console.log('feature infos created' + "::" + layer);
 
                 var layerInfos = [{
                     'featureLayer': featureLayerInfos[0].featureLayer,
@@ -355,30 +351,36 @@ define([
 
                         feature.getLayer().applyEdits(null, null, [feature]);
                     }));
-                // var settings = {
-                //     map: this.map,
-                //     layerInfos: featureLayerInfos
-                // };
+            },
+            _createSliderTools: function() {
+                console.log(this.declaredClass + "::resize", arguments);
 
-                // var params = {
-                //     settings: settings
-                // };
+                var globeContainer = domConstruct.create("div", {
+                    "class": 'esriSimpleSliderGlyphButton'
+                });
 
-                // if (this.editingpane) this.paneStack.remove(this.editingpane);
+                var markerContainer = lang.clone(globeContainer);
 
-                // this.editingpane = new titlePane({
-                //     title: "Edit Address Points",
-                //     open: true
-                // });
+                var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
 
-                // this.countypane.toggle();
-                // this.paneStack.add(this.editingpane);
+                    globe = domConstruct.create("span", {
+                        "class": "glyphicon"
+                    }, globeContainer),
+                    marker = domConstruct.create("span", {
+                        "class": "glyphicon"
+                    }, markerContainer);
 
-                // var editorWidget = new editor(params, this.editingpane.containerNode);
+                on(globeContainer, 'click', lang.hitch(this, 'fullExtent'));
+                on(markerContainer, 'click', lang.hitch(this, 'fullExtent'));
 
-                // editorWidget.startup();
+                domClass.add(globe, "glyphicon-globe");
+                domClass.add(marker, "glyphicon-map-marker");
 
-                console.log('done');
+                domConstruct.place(markerContainer,
+                    node, "after");
+
+                domConstruct.place(globeContainer,
+                    node, "after");
             },
             resize: function() {
                 // summary:
