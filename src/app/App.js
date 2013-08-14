@@ -183,9 +183,11 @@ define([
 
                     this.editLayer.on("edits-complete", function(response) {
                         console.log("onEditsComplete");
+                        //todo: need to validate response and not assume success.
                         console.log(response);
                     }),
 
+                    // this should save a new graphic but somethings up.
                     // this.drawingToolbar.on("draw-end", lang.hitch(this, function(evt) {
                     //     this.drawingToolbar.deactivate();
                     //     this.editingToolbar.deactivate();
