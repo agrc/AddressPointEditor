@@ -3,14 +3,11 @@ define([
         'dojo/_base/lang',
 
         'dojo/Deferred',
+        'dojo/on',
 
         'dijit/_WidgetBase',
-        'dijit/_TemplatedMixin',
-        'dijit/_WidgetsInTemplateMixin',
 
-        'dojo/text!app/templates/Leaderboard.html',
         'dojo/text!app/templates/LeaderboardTemplate.html',
-        'dojo/text!app/templates/LeaderItemTemplate.html',
         'dojo/text!app/templates/LeaderBoardMiniTemplate.html',
 
         'mustache/mustache',
@@ -23,14 +20,11 @@ define([
         lang,
 
         Deferred,
+        on,
 
         _WidgetBase,
-        _TemplatedMixin,
-        _WidgetsInTemplateMixin,
 
-        template,
         leaderboardTemplate,
-        leaderboardItemTemplate,
         leaderBoardMiniTemplate,
 
         mustache,
@@ -39,9 +33,7 @@ define([
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
-        return declare("app.leaderboard", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
-            widgetsInTemplate: true,
-            templateString: template,
+        return declare("app.leaderboard", [_WidgetBase], {
             baseClass: 'leaderboard',
 
             // the data returned by the query to the url
@@ -49,6 +41,12 @@ define([
 
             // the url to query for the leaderboard data
             url: null,
+
+            //dropdown anchor link
+            linkNode: null,
+
+            //drowpdown content node
+            contentNode: null,
 
             constructor: function() {
                 console.log(this.declaredClass + "::constructor", arguments);
@@ -61,18 +59,21 @@ define([
                 this.inherited(arguments);
 
                 this.boardTemplate = mustache.compile(leaderboardTemplate);
-                this.boardItem = mustache.compile(leaderboardItemTemplate);
                 this.miniTemplate = mustache.compile(leaderBoardMiniTemplate);
-
-                this.wireEvents();
 
                 this.getLeaderboard().then(lang.hitch(this,
                     function(content) {
-                        this.set('containerDiv', content);
+                        console.log(content);
+                        this.set('link', content.mini);
+                        this.set('dropdown', content.expanded);
                     }));
             },
-            _setContainerDivAttr: {
-                node: 'containerDiv',
+            _setLinkAttr: {
+                node: 'linkNode',
+                type: 'innerHTML'
+            },
+            _setDropdownAttr: {
+                node: 'contentNode',
                 type: 'innerHTML'
             },
             getLeaderboard: function() {
@@ -100,10 +101,31 @@ define([
                 //      callback for request
                 // json: Object
                 console.log(this.declaredClass + "::onRequestComplete", arguments);
-                this.miniView = this.miniTemplate(json);
-                this.expandedView = this.boardTemplate(json);
 
-                this.xhrDeferred.resolve(this.miniView);
+                this.data = json;
+
+                if (this.data && this.data.standings) {
+                    this.data.standings.sort(function(a, b) {
+                        if (a.editCount > b.editCount)
+                            return -1;
+                        if (a.editCount < b.editCount)
+                            return 1;
+                        return 0;
+                    });
+
+                    this.data.standings = this.data.standings.slice(0, 3);
+                    var places = ['gold', 'silver', 'bronze'],
+                        counter = 0;
+                    this.data.standingCss = function() {
+                        // note that counter is in the enclosing scope
+                        return places[counter++];
+                    };
+                }
+
+                this.xhrDeferred.resolve({
+                    mini: this.miniTemplate(this.data),
+                    expanded: this.boardTemplate(this.data)
+                });
             },
             onRequestFail: function(err) {
                 // summary:
@@ -112,23 +134,6 @@ define([
                 console.log(this.declaredClass + "::onRequestFail", arguments);
 
                 window.alert(err);
-            },
-            wireEvents: function() {
-                // param: type or return: type
-                console.log(this.declaredClass + "::wireEvents", arguments);
-
-            },
-            show: function() {
-                // summary:
-                //      description
-                console.log(this.declaredClass + "::show", arguments);
-
-            },
-            hide: function() {
-                // summary:
-                //      description
-                console.log(this.declaredClass + "::hide", arguments);
-
             }
         });
     });
