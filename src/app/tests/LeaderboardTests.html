@@ -9,37 +9,54 @@
     <link rel="stylesheet" href="../../bootstrap/css/bootstrap-glyphicons.css">
     <link rel='stylesheet' href='../../app/resources/app.css'>
     <link rel="stylesheet" href='../../app/resources/Leaderboard.css'>
-
+    <style>
+    .dropdown-menu{
+        display:block;
+        position: relative;
+    }
+    </style>
     <!-- JAVASCRIPT -->
-     <script src='http://js.arcgis.com/3.6'></script>
+    <script src='http://js.arcgis.com/3.6'></script>
     <script type="text/javascript">
     var projectUrl = location.pathname.replace(/\/[^\/]+$/, "") + '/';
     var widgetUnderTest;
 
     require({
-            packages: [{
-                name: 'app',
-                location: projectUrl + '../../app'
-            },
-            {
-                name: 'mustache',
-                location: projectUrl + '../../mustache'
-            }]
-        }, [
-            'app/leaderboard',
-            'dojo/domReady!'
-        ],
-        function(Module) {
-            widgetUnderTest = new Module({
-                url: './leaderboard.json'
-            }, 'div');
+        packages: [{
+            name: 'app',
+            location: projectUrl + '../../app'
+        },
+        {
+            name: 'mustache',
+            location: projectUrl + '../../mustache'
+        }]
+    }, [
+    'app/leaderboard',
+    'dojo/dom',
+
+    'dojo/domReady!'
+    ],
+    function(Module, dom) {
+        widgetUnderTest = new Module({
+            url: './leaderboard.json',
+            linkNode: dom.byId('linkNode'),
+            contentNode: dom.byId('contentNode')
         });
+    });
     </script>
 </head>
 <body>
     <h3>
         app/Leaderboard
     </h3>
-    <div id='div'></div>
+    <ol>
+        <li class="dropdown">
+         <a href="#" class='dropdown-toggle' data-toggle='dropdown' id="linkNode"></a>
+         <div class='dropdown-menu'>
+           <div id="contentNode"></div>
+       </div>
+   </li>
+</ol>
+
 </body>
 </html>
