@@ -1,11 +1,9 @@
-<div class="leaderboard">
-    <h3>Most Active Users</h3>
-    <ol class='list-group'>
-        {{#standings}}
-        <li class='list-group-item'>
-        <span class="badge">{{editCount}}</span>
-            {{name}}
-        </li>
-        {{/standings}}
-    </ol>
-</div>
+<h5>Most Active Users</h5>
+<ol class='list-group'>
+    {{#standings}}
+    <li class='list-group-item'>
+        <span class="label label-{{standingCss}}">{{editCount}}</span>
+        {{name}}
+    </li>
+    {{/standings}}
+</ol>

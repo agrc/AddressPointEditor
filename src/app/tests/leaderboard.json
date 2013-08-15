@@ -5,10 +5,6 @@
         "rank": "first",
     },
     "standings": [{
-        "name": "sgourley",
-        "editCount": 15,
-        "rank": "first",
-    }, {
         "name": "mpeters",
         "editCount": 10,
         "rank": "second"
@@ -16,5 +12,13 @@
         "name": "sfernandez",
         "editCount": 0,
         "rank": "last"
+    }, {
+        "name": "sgourley",
+        "editCount": 15,
+        "rank": "first",
+    }, {
+        "name": "don't show me",
+        "editCount": -99,
+        "rank": "error",
     }]
 }

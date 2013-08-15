@@ -1,11 +1,8 @@
-<div class='leader-mini'>
-    <ul class='list-inline'>
-        {{#current}}
-            <li>
-                <blockquote>{{name}} <span class="badge">{{rank}}</span></blockquote>
-            </li>
-        {{/current}}
-        <li class="leaderboard-link"><span class="glyphicon glyphicon-signal"></span> Leaderboard</li>
-    </ul>
-
-</div>
+<ul class='list-inline leaderboard-link'>
+    <li class=""><span class="glyphicon glyphicon-signal"></span> Leaderboard</li>
+    {{#current}}
+    <li>
+        {{name}} <span class="badge">{{rank}}</span>
+    </li>
+    {{/current}}
+</ul>
