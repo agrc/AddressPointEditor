@@ -2,23 +2,23 @@
     "current": {
         "name": "sgourley",
         "editCount": 15,
-        "rank": "first",
+        "rankCss": "gold",
     },
     "standings": [{
         "name": "mpeters",
         "editCount": 10,
-        "rank": "second"
+        "rankCss": "silver"
     }, {
         "name": "sfernandez",
         "editCount": 0,
-        "rank": "last"
+        "rankCss": "bronze"
     }, {
         "name": "sgourley",
         "editCount": 15,
-        "rank": "first",
+        "rankCss": "gold",
     }, {
         "name": "don't show me",
         "editCount": -99,
-        "rank": "error",
+        "rankCss": "default",
     }]
 }
