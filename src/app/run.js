@@ -1,4 +1,4 @@
-(function () {
+(function() {
     var projectUrl;
     if (typeof location === 'object') {
         // running in browser
@@ -11,17 +11,18 @@
         projectUrl = '';
     }
     require({
-        packages: [
-            {
-                name: 'app',
-                location: projectUrl + 'app'
-            },{
-                name: 'agrc',
-                location: projectUrl + 'agrc'
-            },{
-                name: 'ijit',
-                location: projectUrl + 'ijit'
-            }
-        ]
+        packages: [{
+            name: 'app',
+            location: projectUrl + 'app'
+        }, {
+            name: 'agrc',
+            location: projectUrl + 'agrc'
+        }, {
+            name: 'ijit',
+            location: projectUrl + 'ijit'
+        }, {
+            name: 'mustache',
+            location: projectUrl + 'mustache'
+        }]
     }, ['app']);
 })();
