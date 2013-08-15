@@ -46,21 +46,3 @@ body {
     font-size: 20px !important;
     line-height: 1.428571429 !important;
 }
-
-/*.leaderboard {
-  display: block;
-  clear: both;
-  font-weight: normal;
-  line-height: 1.428571429;
-  color: #999999;
-  white-space: nowrap;
-  padding-top: 15px;
-  padding-bottom: 15px;
-}*/
-/*.nav.open > div > a,
-.nav.open > div > a:hover,
-.nav.open > div > a:focus {
-  color: #ffffff;
-  background-color: #428bca;
-  border-color: #428bca;
-}*/
