@@ -11,6 +11,7 @@ define([
         'dojo/text!app/templates/Leaderboard.html',
         'dojo/text!app/templates/LeaderboardTemplate.html',
         'dojo/text!app/templates/LeaderItemTemplate.html',
+        'dojo/text!app/templates/LeaderBoardMiniTemplate.html',
 
         'mustache/mustache',
 
@@ -30,6 +31,7 @@ define([
         template,
         leaderboardTemplate,
         leaderboardItemTemplate,
+        leaderBoardMiniTemplate,
 
         mustache,
 
@@ -60,6 +62,7 @@ define([
 
                 this.boardTemplate = mustache.compile(leaderboardTemplate);
                 this.boardItem = mustache.compile(leaderboardItemTemplate);
+                this.miniTemplate = mustache.compile(leaderBoardMiniTemplate);
 
                 this.wireEvents();
 
@@ -97,8 +100,10 @@ define([
                 //      callback for request
                 // json: Object
                 console.log(this.declaredClass + "::onRequestComplete", arguments);
+                this.miniView = this.miniTemplate(json);
+                this.expandedView = this.boardTemplate(json);
 
-                this.xhrDeferred.resolve(this.boardTemplate(json));
+                this.xhrDeferred.resolve(this.miniView);
             },
             onRequestFail: function(err) {
                 // summary:

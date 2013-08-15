@@ -1,0 +1,8 @@
+.leaderboard-link:hover,
+.leaderboard-link:focus {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
