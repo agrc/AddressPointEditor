@@ -1,8 +1,14 @@
-.leaderboard-link:hover,
-.leaderboard-link:focus {
-  color: #000000;
-  text-decoration: none;
-  cursor: pointer;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
+.leaderboard{
+    width: 300px;
+    height: 40px;
+}
+
+.label-gold{
+        background-color: #ffd700;
+        }
+.label-silver{
+    background-color:#c0c0c0;
+}
+.label-bronze{
+    background-color: #CD7F32;
 }
