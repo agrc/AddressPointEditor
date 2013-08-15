@@ -39,7 +39,8 @@ define([
         'esri/toolbars/draw',
         'esri/graphic',
 
-        'app/SlideInSidebar'
+        'app/SlideInSidebar',
+        'app/Leaderboard'
     ],
 
     function(
@@ -77,7 +78,8 @@ define([
         Edit,
         Draw,
         Graphic,
-        SlideInSidebar
+        SlideInSidebar,
+        Leaderboard
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
@@ -152,6 +154,12 @@ define([
                 this.sideContent = new SlideInSidebar({
                     map: this.map
                 }, this.sideBar);
+
+                this.leaderboard = new Leaderboard({
+                    url: 'http://localhost/git/Broadband.Editing/src/app/tests/leaderboard.json',
+                    linkNode: this.leaderboardDiv,
+                    contentNode: this.leaderboardContentDiv
+                });
 
                 this.isEditing = false;
 
