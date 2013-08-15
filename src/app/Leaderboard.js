@@ -2,6 +2,8 @@ define([
         'dojo/_base/declare',
         'dojo/_base/lang',
 
+        'dojo/Deferred',
+
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
         'dijit/_WidgetsInTemplateMixin',
@@ -18,6 +20,8 @@ define([
     function(
         declare,
         lang,
+
+        Deferred,
 
         _WidgetBase,
         _TemplatedMixin,
@@ -59,16 +63,34 @@ define([
 
                 this.wireEvents();
 
-                if (this.url) {
-                    request(this.url, {
-                        //jsonp: 'callback'
-                    });
-                    //.then(lang.hitch(this, this.onRequestComplete), lang.hitch(this, this.onRequestFail));
+                this.getLeaderboard().then(lang.hitch(this,
+                    function(content) {
+                        this.set('containerDiv', content);
+                    }));
+            },
+            _setContainerDivAttr: {
+                node: 'containerDiv',
+                type: 'innerHTML'
+            },
+            getLeaderboard: function() {
+                console.log(this.declaredClass + "::getLeaderboard", arguments);
 
-                    return;
+                this.xhrDeferred = new dojo.Deferred();
+
+                if (this.url) {
+                    console.log('requesting data');
+                    request({
+                        url: this.url,
+                        handleAs: "json"
+                    }).then(lang.hitch(this, this.onRequestComplete),
+                        lang.hitch(this, this.onRequestFail));
+
+                    return this.xhrDeferred;
                 }
-                 
+
                 this.onRequestComplete(this.data);
+
+                return this.xhrDeferred;
             },
             onRequestComplete: function(json) {
                 // summary:
@@ -76,7 +98,7 @@ define([
                 // json: Object
                 console.log(this.declaredClass + "::onRequestComplete", arguments);
 
-                this.boardTemplate(json);
+                this.xhrDeferred.resolve(this.boardTemplate(json));
             },
             onRequestFail: function(err) {
                 // summary:
