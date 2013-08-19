@@ -22,6 +22,7 @@ define([
 
         'agrc/widgets/map/BaseMap',
         'agrc/widgets/locate/FindAddress',
+        'agrc/widgets/locate/MagicZoom',
 
         'ijit/widgets/notify/ChangeRequest',
 
@@ -45,6 +46,7 @@ define([
 
     function(
         template,
+
         array,
         lang,
         declare,
@@ -57,14 +59,19 @@ define([
         aspect,
         query,
         parser,
+
         _WidgetBase,
         _TemplatedMixin,
         _WidgetsInTemplateMixin,
         registry,
         Button,
+
         BaseMap,
         FindAddress,
+        MagicZoom,
+
         ChangeRequest,
+        
         editor,
         AttributeEditor,
         featureLayer,
@@ -78,6 +85,7 @@ define([
         Edit,
         Draw,
         Graphic,
+
         SlideInSidebar,
         Leaderboard
     ) {
@@ -144,6 +152,14 @@ define([
                     map: this.map,
                     apiKey: AGRC.apiKey
                 }, this.findAddressDiv);
+
+                this.magicZoom = new MagicZoom({
+                    map: this.map,
+                    mapServiceURL: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseMap-Vector/MapServer',
+                    searchLayerIndex: 1,
+                    searchField: 'NAME',
+                    maxResultsToDisplay: 10
+                }, this.magicZoomDiv);
 
                 this.changeRequest = new ChangeRequest({
                     map: this.map
