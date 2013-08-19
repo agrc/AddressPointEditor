@@ -42,6 +42,7 @@
   </div>
   <div data-dojo-attach-point="mapDiv" class="map-div"></div>
   <div data-dojo-attach-point='sideBar'></div>
+  
   <!-- Modal -->
   <div class="modal fade" id="loginModal">
     <div class="modal-dialog">
@@ -53,12 +54,12 @@
         <div class="modal-body">
           <form>
             <div class="form-group">
-              <label for="exampleInputEmail">Email address</label>
-              <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
+              <label for="loginEmail">Email address</label>
+              <input type="text" class="form-control" id="loginEmail" placeholder="Enter email" data-required>
             </div>
             <div class="form-group">
-              <label for="exampleInputPassword">Password</label>
-              <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password">
+              <label for="loginPassword">Password</label>
+              <input type="password" class="form-control" id="loginPassword" placeholder="Password" data-required>
             </div>
           </form>
         </div>
@@ -70,6 +71,8 @@
      </div><!-- /.modal-content -->
    </div><!-- /.modal-dialog -->
  </div><!-- /.modal -->
+
+
  <div class="modal fade" id="registerModal">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -80,12 +83,22 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="exampleInputEmail">Email address</label>
-            <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
+            <label for="registerEmail">Email address</label>
+            <input type="text" class="form-control" id="registerEmail" placeholder="Enter email" data-required>
           </div>
           <div class="form-group">
-            <label for="exampleInputPassword">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password">
+            <label for="registerPassword">Password</label>
+            <input type="password" class="form-control" id="registerPassword" placeholder="Password" data-required>
+            <label for="registerPassword2">Password</label>
+            <input type="password" class="form-control" id="registerPassword2" placeholder="Password" data-required>
+          </div>
+          <div class="form-group">
+            <label for="registerAgency">Agency</label>
+            <input type="text" class="form-control" id="registerAgency" placeholder="Enter Company" data-required>
+          </div>
+          <div class="form-group">
+            <label for="registerPosition">Position <span class="label label-info">Optional</span></label>
+            <input type="text" class="form-control" id="registerPosition" placeholder="Job Title">
           </div>
         </form>
       </div>

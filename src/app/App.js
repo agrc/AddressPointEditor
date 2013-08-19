@@ -71,7 +71,7 @@ define([
         MagicZoom,
 
         ChangeRequest,
-        
+
         editor,
         AttributeEditor,
         featureLayer,
