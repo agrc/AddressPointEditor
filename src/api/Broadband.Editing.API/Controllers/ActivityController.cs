@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Broadband.Editing.API.Controllers.Infrastructure;
@@ -10,20 +12,26 @@ namespace Broadband.Editing.API.Controllers
     {
         // POST api/activity/save
         [HttpPost]
-        public async Task<ResponseContainer> Save(UserActivity activity)
+        public async Task<HttpResponseMessage> Save(UserActivity activity)
         {
-            //Open connection to raven
-            using (var s = AsyncSession)
+            try
             {
-                //persist the change
-                await s.StoreAsync(activity);
-                await s.SaveChangesAsync();
+                using (var s = AsyncSession)
+                {
+                    await s.StoreAsync(activity);
+                    await s.SaveChangesAsync();
+                }
             }
+            catch(Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError,
+                              new ResponseContainer(HttpStatusCode.InternalServerError, ex.Message));
 
+            }
             
-
             //return response
-            return new ResponseContainer(HttpStatusCode.Created);
+            return Request.CreateResponse(HttpStatusCode.OK,
+                new ResponseContainer(HttpStatusCode.Created));
         }
     }
 }

@@ -21,6 +21,11 @@ namespace Broadband.Editing.API.Models
         {
         }
 
+        public ResponseContainer(HttpStatusCode status, string message) : this((int) status)
+        {
+            Message = message;
+        }
+
         [JsonProperty(PropertyName = "status")]
         public int Status { get; set; }
 
