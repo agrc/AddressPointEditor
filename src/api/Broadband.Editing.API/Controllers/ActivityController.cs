@@ -26,7 +26,6 @@ namespace Broadband.Editing.API.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError,
                               new ResponseContainer(HttpStatusCode.InternalServerError, ex.Message));
-
             }
             
             //return response
