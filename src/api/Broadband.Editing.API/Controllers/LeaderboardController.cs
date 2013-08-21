@@ -26,6 +26,7 @@ namespace Broadband.Editing.API.Controllers
                 {
                     standings = await s.Query<LeaderboardIndex.ReduceResult, LeaderboardIndex>()
                                        .Take(3)
+                                       .OrderByDescending(x=>x.EditCount)
                                        .ToListAsync();
                 }
 
