@@ -130,6 +130,9 @@ define([
             //boolean: flag for knowing to start/finish editing session
             isEditing: null,
 
+            //array: keeping history of edits for tracking
+            edits: null,
+
             constructor: function() {
                 // summary:
                 //      first function to fire after page loads
@@ -203,23 +206,57 @@ define([
                         setTimeout(function() {
                             $('#suggest-change-dropdown').dropdown('toggle');
                         }, 100);
-                    }),
+                    }));
 
-                    this.editLayer.on("edits-complete", function(response) {
-                        console.log("onEditsComplete");
-                        //todo: need to validate response and not assume success.
-                        console.log(response);
-                    }),
+                if (this.editLayer) {
+                    console.log(this.editLayer);
+                    this.own(
+                        this.editLayer.on("edits-complete", lang.hitch(this,
+                            function(response) {
+                                var fieldsDefiningSuccess = ['adds', 'updates', 'deletes'];
+                                var editsToTrack = {
+                                    user: 'test',
+                                    changes: []
+                                };
 
-                    // this should save a new graphic but somethings up.
-                    // this.drawingToolbar.on("draw-end", lang.hitch(this, function(evt) {
-                    //     this.drawingToolbar.deactivate();
-                    //     this.editingToolbar.deactivate();
+                                array.forEach(fieldsDefiningSuccess,
+                                    function(prop) {
+                                        array.forEach(response[prop], 
+                                            function(status){
+                                                if(!status && !status.success)
+                                                    return;
 
-                    //     var newGraphic = new Graphic(evt.geometry, null, null);
-                    //     this.editLayer.applyEdits([newGraphic], null, null);
-                    // })),
+                                                editsToTrack.changes.push({
+                                                    type:prop
+                                                });
+                                            }, this);
+                                    }, this);
 
+                                //if success send basic edit info to tracking service
+                                console.log("edits-complete");
+                                console.log(editsToTrack);
+                            }))
+
+                        //store the edits to be sent to tracking service
+                        // this.editLayer.on('before-apply-edits', lang.hitch(this,
+                        //     function(edits) {
+                        //         console.log('before-apply-edits');
+                        //         console.log(edits);
+                        //         this.edits = edits;
+                        //     }))
+
+                        // this should save a new graphic but somethings up.
+                        // this.drawingToolbar.on("draw-end", lang.hitch(this, function(evt) {
+                        //     this.drawingToolbar.deactivate();
+                        //     this.editingToolbar.deactivate();
+
+                        //     var newGraphic = new Graphic(evt.geometry, null, null);
+                        //     this.editLayer.applyEdits([newGraphic], null, null);
+                        // })),
+                    );
+                }
+
+                this.own(
                     this.map.on("click", lang.hitch(this, function(evt) {
                         this.sideContent.show();
                         this.selectQuery.geometry = this._screenPointToEnvelope(evt);
@@ -382,6 +419,8 @@ define([
                     "class": "atiSaveButton"
                 });
 
+                this.saveButton.set('disabled', true);
+
                 domConstruct.place(this.saveButton.domNode, this.attributeEditor.editButtons, "first");
                 var that = this;
 
@@ -394,13 +433,11 @@ define([
                         that.saveButton.set('innerHTML', 'Saving Edits.');
 
                         that.updateFeature.getLayer().applyEdits(null, [that.updateFeature], null)
-                            .then(function(response) {
-                                that.saveButton.set('disabled', false);
+                            .then(function() {
+                                // that.saveButton.set('disabled', false);
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.saveButton.set('innerHTML', 'Save');
 
-                                console.log('save response');
-                                console.log(response);
                             }, function(response) {
                                 console.log('save error response');
                                 console.log(response);
@@ -410,6 +447,8 @@ define([
                     this.attributeEditor.on("attribute-change", function(evt) {
                         that.updateFeature.attributes[evt.fieldName] = evt.fieldValue;
                         console.log('attribute-change');
+                        
+                        that.saveButton.set('disabled', false);
                     }),
 
                     this.attributeEditor.on("next", function(evt) {
