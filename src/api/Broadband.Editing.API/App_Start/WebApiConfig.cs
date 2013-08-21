@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Formatting;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Broadband.Editing.API
 {
@@ -15,14 +18,17 @@ namespace Broadband.Editing.API
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            // Uncomment the following line of code to enable query support for actions with an IQueryable or IQueryable<T> return type.
-            // To avoid processing unexpected or malicious queries, use the validation settings on QueryableAttribute to validate incoming queries.
-            // For more information, visit http://go.microsoft.com/fwlink/?LinkId=279712.
-            //config.EnableQuerySupport();
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
+            config.Formatters.JsonFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            
+            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
+            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            //GlobalConfiguration.Configuration.DependencyResolver = new NinjectDependencyResolver(App.Kernel);
 
-            // To disable tracing in your application, please comment out or remove the following line of code
-            // For more information, refer to: http://www.asp.net/web-api
+#if DEBUG
             config.EnableSystemDiagnosticsTracing();
+#endif
+
         }
     }
 }
