@@ -1,50 +1,58 @@
-[assembly: WebActivator.PreApplicationStartMethod(typeof(Broadband.Editing.API.App_Start.NinjectWebCommon), "Start")]
-[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(Broadband.Editing.API.App_Start.NinjectWebCommon), "Stop")]
+using System;
+using System.Web;
+using System.Web.Http;
+using Broadband.Editing.API;
+using Broadband.Editing.API.Configuration.Ninject;
+using Broadband.Editing.API.Configuration.Ninject.Modules;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using Ninject;
+using Ninject.Web.Common;
 
-namespace Broadband.Editing.API.App_Start
+[assembly: WebActivator.PreApplicationStartMethod(typeof(NinjectWebCommon), "Start")]
+[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(NinjectWebCommon), "Stop")]
+
+namespace Broadband.Editing.API
 {
-    using System;
-    using System.Web;
-
-    using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-
-    using Ninject;
-    using Ninject.Web.Common;
-
-    public static class NinjectWebCommon 
+    public static class NinjectWebCommon
     {
-        private static readonly Bootstrapper bootstrapper = new Bootstrapper();
+        private static readonly Bootstrapper Bootstrapper = new Bootstrapper();
 
         /// <summary>
         /// Starts the application
         /// </summary>
-        public static void Start() 
+        public static void Start()
         {
             DynamicModuleUtility.RegisterModule(typeof(OnePerRequestHttpModule));
             DynamicModuleUtility.RegisterModule(typeof(NinjectHttpModule));
-            bootstrapper.Initialize(CreateKernel);
+            Bootstrapper.Initialize(CreateKernel);
         }
-        
+
         /// <summary>
         /// Stops the application.
         /// </summary>
         public static void Stop()
         {
-            bootstrapper.ShutDown();
+            Bootstrapper.ShutDown();
         }
-        
+
         /// <summary>
         /// Creates the kernel that will manage your application.
         /// </summary>
         /// <returns>The created kernel.</returns>
         private static IKernel CreateKernel()
         {
-            var kernel = new StandardKernel();
-            kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
-            kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
-            
-            RegisterServices(kernel);
-            return kernel;
+            App.Kernel = new StandardKernel();
+
+            App.Kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
+            App.Kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
+
+            // Register Dependencies
+            RegisterServices(App.Kernel);
+
+            // Set Web API Resolver
+            GlobalConfiguration.Configuration.DependencyResolver = new NinjectDependencyResolver(App.Kernel);
+
+            return App.Kernel;
         }
 
         /// <summary>
@@ -53,6 +61,7 @@ namespace Broadband.Editing.API.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-        }        
+            kernel.Load(typeof(RavenModule).Assembly);
+        }
     }
 }
