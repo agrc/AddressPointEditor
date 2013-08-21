@@ -1,38 +1,29 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Broadband.Editing.API.Controllers.Infrastructure;
 using Broadband.Editing.API.Models;
 
 namespace Broadband.Editing.API.Controllers
 {
-    public class ActivityController : ApiController
+    public class ActivityController : RavenApiController
     {
-        // POST api/register
+        // POST api/activity/save
         [HttpPost]
-        public async Task<ResponseContainer<ActivityResponse>> SaveEdits()
+        public async Task<ResponseContainer> Save(UserActivity activity)
         {
-            return new ResponseContainer();
-        }
+            //Open connection to raven
+            using (var s = AsyncSession)
+            {
+                //persist the change
+                await s.StoreAsync(activity);
+                await s.SaveChangesAsync();
+            }
 
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
+            
 
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
+            //return response
+            return new ResponseContainer(HttpStatusCode.Created);
         }
     }
 }
