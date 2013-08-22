@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TEST: Leaderboard</title>
+    <title>TEST: DownloadSelector</title>
     
     <link rel='stylesheet' href='http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css'>
     <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
     <link href="../../bootstrap/css/bootstrap.css" rel="stylesheet">
     <link rel='stylesheet' href='../../app/resources/app.css'>
-    <link rel="stylesheet" href='../../app/resources/Leaderboard.css'>
+    <link rel="stylesheet" href='../../app/resources/DownloadSelector.css'>
     <style>
     .dropdown-menu{
         display:block;
@@ -30,14 +30,14 @@
             location: projectUrl + '../../mustache'
         }]
     }, [
-    'app/leaderboard',
+    'app/DownloadSelector',
     'dojo/dom',
 
     'dojo/domReady!'
     ],
     function(Module, dom) {
         widgetUnderTest = new Module({
-            url: './leaderboard.json',
+            url: './DownloadSelector.json',
             linkNode: dom.byId('linkNode'),
             contentNode: dom.byId('contentNode')
         });
@@ -46,7 +46,7 @@
 </head>
 <body>
     <h3>
-        app/Leaderboard
+        app/DownloadSelector
     </h3>
     <ol>
         <li class="dropdown">
