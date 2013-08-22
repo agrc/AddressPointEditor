@@ -175,7 +175,7 @@ define([
                 }, this.sideBar);
 
                 this.leaderboard = new Leaderboard({
-                    url: 'http://localhost/git/Broadband.Editing/src/app/tests/leaderboard.json',
+                    url: 'http://BroadbandEditing/api/leaderboard',
                     linkNode: this.leaderboardDiv,
                     contentNode: this.leaderboardContentDiv
                 });

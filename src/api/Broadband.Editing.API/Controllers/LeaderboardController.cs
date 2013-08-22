@@ -21,6 +21,7 @@ namespace Broadband.Editing.API.Controllers
             try
             {
                 IList<LeaderboardIndex.ReduceResult> standings;
+                LeaderboardIndex.ReduceResult currentRank;
 
                 using (var s = AsyncSession)
                 {

@@ -85,7 +85,8 @@ define([
                     console.log('requesting data');
                     request({
                         url: this.url,
-                        handleAs: "json"
+                        handleAs: "json",
+                        callbackParamName: 'callback'
                     }).then(lang.hitch(this, this.onRequestComplete),
                         lang.hitch(this, this.onRequestFail));
 

@@ -105,8 +105,14 @@
     <Reference Include="WebActivator">
       <HintPath>..\packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
+    <Reference Include="WebApiContrib.Formatting.Jsonp">
+      <HintPath>..\packages\WebApiContrib.Formatting.Jsonp.0.9.7.0\lib\net40\WebApiContrib.Formatting.Jsonp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Packages\TaskHelpers.Sources.0.2\TaskHelpers.cs" />
+    <Compile Include="App_Packages\TaskHelpers.Sources.0.2\TaskHelpersExtensions.cs" />
+    <Compile Include="App_Start\FormatterConfig.cs" />
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="App_Start\RavenConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
