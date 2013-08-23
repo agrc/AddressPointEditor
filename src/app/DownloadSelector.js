@@ -1,6 +1,7 @@
 define([
         'dojo/_base/declare',
         'dojo/_base/lang',
+        'dojo/_base/array',
 
         'dojo/dom',
         'dojo/on',
@@ -24,6 +25,7 @@ define([
     function(
         declare,
         lang,
+        array,
 
         dom,
         on,
@@ -103,15 +105,19 @@ define([
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
                 this.own(
-                    on(dom.byId(this.id + '_stateplain_north'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_north'))),
-                    on(dom.byId(this.id + '_stateplain_central'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_central'))),
-                    on(dom.byId(this.id + '_stateplain_south'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_south'))),
-                    on(dom.byId(this.id + '_utm_zone12n'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'utm12')))
+                    on(dom.byId(this.id + '_stateplain_north'), 'click', lang.hitch(this, lang.partial(this.setDownloadFilter, 'system', 'state_plain_north'))),
+                    on(dom.byId(this.id + '_stateplain_central'), 'click', lang.hitch(this, lang.partial(this.setDownloadFilter, 'system', 'state_plain_central'))),
+                    on(dom.byId(this.id + '_stateplain_south'), 'click', lang.hitch(this, lang.partial(this.setDownloadFilter, 'system', 'state_plain_south'))),
+                    on(dom.byId(this.id + '_utm_zone12n'), 'click', lang.hitch(this, lang.partial(this.setDownloadFilter, 'system', 'utm12')))
                 );
 
                 this.own(
-                    on(dom.byId(this.id + '_shapefile'), 'click', lang.hitch(this, lang.partial(this.setFileType, 'shapefile'))),
-                    on(dom.byId(this.id + '_fgdb'), 'click', lang.hitch(this, lang.partial(this.setFileType, 'fgdb')))
+                    on(dom.byId(this.id + '_shapefile'), 'click', lang.hitch(this, lang.partial(this.setFileType, 'type', 'shapefile'))),
+                    on(dom.byId(this.id + '_fgdb'), 'click', lang.hitch(this, lang.partial(this.setDownloadFilter, 'type', 'fgdb')))
+                );
+
+                this.own(
+                    on(dom.byId(this.id + '_county'), 'change', lang.hitch(this, lang.partial(this.setDownloadFilter, 'county')))
                 );
             },
             showNextPage: function() {
@@ -139,28 +145,35 @@ define([
                     this.currentPage--;
                 }
 
-                 if (this.currentPage === 0) {
+                if (this.currentPage === 0) {
                     domClass.add(this.backButton, 'hidden');
                 }
 
                 this.sc.selectChild(this.pages[this.currentPage]);
             },
-            setCoordinateSystem: function(system) {
-                console.log(this.declaredClass + "::setCoordinateSystem", arguments);
+            setDownloadFilter: function(prop, value) {
+                console.log(this.declaredClass + "::setDownloadFilter", arguments);
 
-                this.download.system = system;
+                if(value && value.target)
+                {
+                    value = value.target.value;
+                }
+
+                this.download[prop] = value;
                 this.showNextPage();
+
+                this.showDownloadButton();
             },
-            setFileType: function(type) {
-                console.log(this.declaredClass + "::setCoordinateSystem", arguments);
+            showDownloadButton: function(){
+                console.log(this.declaredClass + "::showDownloadButton", arguments);
 
-                this.download.type = type;
-                this.showNextPage();
-            },
-            displayCountySelection: function() {
-                console.log(this.declaredClass + "::displayCountySelection", arguments);
-
-
+                var props = ['system', 'type', 'county'];
+                if(array.every(props, function(item){
+                    return item;
+                },this))
+                {
+                    console.log('show download button');
+                }
             },
             requestDownload: function() {
                 console.log(this.declaredClass + "::requestDownload", arguments);

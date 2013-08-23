@@ -1,11 +1,8 @@
 <div class="form-group">
     <label>What counties data would you like?</label>
-    <div class="dropdown">
-      <!-- Link or button to toggle dropdown -->
-      <ul class="dropdown-menu">
+    <select class="form-control" id="{{id}}_county" style="width: 95%">
         {{#county}}
-        <li><a href="#">{{.}}</a></li>
+        <option>{{.}}</option>
         {{/county}}
-      </ul>
-    </div>
+    </select>
 </div>
