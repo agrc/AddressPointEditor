@@ -2,49 +2,58 @@ define([
         'dojo/_base/declare',
         'dojo/_base/lang',
 
-        'dojo/Deferred',
+        'dojo/dom',
         'dojo/on',
+        'dojo/aspect',
+        'dojo/dom-class',
+        'dojo/dom-construct',
 
-         'dijit/_WidgetBase',
+        'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
+        'dijit/layout/StackContainer',
+        'dijit/layout/ContentPane',
 
-        'dojo/text!app/templates/LeaderboardTemplate.html',
-        'dojo/text!app/templates/LeaderBoardMiniTemplate.html',
+        'dojo/text!app/templates/DownloadSelector.html',
+        'dojo/text!app/templates/DownloadCoordinateSystem.html',
+        'dojo/text!app/templates/DownloadFileType.html',
+        'dojo/text!app/templates/DownloadCounty.html',
 
-        'esri/request'
+        'mustache/mustache'
     ],
 
     function(
         declare,
         lang,
 
-        Deferred,
+        dom,
         on,
+        aspect,
+        domClass,
+        domConstruct,
 
         _WidgetBase,
-        _TemplatedMixin
+        _TemplatedMixin,
+        StackContainer,
+        ContentPane,
 
-        leaderboardTemplate,
-        leaderBoardMiniTemplate,
+        template,
+        page1,
+        page2,
+        page3,
 
-        request
+        mustache
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
         return declare("app.downloadSelector", [_WidgetBase, _TemplatedMixin], {
             baseClass: 'download-selector',
 
-            // the data returned by the query to the url
-            data: null,
+            templateString: template,
 
-            // the url to query for the leaderboard data
-            url: null,
+            // the template page that is visible
+            currentPage: 0,
 
-            //dropdown anchor link
-            linkNode: null,
-
-            //drowpdown content node
-            contentNode: null,
+            download: null,
 
             constructor: function() {
                 console.log(this.declaredClass + "::constructor", arguments);
@@ -56,76 +65,107 @@ define([
 
                 this.inherited(arguments);
 
-                this.displayCountySelection();
-            },
-            _setWizardAttr: {
-                node: 'wizardNode',
-                type: 'innerHTML'
-            },
-            displayCountySelection: function(){
-                console.log(this.declaredClass + "::getLeaderboard", arguments);
+                this.download = {};
 
-                
-            },
-            getLeaderboard: function() {
-                console.log(this.declaredClass + "::getLeaderboard", arguments);
+                this.coordinateTemplate = domConstruct.toDom(mustache.compile(page1)({
+                    id: this.id
+                }));
+                this.fileTypeTemplate = domConstruct.toDom(mustache.compile(page2)({
+                    id: this.id
+                }));
+                this.countyTemplate = domConstruct.toDom(mustache.compile(page3)({
+                    id: this.id,
+                    county: ['Salt Lake', 'Provo']
+                }));
 
-                this.xhrDeferred = new dojo.Deferred();
-
-                if (this.url) {
-                    console.log('requesting data');
-                    request({
-                        url: this.url,
-                        handleAs: "json",
-                        callbackParamName: 'callback'
-                    }).then(lang.hitch(this, this.onRequestComplete),
-                        lang.hitch(this, this.onRequestFail));
-
-                    return this.xhrDeferred;
-                }
-
-                this.onRequestComplete(this.data);
-
-                return this.xhrDeferred;
-            },
-            onRequestComplete: function(json) {
-                // summary:
-                //      callback for request
-                // json: Object
-                console.log(this.declaredClass + "::onRequestComplete", arguments);
-
-                this.data = json;
-
-                if (this.data && this.data.standings) {
-                    this.data.standings.sort(function(a, b) {
-                        if (a.editCount > b.editCount)
-                            return -1;
-                        if (a.editCount < b.editCount)
-                            return 1;
-                        return 0;
+                this.sc = new StackContainer({}, this.wizardNode);
+                var cp1 = new ContentPane({
+                    content: this.coordinateTemplate
+                }),
+                    cp2 = new ContentPane({
+                        content: this.fileTypeTemplate
+                    }),
+                    cp3 = new ContentPane({
+                        content: this.countyTemplate
                     });
 
-                    this.data.standings = this.data.standings.slice(0, 3);
-                    var places = ['gold', 'silver', 'bronze'],
-                        counter = 0;
-                    this.data.standingCss = function() {
-                        // note that counter is in the enclosing scope
-                        return places[counter++];
-                    };
+                this.pages = [cp1, cp2, cp3];
+
+                this.sc.addChild(cp1);
+                this.sc.addChild(cp2);
+                this.sc.addChild(cp3);
+
+                this.sc.startup();
+
+                this.wireEvents();
+            },
+            wireEvents: function() {
+                console.log(this.declaredClass + "::wireEvents", arguments);
+
+                this.own(
+                    on(dom.byId(this.id + '_stateplain_north'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_north'))),
+                    on(dom.byId(this.id + '_stateplain_central'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_central'))),
+                    on(dom.byId(this.id + '_stateplain_south'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'state_plain_south'))),
+                    on(dom.byId(this.id + '_utm_zone12n'), 'click', lang.hitch(this, lang.partial(this.setCoordinateSystem, 'utm12')))
+                );
+
+                this.own(
+                    on(dom.byId(this.id + '_shapefile'), 'click', lang.hitch(this, lang.partial(this.setFileType, 'shapefile'))),
+                    on(dom.byId(this.id + '_fgdb'), 'click', lang.hitch(this, lang.partial(this.setFileType, 'fgdb')))
+                );
+            },
+            showNextPage: function() {
+                console.log(this.declaredClass + "::showNextPage", arguments);
+
+                if (this.currentPage < 0) {
+                    domClass.add(this.backButton, 'hidden');
+                    this.sc.selectChild(this.pages[0]);
+
+                    return;
                 }
 
-                this.xhrDeferred.resolve({
-                    mini: this.miniTemplate(this.data),
-                    expanded: this.boardTemplate(this.data)
-                });
-            },
-            onRequestFail: function(err) {
-                // summary:
-                //      fail callback for ajax request
-                // err: Error
-                console.log(this.declaredClass + "::onRequestFail", arguments);
+                if (this.currentPage < this.pages.length - 1) {
+                    this.currentPage++;
+                }
 
-                window.alert(err);
+                domClass.remove(this.backButton, 'hidden');
+
+                this.sc.selectChild(this.pages[this.currentPage]);
+            },
+            back: function() {
+                console.log(this.declaredClass + "::back", arguments);
+
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                }
+
+                 if (this.currentPage === 0) {
+                    domClass.add(this.backButton, 'hidden');
+                }
+
+                this.sc.selectChild(this.pages[this.currentPage]);
+            },
+            setCoordinateSystem: function(system) {
+                console.log(this.declaredClass + "::setCoordinateSystem", arguments);
+
+                this.download.system = system;
+                this.showNextPage();
+            },
+            setFileType: function(type) {
+                console.log(this.declaredClass + "::setCoordinateSystem", arguments);
+
+                this.download.type = type;
+                this.showNextPage();
+            },
+            displayCountySelection: function() {
+                console.log(this.declaredClass + "::displayCountySelection", arguments);
+
+
+            },
+            requestDownload: function() {
+                console.log(this.declaredClass + "::requestDownload", arguments);
+
             }
+
         });
     });

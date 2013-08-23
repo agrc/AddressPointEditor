@@ -12,49 +12,46 @@
     .dropdown-menu{
         display:block;
         position: relative;
-    }
-    </style>
-    <!-- JAVASCRIPT -->
-    <script src='http://js.arcgis.com/3.6'></script>
-    <script type="text/javascript">
-    var projectUrl = location.pathname.replace(/\/[^\/]+$/, "") + '/';
-    var widgetUnderTest;
+        }
+        </style>
+        <!-- JAVASCRIPT -->
+        <script src='http://js.arcgis.com/3.6'></script>
+        <script type="text/javascript">
+        var projectUrl = location.pathname.replace(/\/[^\/]+$/, "") + '/';
+        var widgetUnderTest;
 
-    require({
-        packages: [{
-            name: 'app',
-            location: projectUrl + '../../app'
-        },
-        {
-            name: 'mustache',
-            location: projectUrl + '../../mustache'
-        }]
-    }, [
-    'app/DownloadSelector',
-    'dojo/dom',
+        require({
+                packages: [{
+                    name: 'app',
+                    location: projectUrl + '../../app'
+                }, {
+                    name: 'mustache',
+                    location: projectUrl + '../../mustache'
+                }]
+            }, [
+                'app/DownloadSelector',
+                'dojo/dom',
 
-    'dojo/domReady!'
-    ],
-    function(Module, dom) {
-        widgetUnderTest = new Module({
-            url: './DownloadSelector.json',
-            linkNode: dom.byId('linkNode'),
-            contentNode: dom.byId('contentNode')
-        });
-    });
-    </script>
-</head>
-<body>
-    <h3>
-        app/DownloadSelector
-    </h3>
-    <ol>
-        <li class="dropdown">
-           <a href="#" class='dropdown-toggle' data-toggle='dropdown' id="linkNode"></a>
-           <div class='dropdown-menu'>
-             <div id="contentNode"></div>
-         </div>
-     </li>
- </ol>
+                'dojo/domReady!'
+            ],
+            function(Module, dom) {
+                widgetUnderTest = new Module({}, contentNode);
+            });
+        </script>
+    </head>
+    <body>
+        <h3>
+            app/DownloadSelector
+        </h3>
+        <div class="dropdown">
+         <a href="#" class='dropdown-toggle' data-toggle='dropdown' id="linkNode">Download Data</a>
+         <ul class='dropdown-menu'>
+           <div id="contentNode">
+           </div>
+       </ul>
+   </div>
+   <script src="../../jquery/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../../bootstrap/js/bootstrap.js"></script>
 </body>
 </html>

@@ -1,13 +1,14 @@
 <div class="form-group">
     <label>What coordinate system would you like?</label>
+    <label class='help-block'>State Plane</label>
     <div class="btn-toolbar">
       <div class="btn-group">
-          <button type="button" class="btn btn-default">North</button>
-          <button type="button" class="btn btn-default">Central</button>
-          <button type="button" class="btn btn-default">South</button>
+          <button type="button" class="btn btn-default" id="{{id}}_stateplain_north">North</button>
+          <button type="button" class="btn btn-default" id="{{id}}_stateplain_central">Central</button>
+          <button type="button" class="btn btn-default" id="{{id}}_stateplain_south">South</button>
       </div>
       <div class="btn-group">
-          <button type="button" class="btn btn-default">UTM Zone 12 North</button>
+          <button type="button" class="btn btn-default" id="{{id}}_utm_zone12n">UTM Zone 12 North</button>
       </div>
   </div>
 </div>

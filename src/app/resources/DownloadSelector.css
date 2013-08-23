@@ -1,0 +1,8 @@
+.highlight {
+    display: block;
+    padding: 6px 14px;
+    margin-bottom: -5px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+}
