@@ -19,7 +19,11 @@ define([
             //      The version number.
             version: '0.1.0',
 
-            apiKey: 'AGRC-B5D62BD2151902' // localhost
+            apiKey: 'AGRC-B5D62BD2151902', // localhost,
+
+            urls: {
+                downloadGp: "http://localhost/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points"
+            }
         };
 
         // lights...camera...action!

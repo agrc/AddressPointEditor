@@ -1,4 +1,4 @@
-import arcpy, uuid, os
+import arcpy, os
 from zipfile import ZipFile, ZIP_DEFLATED
 
 class Toolbox(object):
@@ -81,8 +81,12 @@ class DownloadTool(object):
     def zip_output_directory(self, location, name):
         with ZipFile(name, "w", ZIP_DEFLATED) as z:
             for root, dirs, files in os.walk(location):
+                if "scratch.gdb" in root:
+                    continue
                 for fn in files:
+                    arcpy.AddMessage(fn)
                     if self.get_extension(fn) == ".zip":
+                        arcpy.AddMessage("added")
                         continue
 
                     absfn = os.path.join(root, fn)
@@ -102,10 +106,8 @@ class DownloadTool(object):
 
         arcpy.AddMessage("{}, {}, {}".format(county, file_type, coordinate_system))
 
-        unique_folder = str(uuid.uuid4())
         output_location = arcpy.env.scratchFolder
         
-        output_location = os.path.join(arcpy.env.scratchFolder, unique_folder)
         folder_to_zip = output_location
 
         self._create_scratch_folder(output_location)

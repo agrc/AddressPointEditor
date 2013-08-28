@@ -1,5 +1,5 @@
 <div>
-    <form method="post" action="" data-dojo-attach-point="downloadForm" data-dojo-attach-event='submit: validate'>
+    <form data-dojo-attach-point="downloadForm" data-dojo-attach-event='submit: validate'>
         <div data-dojo-type="dijit/layout/StackContainer" style="padding: 0px 9px;" data-dojo-attach-point="sc">
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp1">
              <div class="form-group">
@@ -35,12 +35,12 @@
     </div>
 </div>
 </div>
-<div class='highlight text-center hidden' data-dojo-attach-point="backButton">
-    <button type="button" class="btn btn-default" data-dojo-attach-event="click: back">Back</button>
-    <button type="submit" class="btn btn-success" data-dojo-attach-point="submitButton" disabled="true" class="hidden">Download</a>
+<div class='highlight text-center hidden' data-dojo-attach-point="controlPanel">
+    <button type="button" class="btn btn-default" data-dojo-attach-point="backButton" data-dojo-attach-event="click: back">Back</button>
+    <button type="button" class="btn btn-info hidden" data-dojo-attach-event="click: submitJob" data-dojo-attach-point="submitButton" disabled="true">Submit</button>
+    <button type="button" class="btn btn-danger hidden" data-dojo-attach-event="click: cancelJob" data-dojo-attach-point="cancelButton" disabled="true">Cancel</button>
+    <a href="#" class="btn btn-success hidden" disabled data-dojo-attach-point="downloadButton">Download</a>
+    <span class="label label-warning" data-dojo-attach-point="messagebox"></span>
 </div>
-<input type="hidden" data-dojo-attach-point="systemHidden" name="system"/>
-<input type="hidden" data-dojo-attach-point="typeHidden" name="type"/>
-<input type="hidden" data-dojo-attach-point="countyHidden" name="county"/>
 </form>
 </div>

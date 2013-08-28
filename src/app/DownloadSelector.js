@@ -10,7 +10,6 @@ define([
         'dojo/dom-class',
         'dojo/dom-construct',
         'dojo/dom-attr',
-        'dojo/Stateful',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
@@ -19,7 +18,10 @@ define([
         'dijit/_WidgetsInTemplateMixin',
 
         'dojo/text!app/templates/DownloadSelector.html',
-        'agrc/modules/JSONLoader!app/data/counties.json'
+
+        'agrc/modules/JSONLoader!app/data/counties.json',
+
+        'esri/tasks/Geoprocessor'
     ],
 
     function(
@@ -34,7 +36,6 @@ define([
         domClass,
         domConstruct,
         domAttr,
-        Stateful,
 
         _WidgetBase,
         _TemplatedMixin,
@@ -44,7 +45,9 @@ define([
 
         template,
 
-        counties
+        counties,
+
+        Geoprocessor
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -58,27 +61,14 @@ define([
             // the template page that is visible
             currentPage: 0,
 
-            download: null,
+            downloadFilter: null,
 
-            _setPostUrlAttr: {
-                node: 'downloadForm',
+            jobId: null,
+
+            _setDownloadUrlAttr: {
+                node: 'downloadButton',
                 type: 'attribute',
-                attribute: 'action'
-            },
-            _setSystemAttr: {
-                node: 'systemHidden',
-                type: 'attribute',
-                attribute: 'value'
-            },
-            _setTypeAttr: {
-                node: 'typeHidden',
-                type: 'attribute',
-                attribute: 'value'
-            },
-            _setCountyAttr: {
-                node: 'countyHidden',
-                type: 'attribute',
-                attribute: 'value'
+                attribute: 'href'
             },
             constructor: function() {
                 console.info(this.declaredClass + "::constructor", arguments);
@@ -90,35 +80,36 @@ define([
 
                 this.inherited(arguments);
 
-                this.download = new Stateful({
-                    system: null,
-                    type: null,
-                    county: null
-                });
-
-                this.download.watch("system", lang.hitch(this, 'updateHiddenValues'));
-                this.download.watch("type", lang.hitch(this, 'updateHiddenValues'));
-                this.download.watch("county", lang.hitch(this, 'updateHiddenValues'));
+                this.downloadFilter = {};
 
                 this.pages = [this.cp1, this.cp2, this.cp3];
 
                 this.hydrateCountySelect();
 
                 this.sc.startup();
+
+                this.initGp();
             },
-            updateHiddenValues: function (prop, oldValue, newValue) {
+            initGp: function() {
                 // summary:
-                //      updates the hidden inputs for the form post
-                // param: type or return: type
-                console.log(this.declaredClass + "::updateHiddenValues", arguments);
-             
-                this.set(prop, newValue);
+                //      description
+                console.info(this.declaredClass + "::initGp", arguments);
+
+                this.gp = new Geoprocessor('http://localhost/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points');
+                //this.gp.on('onError', 'onJobError'),
+
+                this.own(
+                    this.gp.on('job-complete', lang.hitch(this, 'gpComplete')),
+                    this.gp.on('status-update', lang.hitch(this, 'statusUpdate')),
+                    this.gp.on('get-result-data-complete', lang.hitch(this, 'displayLink')),
+                    this.gp.on('job-cancel', lang.hitch(this, 'jobCancelled'))
+                );
             },
             showNextPage: function() {
                 console.info(this.declaredClass + "::showNextPage", arguments);
 
                 if (this.currentPage < 0) {
-                    domClass.add(this.backButton, 'hidden');
+                    domClass.add(this.controlPanel, 'hidden');
                     this.sc.selectChild(this.pages[0]);
 
                     return;
@@ -128,7 +119,7 @@ define([
                     this.currentPage++;
                 }
 
-                domClass.remove(this.backButton, 'hidden');
+                domClass.remove(this.controlPanel, 'hidden');
 
                 this.sc.selectChild(this.pages[this.currentPage]);
             },
@@ -140,7 +131,7 @@ define([
                 }
 
                 if (this.currentPage === 0) {
-                    domClass.add(this.backButton, 'hidden');
+                    domClass.add(this.controlPanel, 'hidden');
                 }
 
                 this.sc.selectChild(this.pages[this.currentPage]);
@@ -158,15 +149,16 @@ define([
                     value = node.value;
                 }
 
-                this.download.set(prop, value);
+                this.downloadFilter[prop] = value.toLowerCase();
                 this.showNextPage();
 
-                this.showDownloadButton();
+                this.showSubmitButton();
             },
-            showDownloadButton: function() {
-                console.info(this.declaredClass + "::showDownloadButton", arguments);
+            showSubmitButton: function() {
+                console.info(this.declaredClass + "::showSubmitButton", arguments);
 
                 if (!this.valid()) {
+                    console.log('not valid');
                     domClass.add(this.submitButton, 'hidden');
                     domAttr.set(this.submitButton, 'disabled', true);
 
@@ -175,8 +167,6 @@ define([
 
                 domClass.remove(this.submitButton, 'hidden');
                 domAttr.set(this.submitButton, 'disabled', false);
-
-                this.set('postUrl', '/download');
             },
             hydrateCountySelect: function() {
                 console.log(this.declaredClass + "::hydrateCountySelect", arguments);
@@ -222,8 +212,131 @@ define([
 
                 var props = ['system', 'type', 'county'];
                 return array.every(props, function(item) {
-                    return !!this.download.get(item);
+                    return !!this.downloadFilter[item];
                 }, this);
+            },
+            submitJob: function() {
+                // summary:
+                //      sends the download filter to the gp service
+                console.log(this.declaredClass + "::submitJob", arguments);
+
+                if (!this.valid()){
+                    this.messagebox.innerHTML = "You haven't selected all the parts.";
+                    return;
+                }
+
+                this.messagebox.innerHTML = "";
+                this.downloadButton.innerHTML = 'Submitting';
+                this.gp.submitJob(this.downloadFilter);
+
+                domClass.remove(this.cancelButton, 'hidden');
+                domAttr.set(this.cancelButton, 'disabled', false);
+
+                domClass.add(this.backButton, 'hidden');
+                domAttr.set(this.backButton, 'disabled', true);
+
+                domAttr.set(this.submitButton, 'disabled', true);
+                domClass.add(this.submitButton, 'hidden');
+
+                domAttr.set(this.downloadButton, 'disabled', null);
+                domClass.remove(this.downloadButton, 'hidden');
+            },
+            cancelJob: function() {
+                // summary:
+                //      cancels the download job
+                console.log(this.declaredClass + "::cancelJob", arguments);
+
+                this.gp.cancelJob(this.jobId);
+            },
+            jobCancelled: function() {
+                // summary:
+                //      successful cancel
+                console.log(this.declaredClass + "::jobCancelled", arguments);
+
+
+            },
+            statusUpdate: function(status) {
+                // summary:
+                //      status updates from the gp service
+                // jobinfo: esri/tasks/JobInfo
+                console.log(this.declaredClass + "::statusUpdate", arguments);
+
+                this.jobId = status.jobInfo.jobId;
+                this.messagebox.innerHTML = "";
+
+                switch (status.jobInfo.jobStatus) {
+                    case 'esriJobSubmitted':
+                        this.downloadButton.innerHTML = 'Submitted';
+                        break;
+                    case 'esriJobExecuting':
+                        this.downloadButton.innerHTML = 'Processing';
+                        break;
+                    case 'esriJobSucceeded':
+                        this.downloadButton.innerHTML = 'Download';
+                        break;
+                }
+            },
+            gpComplete: function(status) {
+                // summary:
+                //      description
+                // status: esri/tasks/JobInfo
+                console.log(this.declaredClass + "::gpComplete", arguments);
+
+                switch (status.jobInfo.jobStatus) {
+                    case 'esriJobCancelling':
+                    case 'esriJobCancelled':
+                        domClass.remove(this.backButton, 'hidden');
+                        domAttr.set(this.backButton, 'disabled', false);
+
+                        domClass.add(this.cancelButton, 'hidden');
+                        domAttr.set(this.cancelButton, 'disabled', true);
+
+                        domAttr.set(this.submitButton, 'disabled', false);
+                        domClass.remove(this.submitButton, 'hidden');
+
+                        domAttr.set(this.downloadButton, 'disabled', true);
+                        domClass.add(this.downloadButton, 'hidden');
+                        break;
+                    case 'esriJobSucceeded':
+                        this.gp.getResultData(status.jobInfo.jobId, 'zip');
+                        break;
+                    case 'esriJobFailed':
+                        domClass.remove(this.backButton, 'hidden');
+                        domAttr.set(this.backButton, 'disabled', false);
+
+                        domClass.add(this.cancelButton, 'hidden');
+                        domAttr.set(this.cancelButton, 'disabled', true);
+
+                        domAttr.set(this.submitButton, 'disabled', false);
+                        domClass.remove(this.submitButton, 'hidden');
+
+                        domAttr.set(this.downloadButton, 'disabled', true);
+                        domClass.add(this.downloadButton, 'hidden');
+
+                        this.messagebox.innerHTML = "I'm sorry but the job failed.";
+
+                        break;
+                }
+
+            },
+            displayLink: function(response) {
+                // summary:
+                //      sets the download link's href
+                // data: the esri/tasks/ParameterInfo object
+                console.log(this.declaredClass + "::displayLink", arguments);
+
+                this.set('downloadUrl', response.result.value.url);
+
+                domClass.remove(this.backButton, 'hidden');
+                domAttr.set(this.backButton, 'disabled', false);
+
+                domClass.add(this.cancelButton, 'hidden');
+                domAttr.set(this.cancelButton, 'disabled', true);
+
+                domAttr.set(this.submitButton, 'disabled', false);
+                domClass.remove(this.submitButton, 'hidden');
+
+                domAttr.remove(this.downloadButton, 'disabled');
             }
         });
     });
