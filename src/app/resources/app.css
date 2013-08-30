@@ -24,9 +24,6 @@ body {
 .navbar {
     opacity: 0.975;
 }
-.app .esriSimpleSlider {
-    top: 60px;
-}
 .app .dropdown-menu {
     padding: 15px;
 }
@@ -57,9 +54,20 @@ body {
 @media (min-width: 768px) {
   .container {
     max-width: 100%;
-  }
+}
+}
 
-  @media (min-width: 1200px) {
+@media (min-width: 1200px) {
   .container {
     max-width: 100%;
-  }
+}
+}
+.app .esriSimpleSlider {
+    top: 60px;
+}
+
+@media (min-width: 920px) and (max-width: 1176px) {
+    .app .esriSimpleSlider {
+        top: 115px;
+    }
+}
