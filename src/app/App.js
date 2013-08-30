@@ -41,7 +41,8 @@ define([
         'esri/graphic',
 
         'app/SlideInSidebar',
-        'app/Leaderboard'
+        'app/Leaderboard',
+        'app/DownloadSelector'
     ],
 
     function(
@@ -87,7 +88,8 @@ define([
         Graphic,
 
         SlideInSidebar,
-        Leaderboard
+        Leaderboard,
+        DownloadSelector
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
@@ -167,6 +169,9 @@ define([
                 this.changeRequest = new ChangeRequest({
                     map: this.map
                 }, this.suggestChangeDiv);
+
+                this.downloadWizard = new DownloadSelector({},
+                    this.downloadDiv);
 
                 this.wireEvents();
 

@@ -3,6 +3,7 @@
 @import '../../ijit/resources/notify/ChangeRequest.css';
 @import 'SlideInSidebar.css';
 @import 'Leaderboard.css';
+@import 'DownloadSelector.css';
 
 body {
     overflow: hidden;

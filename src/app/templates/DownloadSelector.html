@@ -1,46 +1,46 @@
 <div>
-    <form data-dojo-attach-point="downloadForm" data-dojo-attach-event='submit: validate'>
-        <div data-dojo-type="dijit/layout/StackContainer" style="padding: 0px 9px;" data-dojo-attach-point="sc">
-            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp1">
-             <div class="form-group">
-                <label>What coordinate system would you like?</label>
-                <label class='help-block'>State Plane</label>
-                <div class="btn-toolbar">
-                  <div class="btn-group">
-                      <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_north" data-dojo-attach-event="click: setDownloadFilter">North</button>
-                      <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_central" data-dojo-attach-event="click: setDownloadFilter">Central</button>
-                      <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_south" data-dojo-attach-event="click: setDownloadFilter">South</button>
-                  </div>
-                  <div class="btn-group">
-                      <button type="button" class="btn btn-default" data-prop="system" data-system="utm12" data-dojo-attach-event="click: setDownloadFilter">UTM Zone 12 North</button>
-                  </div>
-              </div>
+  <form data-dojo-attach-point="downloadForm" data-dojo-attach-event='submit: validate'>
+    <div data-dojo-type="dijit/layout/StackContainer" style="padding: 0px 9px;" data-dojo-attach-point="sc" class="download-selector-container">
+      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp1" class="download-selector-container">
+       <div class="form-group">
+        <label>What coordinate system would you like?</label>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default" data-prop="system" data-system="utm12" data-dojo-attach-event="click: setDownloadFilter">UTM Zone 12 North</button>
           </div>
-      </div>
-      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp2">
-        <div class="form-group">
-            <label>What format would you like?</label>
-            <div class="btn-group">
-              <button type="button" class="btn btn-default" data-prop="type" data-type="shapefile" data-dojo-attach-event="click: setDownloadFilter">Shapefile</button>
-              <button type="button" class="btn btn-default" data-prop="type" data-type="fgdb" data-dojo-attach-event="click: setDownloadFilter">File Geodatabase</button>
+        <label class='help-block'>State Plane</label>
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_north" data-dojo-attach-event="click: setDownloadFilter">North</button>
+            <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_central" data-dojo-attach-event="click: setDownloadFilter">Central</button>
+            <button type="button" class="btn btn-default" data-prop="system" data-system="stateplane_south" data-dojo-attach-event="click: setDownloadFilter">South</button>
           </div>
+        </div>
       </div>
-  </div>
-  <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp3">
-    <div class="form-group">
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp2" class="download-selector-container">
+      <div class="form-group">
+        <label>What format would you like?</label>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" data-prop="type" data-type="shapefile" data-dojo-attach-event="click: setDownloadFilter">Shapefile</button>
+          <button type="button" class="btn btn-default" data-prop="type" data-type="fgdb" data-dojo-attach-event="click: setDownloadFilter">File Geodatabase</button>
+        </div>
+      </div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="cp3" class="download-selector-container">
+      <div class="form-group">
         <label>What counties data would you like?</label>
         <select class="form-control" data-prop="county" data-dojo-attach-event="change: setDownloadFilter" data-dojo-attach-point='countySelect' style="width: 95%">
-            <option value="">Select a County</option>
+          <option value="">Select a County</option>
         </select>
+      </div>
     </div>
-</div>
-</div>
-<div class='highlight text-center hidden' data-dojo-attach-point="controlPanel">
+  </div>
+  <div class='highlight text-center hidden' data-dojo-attach-point="controlPanel">
     <button type="button" class="btn btn-default" data-dojo-attach-point="backButton" data-dojo-attach-event="click: back">Back</button>
     <button type="button" class="btn btn-info hidden" data-dojo-attach-event="click: submitJob" data-dojo-attach-point="submitButton" disabled="true">Submit</button>
     <button type="button" class="btn btn-danger hidden" data-dojo-attach-event="click: cancelJob" data-dojo-attach-point="cancelButton" disabled="true">Cancel</button>
     <a href="#" class="btn btn-success hidden" disabled data-dojo-attach-point="downloadButton">Download</a>
     <span class="label label-warning" data-dojo-attach-point="messagebox"></span>
-</div>
+  </div>
 </form>
 </div>
