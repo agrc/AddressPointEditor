@@ -42,7 +42,8 @@ define([
 
         'app/SlideInSidebar',
         'app/Leaderboard',
-        'app/DownloadSelector'
+        'app/DownloadSelector',
+        'app/Editor'
     ],
 
     function(
@@ -89,7 +90,8 @@ define([
 
         SlideInSidebar,
         Leaderboard,
-        DownloadSelector
+        DownloadSelector,
+        Editor
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
@@ -184,6 +186,8 @@ define([
                     linkNode: this.leaderboardDiv,
                     contentNode: this.leaderboardContentDiv
                 });
+
+                this.editor = new Editor({}, domConstruct.place('<div>', this.map.container, 'last'));
 
                 this.isEditing = false;
 
@@ -367,7 +371,7 @@ define([
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                this._createSliderTools();
+                //this._createSliderTools();
 
                 this._initializeAttributeInspector(evt.layers);
 

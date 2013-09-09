@@ -63,7 +63,6 @@ define([
 
                 this.getLeaderboard().then(lang.hitch(this,
                     function(content) {
-                        console.log(content);
                         this.set('link', content.mini);
                         this.set('dropdown', content.expanded);
                     }));
@@ -82,7 +81,6 @@ define([
                 this.xhrDeferred = new dojo.Deferred();
 
                 if (this.url) {
-                    console.log('requesting data');
                     request({
                         url: this.url,
                         handleAs: "json",
