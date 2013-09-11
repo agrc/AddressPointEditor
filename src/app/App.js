@@ -6,19 +6,19 @@ define([
         'dojo/_base/declare',
         'dojo/_base/Color',
         'dojo/_base/event',
+
         'dojo/dom',
         'dojo/on',
+        'dojo/aspect',
+        'dojo/topic',
+
         'dojo/dom-construct',
         'dojo/dom-class',
-        'dojo/aspect',
-        'dojo/query',
-        'dojo/parser',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
         'dijit/_WidgetsInTemplateMixin',
         'dijit/registry',
-        'dijit/form/Button',
 
         'agrc/widgets/map/BaseMap',
         'agrc/widgets/locate/FindAddress',
@@ -26,24 +26,19 @@ define([
 
         'ijit/widgets/notify/ChangeRequest',
 
-        'esri/dijit/editing/Editor',
-        'esri/dijit/AttributeInspector',
         'esri/layers/FeatureLayer',
         'esri/config',
         'esri/tasks/GeometryService',
         'esri/geometry/Extent',
-        'esri/geometry/Point',
-        'esri/tasks/query',
         'esri/symbols/SimpleMarkerSymbol',
         'esri/symbols/SimpleLineSymbol',
         'esri/toolbars/edit',
-        'esri/toolbars/draw',
-        'esri/graphic',
 
         'app/SlideInSidebar',
         'app/Leaderboard',
         'app/DownloadSelector',
-        'app/Editor'
+        'app/Editor',
+        'app/AttributeEditor'
     ],
 
     function(
@@ -54,19 +49,19 @@ define([
         declare,
         Color,
         event,
+
         dom,
         on,
+        aspect,
+        topic,
+
         domConstruct,
         domClass,
-        aspect,
-        query,
-        parser,
 
         _WidgetBase,
         _TemplatedMixin,
         _WidgetsInTemplateMixin,
         registry,
-        Button,
 
         BaseMap,
         FindAddress,
@@ -74,24 +69,19 @@ define([
 
         ChangeRequest,
 
-        editor,
-        AttributeEditor,
         featureLayer,
         config,
         geomService,
         Extent,
-        Point,
-        Query,
         SimpleMarkerSymbol,
         SimpleLineSymbol,
         Edit,
-        Draw,
-        Graphic,
 
         SlideInSidebar,
         Leaderboard,
         DownloadSelector,
-        Editor
+        Editor,
+        AttributeEditor
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
@@ -113,21 +103,6 @@ define([
             // sideBar: app/SlideInSidebar
             sideBar: null,
 
-            // attributeEditor: esri/dijit/AttributeEditor
-            attributeEditor: null,
-
-            //selectQuery: esri/tasks/QueryTask
-            selectQuery: null,
-
-            //saveButton: dijit/form/Button
-            saveButton: null,
-
-            //updateFeature: esri/graphic
-            updateFeature: null,
-
-            //drawingToolbar: esri/toolbars/draw
-            drawingToolbar: null,
-
             //editingToolbar: esri/toolbars/edit
             editingToolbar: null,
 
@@ -148,8 +123,6 @@ define([
                 // summary:
                 //      Fires when 
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
-
-                this.selectQuery = new Query();
 
                 this.initMap();
 
@@ -187,11 +160,20 @@ define([
                     contentNode: this.leaderboardContentDiv
                 });
 
-                this.editor = new Editor({}, domConstruct.place('<div>', this.map.container, 'last'));
+                this.editor = new Editor({
+                    map: this.map,
+                    editLayer: this.editLayer,
+                    sideContent: this.sideContent
+                }, domConstruct.place('<div>', this.map.container, 'last'));
+
+                this.attributeEditor = new AttributeEditor({
+                    sideContent: this.sideContent,
+                    editLayer: this.editLayer,
+                    map: this.map
+                });
 
                 this.isEditing = false;
 
-                this.drawingToolbar = new Draw(this.map);
                 this.editingToolbar = new Edit(this.map);
             },
             wireEvents: function() {
@@ -217,86 +199,7 @@ define([
                         }, 100);
                     }));
 
-                if (this.editLayer) {
-                    console.log(this.editLayer);
-                    this.own(
-                        this.editLayer.on("edits-complete", lang.hitch(this,
-                            function(response) {
-                                var fieldsDefiningSuccess = ['adds', 'updates', 'deletes'];
-                                var editsToTrack = {
-                                    user: 'test',
-                                    changes: []
-                                };
-
-                                array.forEach(fieldsDefiningSuccess,
-                                    function(prop) {
-                                        array.forEach(response[prop], 
-                                            function(status){
-                                                if(!status && !status.success)
-                                                    return;
-
-                                                editsToTrack.changes.push({
-                                                    type:prop
-                                                });
-                                            }, this);
-                                    }, this);
-
-                                //if success send basic edit info to tracking service
-                                console.log("edits-complete");
-                                console.log(editsToTrack);
-                            }))
-
-                        //store the edits to be sent to tracking service
-                        // this.editLayer.on('before-apply-edits', lang.hitch(this,
-                        //     function(edits) {
-                        //         console.log('before-apply-edits');
-                        //         console.log(edits);
-                        //         this.edits = edits;
-                        //     }))
-
-                        // this should save a new graphic but somethings up.
-                        // this.drawingToolbar.on("draw-end", lang.hitch(this, function(evt) {
-                        //     this.drawingToolbar.deactivate();
-                        //     this.editingToolbar.deactivate();
-
-                        //     var newGraphic = new Graphic(evt.geometry, null, null);
-                        //     this.editLayer.applyEdits([newGraphic], null, null);
-                        // })),
-                    );
-                }
-
-                this.own(
-                    this.map.on("click", lang.hitch(this, function(evt) {
-                        this.sideContent.show();
-                        this.selectQuery.geometry = this._screenPointToEnvelope(evt);
-                        this.editLayer.selectFeatures(this.selectQuery, esri.layers.FeatureLayer.SELECTION_NEW, lang.hitch(this, function(features) {
-                            if (features.length > 0) {
-                                this.updateFeature = features[0];
-                            } else {
-                                this.updateFeature = null;
-                                this.editLayer.clearSelection();
-                                this.sideContent.hide();
-                            }
-                        }));
-                    }))
-                );
-
-                console.log('events wired');
-            },
-            _screenPointToEnvelope: function(evt) {
-                var centerPoint = new Point(evt.mapPoint.x, evt.mapPoint.y, evt.mapPoint.spatialReference);
-                var mapWidth = this.map.extent.getWidth();
-
-                //Divide width in map units by width in pixels
-                var pixelWidth = mapWidth / this.map.width;
-
-                //Calculate a 10 pixel envelope width (5 pixel tolerance on each side)
-                var tolerance = 10 * pixelWidth;
-
-                //Build tolerance envelope and set it as the query geometry
-                var queryExtent = new Extent(1, 1, tolerance, tolerance, evt.mapPoint.spatialReference);
-
-                return queryExtent.centerAt(centerPoint);
+                topic.subscribe('app/toolbar', lang.hitch(this, 'addNewPoint'));
             },
             initMap: function() {
                 // summary:
@@ -328,7 +231,9 @@ define([
                     return;
                 }
 
-                if (this.editLayer) this.map.removeLayer(this.editLayer);
+                if (this.editLayer) {
+                    this.map.removeLayer(this.editLayer);
+                }
 
                 this.editLayer = new featureLayer("/arcgis/rest/services/demo/Editing/FeatureServer/" + id, {
                     mode: featureLayer.MODE_ONDEMAND,
@@ -364,16 +269,13 @@ define([
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
                 this.editingToolbar.deactivate();
-                this.drawingToolbar.activate(Draw.POINT);
             },
             initEditing: function(evt) {
                 // sumamry:
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                //this._createSliderTools();
-
-                this._initializeAttributeInspector(evt.layers);
+                this.attributeEditor.initializeAttributeInspector(evt.layers);
 
                 this.own(
                     this.editingToolbar.on("deactivate", lang.hitch(this, function(evt) {
@@ -394,116 +296,6 @@ define([
                         }
                     }))
                 );
-            },
-            _initializeAttributeInspector: function(layer) {
-                var featureLayerInfos = array.map(layer, function(result) {
-                    return {
-                        "featureLayer": result.layer
-                    };
-                });
-
-                var layerInfos = [{
-                    'featureLayer': featureLayerInfos[0].featureLayer,
-                    'showAttachments': false,
-                    'isEditable': true,
-                    'fieldInfos': [{
-                        'fieldName': 'HouseAddr',
-                        'isEditable': true,
-                        'tooltip': 'The House Address',
-                        'label': 'House Address:'
-                    }, {
-                        'fieldName': 'FullAddr',
-                        'isEditable': true,
-                        'tooltip': 'The full address',
-                        'label': 'FullAddr:'
-                    }]
-                }];
-
-                this.attributeEditor = new AttributeEditor({
-                    layerInfos: layerInfos
-                }, domConstruct.create("div", null, this.sideContent.contentDiv, "first"));
-
-                this.saveButton = new Button({
-                    label: "Save",
-                    "class": "atiSaveButton"
-                });
-
-                this.saveButton.set('disabled', true);
-
-                domConstruct.place(this.saveButton.domNode, this.attributeEditor.editButtons, "first");
-                var that = this;
-
-                this.own(
-                    this.saveButton.on("click", function() {
-                        that.saveButton.set('disabled', true);
-                        that.attributeEditor.deleteBtn.set('disabled', true);
-                        that.attributeEditor.deleteBtn.set('disabled', true);
-
-                        that.saveButton.set('innerHTML', 'Saving Edits.');
-
-                        that.updateFeature.getLayer().applyEdits(null, [that.updateFeature], null)
-                            .then(function() {
-                                // that.saveButton.set('disabled', false);
-                                that.attributeEditor.deleteBtn.set('disabled', false);
-                                that.saveButton.set('innerHTML', 'Save');
-
-                            }, function(response) {
-                                console.log('save error response');
-                                console.log(response);
-                            });
-                    }),
-
-                    this.attributeEditor.on("attribute-change", function(evt) {
-                        that.updateFeature.attributes[evt.fieldName] = evt.fieldValue;
-                        console.log('attribute-change');
-                        
-                        that.saveButton.set('disabled', false);
-                    }),
-
-                    this.attributeEditor.on("next", function(evt) {
-                        that.updateFeature = evt.feature;
-                        console.log('next');
-                    }),
-
-                    this.attributeEditor.on("delete", function(evt) {
-                        var feature = evt.feature;
-
-                        that.saveButton.set('disabled', true);
-                        that.attributeEditor.deleteBtn.set('disabled', true);
-                        that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
-
-                        feature.getLayer().applyEdits(null, null, [feature]);
-                    }));
-            },
-            _createSliderTools: function() {
-                console.log(this.declaredClass + "::resize", arguments);
-
-                var globeContainer = domConstruct.create("div", {
-                    "class": 'esriSimpleSliderGlyphButton'
-                });
-
-                var markerContainer = lang.clone(globeContainer);
-
-                var node = query(".esriSimpleSliderIncrementButton", this.map._slider)[0],
-
-                    globe = domConstruct.create("span", {
-                        "class": "glyphicon"
-                    }, globeContainer),
-                    marker = domConstruct.create("span", {
-                        "class": "glyphicon"
-                    }, markerContainer);
-
-                on(globeContainer, 'click', lang.hitch(this, 'fullExtent'));
-                on(markerContainer, 'click', lang.hitch(this, 'addNewPoint'));
-
-                domClass.add(globe, "glyphicon-globe");
-                domClass.add(marker, "glyphicon-map-marker");
-
-                domConstruct.place(markerContainer,
-                    node, "after");
-
-                domConstruct.place(globeContainer,
-                    node, "after");
             },
             resize: function() {
                 // summary:
