@@ -1,16 +1,17 @@
+require({
+    async: 0
+});
+
 define([
         'dojo/parser',
 
+        'jquery/jquery',
+        'bootstrap/js/bootstrap',
         'app/App'
     ],
 
-    function(
-        parser
-    ) {
+    function(parser) {
         window.AGRC = {
-            // errorLogger: ijit.modules.ErrorLogger
-            errorLogger: null,
-
             // app: app.App
             //      global reference to App
             app: null,
@@ -19,13 +20,17 @@ define([
             //      The version number.
             version: '0.1.0',
 
-            apiKey: 'AGRC-B5D62BD2151902', // localhost,
+            //apiKey: 'AGRC-B5D62BD2151902', // localhost
+            apiKey: 'AGRC-FFCDAD6B933051',
 
             urls: {
-                downloadGp: "http://localhost/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points"
+                leaderboard: './webapi/api/leaderboard',
+                basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseMap-Vector/MapServer',
+                featureLayer: "/arcgis/rest/services/Broadband/Editing/FeatureServer/",
+                geometryService: "/arcgis/rest/services/Geometry/GeometryServer",
+                downloadGp: "/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points"
             }
         };
 
-        // lights...camera...action!
         parser.parse();
     });

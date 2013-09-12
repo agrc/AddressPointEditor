@@ -135,7 +135,7 @@ define([
 
                 this.magicZoom = new MagicZoom({
                     map: this.map,
-                    mapServiceURL: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseMap-Vector/MapServer',
+                    mapServiceURL: AGRC.urls.basemap,
                     searchLayerIndex: 1,
                     searchField: 'NAME',
                     maxResultsToDisplay: 10
@@ -155,7 +155,7 @@ define([
                 }, this.sideBar);
 
                 this.leaderboard = new Leaderboard({
-                    url: 'http://BroadbandEditing/api/leaderboard',
+                    url: AGRC.urls.leaderboard,
                     linkNode: this.leaderboardDiv,
                     contentNode: this.leaderboardContentDiv
                 });
@@ -229,7 +229,7 @@ define([
                     })
                 });
 
-                config.defaults.geometryService = new geomService("http://mapserv.utah.gov/ArcGIS/rest/services/Geometry/GeometryServer");
+                config.defaults.geometryService = new geomService(AGRC.urls.geometryService);
             },
             addFeatureLayer: function() {
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
@@ -244,7 +244,7 @@ define([
                     this.map.removeLayer(this.editLayer);
                 }
 
-                this.editLayer = new featureLayer("/arcgis/rest/services/demo/Editing/FeatureServer/" + id, {
+                this.editLayer = new featureLayer(AGRC.urls.featureLayer + id, {
                     mode: featureLayer.MODE_ONDEMAND,
                     useMapTime: false,
                     outFields: ['HouseAddr', 'FullAddr', 'HouseNum', 'PreDir', 'StreetName', 'StreetType', 'SufDir', 'UnitNumber', 'City', 'ZipCode']

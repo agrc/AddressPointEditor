@@ -8,7 +8,7 @@ define([
         'dijit/_WidgetBase',
 
         'dojo/text!app/templates/LeaderboardTemplate.html',
-        'dojo/text!app/templates/LeaderBoardMiniTemplate.html',
+        'dojo/text!app/templates/LeaderboardMiniTemplate.html',
 
         'mustache/mustache',
 

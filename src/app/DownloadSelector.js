@@ -95,7 +95,7 @@ define([
                 //      description
                 console.info(this.declaredClass + "::initGp", arguments);
 
-                this.gp = new Geoprocessor('http://localhost/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points');
+                this.gp = new Geoprocessor(AGRC.urls.downloadGp);
                 //this.gp.on('onError', 'onJobError'),
 
                 this.own(

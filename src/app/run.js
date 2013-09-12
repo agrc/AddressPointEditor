@@ -1,4 +1,4 @@
-(function() {
+(function () {
     var projectUrl;
     if (typeof location === 'object') {
         // running in browser
@@ -10,19 +10,14 @@
         // running in build system
         projectUrl = '';
     }
-    require({
-        packages: [{
-            name: 'app',
-            location: projectUrl + 'app'
-        }, {
-            name: 'agrc',
-            location: projectUrl + 'agrc'
-        }, {
-            name: 'ijit',
-            location: projectUrl + 'ijit'
-        }, {
-            name: 'mustache',
-            location: projectUrl + 'mustache'
-        }]
-    }, ['app']);
+    var config = {packagePaths: {}};
+    config.packagePaths[projectUrl] = [
+        'app',
+        'agrc',
+        'ijit',
+        'mustache',
+        'jquery',
+        'bootstrap'
+    ];
+    require(config, ['app']);
 })();
