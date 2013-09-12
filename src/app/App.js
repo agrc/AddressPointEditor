@@ -179,11 +179,9 @@ define([
             wireEvents: function() {
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
+                this.own(on(window, 'resize', lang.hitch(this, this.resize)));
+                this.own(this.map.on("layers-add-result", lang.hitch(this, 'initEditing')));
                 this.own(
-                    on(window, 'resize', lang.hitch(this, this.resize)),
-
-                    this.map.on("layers-add-result", lang.hitch(this, 'initEditing')),
-
                     on(this.changeRequest, 'drawStart', function() {
                         console.log('on draw start');
                         var ddl = $('#suggest-change-dropdown');
@@ -197,7 +195,18 @@ define([
                         setTimeout(function() {
                             $('#suggest-change-dropdown').dropdown('toggle');
                         }, 100);
-                    }));
+                    })
+                );
+
+                this.own(
+                    aspect.after(this.findAddress, 'done', lang.hitch(this,
+                        function() {
+                            setTimeout(lang.hitch(this,
+                                function() {
+                                    this.findAddress.graphicsLayer.remove(this.findAddress._graphic);
+                                }), 5000);
+                        }))
+                );
 
                 topic.subscribe('app/toolbar', lang.hitch(this, 'addNewPoint'));
             },
