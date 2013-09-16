@@ -1,10 +1,6 @@
 {
     "predef": [
-        "esri",
         "alert",
-        "dojo",
-        "$",
-        "jQuery",
         "define",
         "require",
         "console",
@@ -21,7 +17,8 @@
         "waitsFor",
         "describe",
         "xdescribe",
-        "stubModule"
+        "stubModule",
+        "$"
     ],
 
     "evil": true,
@@ -30,5 +27,6 @@
     "wsh": true,
     "sub": true,
     "undef": true,
-    "unused": true
+    "unused": "vars",
+    "eqnull": true
 }

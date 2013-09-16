@@ -78,7 +78,7 @@ define([
             getLeaderboard: function() {
                 console.log(this.declaredClass + "::getLeaderboard", arguments);
 
-                this.xhrDeferred = new dojo.Deferred();
+                this.xhrDeferred = new Deferred();
 
                 if (this.url) {
                     request({

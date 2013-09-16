@@ -16,7 +16,8 @@ define([
         'esri/undoManager',
         'esri/toolbars/draw',
         'esri/graphic',
-        'esri/tasks/query'
+        'esri/tasks/query',
+        'esri/main' //this is where esri.bundle is located
     ],
 
     function(

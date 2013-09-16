@@ -19,8 +19,8 @@ define([
         'esri/geometry/Extent',
         'esri/geometry/Point',
         'esri/tasks/query',
-
-        'esri/dijit/AttributeInspector'
+        'esri/dijit/AttributeInspector',
+        'esri/layers/FeatureLayer',
     ],
 
     function(
@@ -43,8 +43,8 @@ define([
         Extent,
         Point,
         Query,
-
-        AttributeInspector
+        AttributeInspector,
+        FeatureLayer
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -163,7 +163,7 @@ define([
                 if (lang.isArray(selectQuery))
                     selectQuery = selectQuery[0];
 
-                this.editLayer.selectFeatures(selectQuery, esri.layers.FeatureLayer.SELECTION_NEW, lang.hitch(this,
+                this.editLayer.selectFeatures(selectQuery, FeatureLayer.SELECTION_NEW, lang.hitch(this,
                     function(features) {
                         if (features.length > 0) {
                             this.updateFeature = features[0];
