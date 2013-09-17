@@ -1,0 +1,14 @@
+.leaderboard{
+    width: 300px;
+    height: 40px;
+}
+
+.label-gold{
+        background-color: #ffd700;
+        }
+.label-silver{
+    background-color:#c0c0c0;
+}
+.label-bronze{
+    background-color: #CD7F32;
+}

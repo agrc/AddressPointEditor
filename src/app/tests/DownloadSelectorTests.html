@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TEST: DownloadSelector</title>
+    
+    <link rel='stylesheet' href='http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css'>
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
+    <link href="../../bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link rel='stylesheet' href='../../app/resources/app.css'>
+    <link rel="stylesheet" href='../../app/resources/DownloadSelector.css'>
+    <style>
+/*    .dropdown-menu{
+        display:block;
+        position: relative;
+        }*/
+    </style>
+        <!-- JAVASCRIPT -->
+    <script src='http://js.arcgis.com/3.6'></script>
+    <script type="text/javascript">
+        var projectUrl = location.pathname.replace(/\/[^\/]+$/, "") + '/';
+        var widgetUnderTest;
+
+        require({
+                packages: [{
+                    name: 'app',
+                    location: projectUrl + '../../app'
+                }, {
+                    name: 'agrc',
+                    location: projectUrl + '../../agrc'
+                }]
+            }, [
+                'app/DownloadSelector',
+                'dojo/dom',
+
+                'dojo/domReady!'
+            ],
+            function(Module, dom) {
+                widgetUnderTest = new Module({}, contentNode);
+            });
+        </script>
+    </head>
+    <body>
+        <h3>
+            app/DownloadSelector
+        </h3>
+        <div class="dropdown">
+         <a href="#" class='dropdown-toggle' data-toggle='dropdown' id="linkNode">Download Data</a>
+         <ul class='dropdown-menu'>
+           <div id="contentNode">
+           </div>
+       </ul>
+   </div>
+   <script src="../../jquery/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../../bootstrap/js/bootstrap.js"></script>
+</body>
+</html>

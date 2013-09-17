@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AGRC Address Point Editor</title>
+<style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <!-- META TAGS -->
+    <meta charset='utf-8'>
+    <link rel="shortcut icon" href="http://mapserv.utah.gov/cdn/images/favicon.ico" />
+    <!-- CSS -->
+    <link rel='stylesheet' href='http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css'>
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link rel='stylesheet' href='app/resources/app.css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="claro">
+    <div class="agrc-container">
+        <div data-dojo-type='app.App'></div>
+    </div>    
+    <script data-dojo-config="async: 0, isDebug: 1, tlmSiblingOfDojo: 1" src='http://js.arcgis.com/3.6' defer></script>
+    <script src='app/run.js' defer></script>
+    <!-- GOOGLE ANALYTICS -->
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'CODE???']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</body>
+</html>

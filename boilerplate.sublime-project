@@ -1,0 +1,20 @@
+{
+    "folders": [{
+        "folder_exclude_patterns": [
+            "dist",
+            "dist/agrc",
+            "dist/app",
+            "dist/ijit",
+            "dist/dojo",
+            "dist/dojox",
+            "dist/util",
+            "dist/dijit",
+            "src/dojo",
+            "src/dojox",
+            "src/util",
+            "src/dijit",
+            "node_modules",
+            ".grunt"],
+        "path": "/"
+    }]
+}

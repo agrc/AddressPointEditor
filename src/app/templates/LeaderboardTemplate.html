@@ -1,0 +1,9 @@
+<h5>Most Active Users</h5>
+<ol class='list-group'>
+    {{#standings}}
+    <li class='list-group-item'>
+        <span class="badge label-{{standingCss}}">{{editCount}}</span>
+        {{name}}
+    </li>
+    {{/standings}}
+</ol>

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Editor Tests</title>
+
+    <!-- META TAGS -->
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+    <!-- CSS -->        
+    <link rel='stylesheet' href='http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css'>
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
+    <link href="../../bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link rel='stylesheet' href='../../app/resources/app.css'>
+
+    <style type='text/css'>
+    #map-div {
+        height: 400px;
+        width: 500px;
+        border: solid 1px gray;
+        position: relative;
+    }
+    </style>
+
+    <!-- JAVASCRIPT -->
+    <script type='text/javascript' src='http://js.arcgis.com/3.6'></script>
+    <script type="text/javascript">
+    var projectUrl = location.pathname.replace(/\/[^\/]+$/, "") + '/';
+    var widgetUnderTest;
+
+    require({
+        packages: [{
+            name: 'agrc',
+            location: projectUrl + '../../agrc'
+        },
+        {
+            name: 'app',
+            location: projectUrl + '../../app'
+        }
+        ]
+    }, [
+    'app/Editor',
+    'agrc/widgets/map/BaseMap',
+
+    'dojo/domReady!'
+    ],
+    function(Module, mapDependency) {
+        var map = new mapDependency('map-div');
+
+        widgetUnderTest = new Module({
+            map: map
+        }, 'search-div');
+    });
+    </script>
+</head>
+<body class='claro'>
+    <div id='map-div'>
+        <div id='search-div'></div>
+    </div>
+</body>
+</html>

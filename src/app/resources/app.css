@@ -1,0 +1,66 @@
+@import '../../agrc/resources/map/BaseMap.css';
+@import '../../agrc/resources/locate/FindAddress.css';
+@import '../../ijit/resources/notify/ChangeRequest.css';
+@import 'SlideInSidebar.css';
+@import 'Leaderboard.css';
+@import 'DownloadSelector.css';
+@import 'Editor.css';
+
+body {
+    overflow: hidden;
+}
+.app, .agrc-container, .map-div {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.navbar .navbar-brand {
+    font-weight: bold;
+    font-size: 25px;
+    color: white;
+    max-width: 300px;
+}
+.navbar {
+    opacity: 0.975;
+}
+.app .dropdown-menu {
+    padding: 15px;
+}
+.app .dropdown-menu .control-group {
+    margin: 0;
+}
+
+.atiSaveButton, .atiDeleteButton
+{
+    float: left;
+    margin: 0.2em !important;
+}
+
+@media (min-width: 992px){
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 100%;
+}
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 100%;
+}
+}
+.app .esriSimpleSlider {
+    top: 60px;
+}
+
+@media (min-width: 920px) and (max-width: 1176px) {
+    .app .esriSimpleSlider {
+        top: 115px;
+    }
+}
