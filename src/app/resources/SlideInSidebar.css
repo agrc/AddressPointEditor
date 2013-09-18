@@ -60,3 +60,8 @@
     margin-top: 0;
     font-size: 0.85em;
 }
+@media (min-width: 920px) and (max-width: 1176px) {
+    .slide-in-sidebar {
+        top: 100px;
+    }
+}

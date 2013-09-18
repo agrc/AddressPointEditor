@@ -55,7 +55,7 @@ define([
 
             templateString: template,
 
-            //sideContent: app/SlideInSidebar
+            //sideBar: app/SlideInSidebar
 
             // attributeEditor: esri/dijit/AttributeEditor
             attributeEditor: null,
@@ -95,9 +95,9 @@ define([
                     this.map.on("click", lang.hitch(this, function() {
                         console.log('map::click' + this.activeToolbar);
                         if (this.activeToolbar !== "navigation") {
-                            this.sideContent.show();
+                            this.sideBar.show();
                         } else {
-                            this.sideContent.hide();
+                            this.sideBar.hide();
                             this.editLayer.clearSelection();
                         }
                     })),
@@ -167,11 +167,11 @@ define([
                     function(features) {
                         if (features.length > 0) {
                             this.updateFeature = features[0];
-                            this.sideContent.show();
+                            this.sideBar.show();
                         } else {
                             this.updateFeature = null;
                             this.editLayer.clearSelection();
-                            this.sideContent.hide();
+                            this.sideBar.hide();
                         }
                         this.map.hideLoader();
                     }));
@@ -204,7 +204,7 @@ define([
 
                 this.attributeEditor = new AttributeInspector({
                     layerInfos: layerInfos
-                }, domConstruct.create("div", null, this.sideContent.contentDiv, "first"));
+                }, domConstruct.create("div", null, this.sideBar.contentDiv, "first"));
 
                 this.saveButton = new Button({
                     label: "Save",
@@ -263,7 +263,7 @@ define([
                                 
                                 if(that.editLayer.getSelectedFeatures().length === 0)
                                 {   
-                                    that.sideContent.hide();
+                                    that.sideBar.hide();
                                 }
 
                                 that.attributeEditor.deleteBtn.set('disabled', false);
