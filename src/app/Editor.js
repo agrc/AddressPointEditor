@@ -4,6 +4,7 @@ define([
 
         'dojo/topic',
         'dojo/aspect',
+        'dojo/on',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
@@ -17,6 +18,9 @@ define([
         'esri/toolbars/draw',
         'esri/graphic',
         'esri/tasks/query',
+        'esri/toolbars/edit',
+
+
         'esri/main' //this is where esri.bundle is located
     ],
 
@@ -26,6 +30,7 @@ define([
 
         topic,
         aspect,
+        on,
 
         _WidgetBase,
         _TemplatedMixin,
@@ -38,7 +43,8 @@ define([
         UndoManager,
         Draw,
         Graphic,
-        Query
+        Query,
+        Edit
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -54,6 +60,12 @@ define([
             //isActive: boolean for knowing when drawing toolbar is active. 
             //          allows for point button to be clicked twice to disable
             isActive: false,
+
+            //editingToolbar: esri/toolbars/edit
+            editingToolbar: null,
+
+            //boolean: flag for knowing to start/finish editing session
+            isEditing: null,
 
             constructor: function() {
                 console.info(this.declaredClass + "::constructor", arguments);
@@ -86,7 +98,11 @@ define([
 
                 esri.bundle.toolbars.draw.addPoint = 'Click on the map to place your new address point.';
 
-                this.drawing = new Draw(this.map);
+                this.drawingToolbar = new Draw(this.map);
+
+                this.isEditing = false;
+
+                this.editingToolbar = new Edit(this.map);
 
                 this.wireEvents();
             },
@@ -95,15 +111,29 @@ define([
                 //      sets up the events for this widget
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
-                this.drawing.on("draw-end", lang.hitch(this, 'saveNewPoint'));
+                this.drawingToolbar.on("draw-end", lang.hitch(this, 'saveNewPoint'));
 
                 this.own(
-                    aspect.after(this.drawing, 'deactivate', function() {
+                    aspect.after(this.drawingToolbar, 'deactivate', function() {
                         topic.publish('app/toolbar', 'navigation');
                     }),
-                    aspect.after(this.drawing, 'activate', function() {
+                    aspect.after(this.drawingToolbar, 'activate', function() {
                         topic.publish('app/toolbar', 'drawing');
+                    }),
+                    aspect.after(this.editingToolbar, 'deactivate', function() {
+                        topic.publish('app/toolbar', 'navigation');
+                    }),
+                    aspect.after(this.editingToolbar, 'activate', function() {
+                        topic.publish('app/toolbar', 'editing');
                     })
+                );
+
+                this.own(
+                    this.editingToolbar.on("deactivate", lang.hitch(this,
+                        function(evt) {
+                            console.log('editingToolbar::deactivate::saving edits');
+                            this.editLayer.applyEdits(null, [evt.graphic], null);
+                        }))
                 );
             },
             saveNewPoint: function(evt) {
@@ -112,7 +142,7 @@ define([
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
                 this.isActive = false;
-                this.drawing.deactivate();
+                this.drawingToolbar.deactivate();
                 this.editLayer.clearSelection();
 
                 this.map.showLoader();
@@ -134,12 +164,47 @@ define([
                 console.log(this.declaredClass + "::activatePointDrawing", arguments);
 
                 if (this.isActive) {
-                    this.drawing.deactivate();
+                    this.drawingToolbar.deactivate();
                     return;
                 }
 
                 this.isActive = true;
-                this.drawing.activate(Draw.POINT);
+                this.drawingToolbar.activate(Draw.POINT);
+            },
+            activateEditing: function(evt) {
+                // summary:
+                //      sets up the evetns on the layer
+                // layer: the layer added to the map that is going to be edited
+                console.log(this.declaredClass + "::activateEditing", arguments);
+
+                if(this.editingSignal){
+                    this.editingToolbar.deactivate();
+                    this.editingSignal.remove();
+                    this.editingSignal = null;
+                    return;
+                }
+
+                this.own(
+                    this.editingSignal = this.editLayer.on('mouse-over', lang.hitch(this,
+                        function(evt) {
+                            console.log('editingLayer::mouse-over');
+                            // if (this.isEditing === false) {
+                            //     console.log('editingToolbar::active');
+                            if (this.editingGraphic !== evt.graphic) {
+                                this.editingToolbar.deactivate();
+                                this.editingToolbar.activate(Edit.MOVE, evt.graphic);
+                                this.editingGraphic = evt.graphic;
+                            }
+
+                            // } 
+                            // else {
+                            //     this.editingToolbar.deactivate();
+                            //     console.log('editingToolbar::deactivating');
+                            // }
+                        }))
+                );
+
+
             }
         });
     });

@@ -32,7 +32,6 @@ define([
         'esri/geometry/Extent',
         'esri/symbols/SimpleMarkerSymbol',
         'esri/symbols/SimpleLineSymbol',
-        'esri/toolbars/edit',
 
         'app/SlideInSidebar',
         'app/Leaderboard',
@@ -75,7 +74,6 @@ define([
         Extent,
         SimpleMarkerSymbol,
         SimpleLineSymbol,
-        Edit,
 
         SlideInSidebar,
         Leaderboard,
@@ -102,12 +100,6 @@ define([
 
             // sideBar: app/SlideInSidebar
             sideBar: null,
-
-            //editingToolbar: esri/toolbars/edit
-            editingToolbar: null,
-
-            //boolean: flag for knowing to start/finish editing session
-            isEditing: null,
 
             //array: keeping history of edits for tracking
             edits: null,
@@ -171,10 +163,6 @@ define([
                     editLayer: this.editLayer,
                     map: this.map
                 });
-
-                this.isEditing = false;
-
-                this.editingToolbar = new Edit(this.map);
             },
             wireEvents: function() {
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
@@ -207,8 +195,6 @@ define([
                                 }), 5000);
                         }))
                 );
-
-                topic.subscribe('app/toolbar', lang.hitch(this, 'addNewPoint'));
             },
             initMap: function() {
                 // summary:
@@ -274,37 +260,13 @@ define([
                     }
                 }));
             },
-            addNewPoint: function() {
-                console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
-
-                this.editingToolbar.deactivate();
-            },
             initEditing: function(evt) {
                 // sumamry:
                 //      initializes the editing settings/widget
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                this.attributeEditor.initializeAttributeInspector(evt.layers);
-
-                this.own(
-                    this.editingToolbar.on("deactivate", lang.hitch(this, function(evt) {
-                        console.log('editingToolbar::deactivate::saving edits');
-                        this.editLayer.applyEdits(null, [evt.graphic], null);
-                    })),
-
-                    this.editLayer.on("dbl-click", lang.hitch(this, function(evt) {
-                        event.stop(evt);
-                        if (this.isEditing === false) {
-                            this.isEditing = true;
-                            this.editingToolbar.activate(Edit.MOVE, evt.graphic);
-                            console.log('editingToolbar::activating');
-                        } else {
-                            this.editingToolbar.deactivate();
-                            console.log('editingToolbar::deactivating');
-                            this.isEditing = false;
-                        }
-                    }))
-                );
+                this.attributeEditor.initialize(evt.layers);
+                this.editor.initialize(evt.layers);                
             },
             resize: function() {
                 // summary:

@@ -27,7 +27,7 @@ define([
         declare,
         lang,
         array,
-        event,
+        evt,
 
         domConstruct,
         topic,
@@ -140,7 +140,7 @@ define([
                 topic.subscribe('app/toolbar', lang.hitch(this, 'notifyToolbarActivation'));
                 topic.subscribe('app/selectFeature', lang.hitch(this, 'selectFeature'));
             },
-            buildQuery: function(evt) {
+            buildQuery: function(mouseEvt) {
                 // summary:
                 //      builds the query to pass to the select features method
                 // evt: the click event
@@ -148,11 +148,11 @@ define([
 
                 this.map.showLoader();
 
-                this.selectQuery.geometry = this._screenPointToEnvelope(evt);
+                this.selectQuery.geometry = this._screenPointToEnvelope(mouseEvt);
 
                 this.selectFeature(this.selectQuery);
 
-                event.stop(evt);
+                evt.stop(mouseEvt);
             },
             selectFeature: function(selectQuery) {
                 // summary:
@@ -176,8 +176,8 @@ define([
                         this.map.hideLoader();
                     }));
             },
-            initializeAttributeInspector: function(layer) {
-                console.log(this.declaredClass + "::initializeAttributeInspector", arguments);
+            initialize: function(layer) {
+                console.log(this.declaredClass + "::initialize", arguments);
 
                 var featureLayerInfos = array.map(layer, function(result) {
                     return {
