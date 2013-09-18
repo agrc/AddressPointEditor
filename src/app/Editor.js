@@ -13,15 +13,13 @@ define([
         'dijit/Tooltip',
 
         'dojo/text!app/templates/Editor.html',
+        'dojo/i18n!esri/nls/jsapi', //this is where esri.bundle is located
 
         'esri/undoManager',
         'esri/toolbars/draw',
         'esri/graphic',
         'esri/tasks/query',
-        'esri/toolbars/edit',
-
-
-        'esri/main' //this is where esri.bundle is located
+        'esri/toolbars/edit'
     ],
 
     function(
@@ -39,6 +37,7 @@ define([
         Tooltip,
 
         template,
+        jsapiBundle, 
 
         UndoManager,
         Draw,
@@ -96,7 +95,7 @@ define([
                     label: "Redo the last editing action."
                 });
 
-                esri.bundle.toolbars.draw.addPoint = 'Click on the map to place your new address point.';
+                jsapiBundle.toolbars.draw.addPoint = 'Click on the map to place your new address point.';
 
                 this.drawingToolbar = new Draw(this.map);
 

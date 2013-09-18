@@ -142,9 +142,9 @@ define([
 
                 this.wireEvents();
 
-                this.sideContent = new SlideInSidebar({
+                this.sideBar = new SlideInSidebar({
                     map: this.map
-                }, this.sideBar);
+                }, this.sideBarNode);
 
                 this.leaderboard = new Leaderboard({
                     url: AGRC.urls.leaderboard,
@@ -154,12 +154,11 @@ define([
 
                 this.editor = new Editor({
                     map: this.map,
-                    editLayer: this.editLayer,
-                    sideContent: this.sideContent
+                    editLayer: this.editLayer
                 }, domConstruct.place('<div>', this.map.container, 'last'));
 
                 this.attributeEditor = new AttributeEditor({
-                    sideContent: this.sideContent,
+                    sideBar: this.sideBar,
                     editLayer: this.editLayer,
                     map: this.map
                 });
@@ -167,7 +166,13 @@ define([
             wireEvents: function() {
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                this.own(on(window, 'resize', lang.hitch(this, this.resize)));
+                this.own(on(window, 'resize',
+                    function() {
+                        topic.publish('window/resize', true);
+                    }
+                ));
+                topic.subscribe('window/resize', lang.hitch(this, 'resize'));
+
                 this.own(this.map.on("layers-add-result", lang.hitch(this, 'initEditing')));
                 this.own(
                     on(this.changeRequest, 'drawStart', function() {
@@ -266,7 +271,7 @@ define([
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
                 this.attributeEditor.initialize(evt.layers);
-                this.editor.initialize(evt.layers);                
+                this.editor.initialize(evt.layers);
             },
             resize: function() {
                 // summary:
