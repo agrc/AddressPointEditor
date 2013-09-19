@@ -29,9 +29,6 @@ body {
 .app .navbar-nav>.dropdown>.dropdown-menu {
     padding: 15px;
 }
-.app .dropdown .magic-zoom .matches-table {
-    top: 56px;
-}
 .app .dropdown-menu .control-group {
     margin: 0;
 }
