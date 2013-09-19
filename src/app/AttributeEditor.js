@@ -7,6 +7,7 @@ define([
         'dojo/dom-construct',
 
         'dojo/topic',
+        'dojo/aspect',
 
         'dojo/text!app/templates/AttributeEditor.html',
 
@@ -31,6 +32,7 @@ define([
 
         domConstruct,
         topic,
+        aspect,
 
         template,
 
@@ -105,6 +107,12 @@ define([
                     this.editLayer.on("click", lang.hitch(this, 'buildQuery'))
                 );
 
+                this.own(
+                    aspect.before(this, 'buildQuery', function() {
+                        this.map.showLoader();
+                    })
+                );
+
                 if (this.editLayer) {
                     this.own(
                         this.editLayer.on("edits-complete", lang.hitch(this,
@@ -145,8 +153,6 @@ define([
                 //      builds the query to pass to the select features method
                 // evt: the click event
                 console.log(this.declaredClass + "::buildQuery", arguments);
-
-                this.map.showLoader();
 
                 this.selectQuery.geometry = this._screenPointToEnvelope(mouseEvt);
 
@@ -260,9 +266,8 @@ define([
                         feature.getLayer().applyEdits(null, null, [feature])
                             .then(function() {
                                 that.map.hideLoader();
-                                
-                                if(that.editLayer.getSelectedFeatures().length === 0)
-                                {   
+
+                                if (that.editLayer.getSelectedFeatures().length === 0) {
                                     that.sideBar.hide();
                                 }
 

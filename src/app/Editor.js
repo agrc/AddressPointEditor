@@ -1,6 +1,7 @@
 define([
         'dojo/_base/declare',
         'dojo/_base/lang',
+        'dojo/_base/Color',
 
         'dojo/topic',
         'dojo/aspect',
@@ -19,12 +20,15 @@ define([
         'esri/toolbars/draw',
         'esri/graphic',
         'esri/tasks/query',
-        'esri/toolbars/edit'
+        'esri/toolbars/edit',
+        'esri/symbols/SimpleMarkerSymbol',
+        'esri/symbols/SimpleLineSymbol'
     ],
 
     function(
         declare,
         lang,
+        Color,
 
         topic,
         aspect,
@@ -37,13 +41,15 @@ define([
         Tooltip,
 
         template,
-        jsapiBundle, 
+        jsapiBundle,
 
         UndoManager,
         Draw,
         Graphic,
         Query,
-        Edit
+        Edit,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -66,6 +72,14 @@ define([
             //boolean: flag for knowing to start/finish editing session
             isEditing: null,
 
+            //esri/graphic: holds the graphic signifying that a point is active to be moved
+            _currentEditingGraphic: null,
+
+            _setMoveTextAttr: {
+                node: 'moveTextNode',
+                type: 'innerHTML'
+            },
+
             constructor: function() {
                 console.info(this.declaredClass + "::constructor", arguments);
             },
@@ -76,6 +90,13 @@ define([
 
                 this.inherited(arguments);
 
+                this.symbol = new SimpleMarkerSymbol(
+                    SimpleMarkerSymbol.STYLE_CIRCLE, 8,
+                    new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color("black"), 1),
+                    new Color("yellow")
+                );
+
                 this.undoManager = new UndoManager({
                     maxOperations: 5
                 });
@@ -83,6 +104,11 @@ define([
                 new Tooltip({
                     connectId: [this.pointButton],
                     label: "Add address points to the map."
+                });
+
+                new Tooltip({
+                    connectId: [this.moveButton],
+                    label: "Enable moving of address points on the map. Hover over a point, then drag to move it."
                 });
 
                 new Tooltip({
@@ -124,6 +150,16 @@ define([
                     }),
                     aspect.after(this.editingToolbar, 'activate', function() {
                         topic.publish('app/toolbar', 'editing');
+                    }),
+                    aspect.before(this, 'activateEditing', function(){
+                        this.drawingToolbar.deactivate();
+                    }),
+                    aspect.before(this, 'saveNewPoint', function() {
+                        this.isActive = false;
+                        this.drawingToolbar.deactivate();
+                        this.editLayer.clearSelection();
+
+                        this.map.showLoader();
                     })
                 );
 
@@ -131,7 +167,16 @@ define([
                     this.editingToolbar.on("deactivate", lang.hitch(this,
                         function(evt) {
                             console.log('editingToolbar::deactivate::saving edits');
-                            this.editLayer.applyEdits(null, [evt.graphic], null);
+                            this.map.showLoader();
+                            this.editLayer.applyEdits(null, [evt.graphic], null).then(
+                                function(){
+                                    topic.publish('app/state', 'Edit saved successfully');
+                                    this.map.hideLoader();
+                                },
+                                function(err){
+                                    topic.publish('app/state', 'Unable to save. ' + err.details[0]);
+                                    this.map.hideLoader();
+                                });
                         }))
                 );
             },
@@ -140,22 +185,22 @@ define([
                 //      applies the edits to the feature layer
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
-                this.isActive = false;
-                this.drawingToolbar.deactivate();
-                this.editLayer.clearSelection();
-
-                this.map.showLoader();
-
-                var newGraphic = new Graphic(evt.geometry, null, null);
+                this.newGraphic = new Graphic(evt.geometry, this.symbol, null, null);
+                this.map.graphics.add(this.newGraphic);
 
                 var selectQuery = new Query();
                 selectQuery.geometry = evt.geometry;
 
-                this.editLayer.applyEdits([newGraphic], null, null).then(lang.hitch(this,
+                this.editLayer.applyEdits([this.newGraphic], null, null).then(lang.hitch(this,
                     function() {
                         topic.publish('app/selectFeature', selectQuery);
-                        this.map.hideLoader();
-                    }));
+                    },
+                    function() {
+                        topic.publish('app/state', 'Unable to save new point.');
+                    })).always(function() {
+                    this.map.hideLoader();
+                    this.map.graphics.remove(this.newGraphic);
+                });
             },
             activatePointDrawing: function() {
                 // summary:
@@ -176,34 +221,40 @@ define([
                 // layer: the layer added to the map that is going to be edited
                 console.log(this.declaredClass + "::activateEditing", arguments);
 
-                if(this.editingSignal){
+                this.set('moveText', 'Save');
+
+                if (this.editingSignal) {
                     this.editingToolbar.deactivate();
                     this.editingSignal.remove();
                     this.editingSignal = null;
+
+                    if (this.editingGraphic) {
+                        this.editingGraphic.setSymbol(null);
+                    }
+
+                    this.set('moveText', "Move");
+
                     return;
                 }
 
+                topic.publish('app/state', 'started.editing');
+                
                 this.own(
                     this.editingSignal = this.editLayer.on('mouse-over', lang.hitch(this,
                         function(evt) {
-                            console.log('editingLayer::mouse-over');
-                            // if (this.isEditing === false) {
-                            //     console.log('editingToolbar::active');
                             if (this.editingGraphic !== evt.graphic) {
-                                this.editingToolbar.deactivate();
+                                if (this.editingGraphic) {
+                                    this.editingGraphic.setSymbol(null);
+                                }
+
+                                this.editingToolbar.deactivate(this.editingGraphic);
+
+                                evt.graphic.setSymbol(this.symbol);
                                 this.editingToolbar.activate(Edit.MOVE, evt.graphic);
                                 this.editingGraphic = evt.graphic;
                             }
-
-                            // } 
-                            // else {
-                            //     this.editingToolbar.deactivate();
-                            //     console.log('editingToolbar::deactivating');
-                            // }
                         }))
                 );
-
-
             }
         });
     });

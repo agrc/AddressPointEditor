@@ -6,6 +6,7 @@
 @import 'Leaderboard.css';
 @import 'DownloadSelector.css';
 @import 'Editor.css';
+@import 'Toaster.css';
 
 body {
     overflow: hidden;
@@ -60,7 +61,7 @@ body {
     top: 60px;
 }
 
-@media (min-width: 920px) and (max-width: 1176px) {
+@media (min-width: 920px) and (max-width: 1120px) {
     .app .esriSimpleSlider {
         top: 115px;
     }

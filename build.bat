@@ -6,11 +6,10 @@ SET SRCDIR=%BASEDIR%\src
 SET LOADERMID=app\run
 SET LOADERCONF=%SRCDIR%\%LOADERMID%.js
 
+rmdir /s /q dist
+mkdir dist
+
 cd %BASEDIR%\src\util\buildscripts
-
-rmdir /s /q %DISTDIR%
-mkdir %DISTDIR%
-
 start /WAIT build --require %LOADERCONF% --profile %PROFILE% --releaseDir %DISTDIR%
 
 cd %DISTDIR%

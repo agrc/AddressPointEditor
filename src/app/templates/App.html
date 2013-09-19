@@ -13,19 +13,19 @@
     <div class="collapse navbar-collapse navbar-main-collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-          <a href="#" id='suggest-change-dropdown' class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-pencil"></span> Suggest Change <b class="caret"></b></a>
+          <a href="#" id='suggest-change-dropdown' class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-pencil"></span> Suggest Change</a>
           <div class='dropdown-menu'>
             <div data-dojo-attach-point="suggestChangeDiv"></div>
           </div>
         </li>
         <li class="dropdown">
-          <a href="#" class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-map-marker"></span> Find Address <b class="caret"></b></a>
+          <a href="#" class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-map-marker"></span> Find Address</a>
           <div class='dropdown-menu'>
             <div data-dojo-attach-point="findAddressDiv"></div>
           </div>
         </li>
         <li class="dropdown">
-          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-globe"></span> Find Place <b class="caret"></b></a>
+          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-globe"></span> Find Place</a>
           <div class='dropdown-menu'>
             <form onsubmit='return false;'>
               <div data-dojo-attach-point="magicZoomDiv"></div>
@@ -38,9 +38,12 @@
             <div data-dojo-attach-point="leaderboardContentDiv"></div>
           </div>
         </li>
-        <li>
-          <a data-toggle="modal" href="#loginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a>
-        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-cloud-download"></span> Download</a>
+          <div class='dropdown-menu'>
+            <div data-dojo-attach-point="downloadDiv"></div>
+          </div>
+        </li> 
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-link"></span> Links <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -51,12 +54,9 @@
             <li><a href="#">911 Registration</a></li>
           </ul>
         </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-cloud-download"></span> Download <b class="caret"></b></a>
-          <div class='dropdown-menu'>
-            <div data-dojo-attach-point="downloadDiv"></div>
-          </div>
-        </li> 
+        <li>
+          <a data-toggle="modal" href="#loginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -127,4 +127,6 @@
    </div><!-- /.modal-content -->
  </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<div data-dojo-attach-point="toasterNode">
+</div>
 </div>
