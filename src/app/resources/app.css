@@ -1,5 +1,6 @@
 @import '../../agrc/resources/map/BaseMap.css';
 @import '../../agrc/resources/locate/FindAddress.css';
+@import '../../agrc/resources/locate/MagicZoom.css';
 @import '../../ijit/resources/notify/ChangeRequest.css';
 @import 'SlideInSidebar.css';
 @import 'Leaderboard.css';
@@ -25,8 +26,11 @@ body {
 .navbar {
     opacity: 0.975;
 }
-.app .dropdown-menu {
+.app .navbar-nav>.dropdown>.dropdown-menu {
     padding: 15px;
+}
+.app .dropdown .magic-zoom .matches-table {
+    top: 56px;
 }
 .app .dropdown-menu .control-group {
     margin: 0;
