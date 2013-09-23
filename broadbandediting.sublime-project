@@ -10,6 +10,8 @@
             "dist/dijit",
             "dist/bootstrap",
             "dist/esri",
+            "dist/jquery",
+            "dist/mustache",
             "src/dojo",
             "src/dojox",
             "src/util",
@@ -20,6 +22,8 @@
             ".grunt"
         ],
         "file_exclude_patterns": [
+            "dist/index.html",
+            "dist/edit.html",
             "*.sublime-workspace"
         ],
         "path": "/"

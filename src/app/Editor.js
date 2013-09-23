@@ -2,6 +2,7 @@ define([
         'dojo/_base/declare',
         'dojo/_base/lang',
         'dojo/_base/Color',
+        'dojo/_base/json',
 
         'dojo/topic',
         'dojo/aspect',
@@ -22,13 +23,17 @@ define([
         'esri/tasks/query',
         'esri/toolbars/edit',
         'esri/symbols/SimpleMarkerSymbol',
-        'esri/symbols/SimpleLineSymbol'
+        'esri/symbols/SimpleLineSymbol',
+        'esri/dijit/editing/Add',
+        'esri/dijit/editing/Delete',
+        'esri/dijit/editing/Update'
     ],
 
     function(
         declare,
         lang,
         Color,
+        dojo,
 
         topic,
         aspect,
@@ -49,7 +54,10 @@ define([
         Query,
         Edit,
         SimpleMarkerSymbol,
-        SimpleLineSymbol
+        SimpleLineSymbol,
+        Add,
+        Delete,
+        Update
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -60,28 +68,48 @@ define([
 
             templateString: template,
 
-            //drawing: esri/toolbars/draw
+            //drawingToolbar: esri/toolbars/draw: the toolbar used to add new points
 
-            //isActive: boolean for knowing when drawing toolbar is active. 
+            //boolean: for knowing when drawing toolbar is active. 
             //          allows for point button to be clicked twice to disable
-            isActive: false,
+            isDrawing: false,
 
-            //editingToolbar: esri/toolbars/edit
+            //esri/toolbars/edit: the toolbar controlling editing of the editLayer
             editingToolbar: null,
+
+            //esri/layers/FeatureLayer: the feature layer being edited
+            editLayer: null,
 
             //boolean: flag for knowing to start/finish editing session
             isEditing: null,
 
-            //esri/graphic: holds the graphic signifying that a point is active to be moved
-            _currentEditingGraphic: null,
+            //esri/Graphic: the graphic being edited. Holds the new location if being moved.
+            updatedGraphic: null,
+
+            //esri/Graphic: the original state of the updatedGraphic. Necessary for preUpdate on undomanager
+            originalGraphic: null,
+
+            //esri/Grahpic: the graphic to be displayed when adding a new point and waiting for the edit layer to draw it
+            newGraphic: null,
+
+            //dojo/event
+            editingSignal: null,
+
+            //esri/symbols/simplemarkersymbol: the color to make selected points for editing
+            symbol: null,
+
+            //esri/undomanager: the tool for enabling undo/redo
+            undoManager: null,
+
+            //moveText: domNode: the text displayed for starting and stopping editing points
+
+            //hash: holds the edits as a key value pair with the objectid being the key and the 
+            //      value being original graphic and the moved graphic
+            editSession: null,
 
             _setMoveTextAttr: {
                 node: 'moveTextNode',
                 type: 'innerHTML'
-            },
-
-            constructor: function() {
-                console.info(this.declaredClass + "::constructor", arguments);
             },
             postCreate: function() {
                 // summary:
@@ -89,6 +117,8 @@ define([
                 console.info(this.declaredClass + "::postCreate", arguments);
 
                 this.inherited(arguments);
+
+                this.editSession = {};
 
                 this.symbol = new SimpleMarkerSymbol(
                     SimpleMarkerSymbol.STYLE_CIRCLE, 8,
@@ -112,12 +142,12 @@ define([
                 });
 
                 new Tooltip({
-                    connectId: [this.undo],
+                    connectId: [this.undoNode],
                     label: "Make a mistake? Undo the last editing action."
                 });
 
                 new Tooltip({
-                    connectId: [this.redo],
+                    connectId: [this.redoNode],
                     label: "Redo the last editing action."
                 });
 
@@ -136,8 +166,7 @@ define([
                 //      sets up the events for this widget
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
-                this.drawingToolbar.on("draw-end", lang.hitch(this, 'saveNewPoint'));
-
+                //This assists the application to know what toolbar is active.
                 this.own(
                     aspect.after(this.drawingToolbar, 'deactivate', function() {
                         topic.publish('app/toolbar', 'navigation');
@@ -150,34 +179,40 @@ define([
                     }),
                     aspect.after(this.editingToolbar, 'activate', function() {
                         topic.publish('app/toolbar', 'editing');
-                    }),
-                    aspect.before(this, 'activateEditing', function(){
-                        this.drawingToolbar.deactivate();
-                    }),
-                    aspect.before(this, 'saveNewPoint', function() {
-                        this.isActive = false;
-                        this.drawingToolbar.deactivate();
-                        this.editLayer.clearSelection();
+                    })
+                );
 
-                        this.map.showLoader();
+                //Prelogic for activateEditing.
+                this.own(
+                    aspect.before(this, 'activateEditing', function() {
+                        this.drawingToolbar.deactivate();
                     })
                 );
 
                 this.own(
-                    this.editingToolbar.on("deactivate", lang.hitch(this,
-                        function(evt) {
-                            console.log('editingToolbar::deactivate::saving edits');
-                            this.map.showLoader();
-                            this.editLayer.applyEdits(null, [evt.graphic], null).then(
-                                function(){
-                                    topic.publish('app/state', 'Edit saved successfully');
-                                    this.map.hideLoader();
-                                },
-                                function(err){
-                                    topic.publish('app/state', 'Unable to save. ' + err.details[0]);
-                                    this.map.hideLoader();
-                                });
-                        }))
+                    this.drawingToolbar.on("draw-end", lang.hitch(this, 'saveNewPoint')),
+
+                    //Prelogic for saveNewPoint
+                    aspect.before(this, 'saveNewPoint', function() {
+                        this.isDrawing = false;
+                        this.drawingToolbar.deactivate();
+                        this.editLayer.clearSelection();
+
+                        topic.publish('map-activity', 1);
+                    })
+                );
+
+                this.own(
+                    on(this.undoNode, 'click', lang.hitch(this, 'undo')),
+                    on(this.redoNode, 'click', lang.hitch(this, 'redo')),
+
+                    topic.subscribe('app/operation-edit', lang.hitch(this, 'addUndoState'))
+                );
+
+                //When editing toolbar is deactivated, save edits. 
+                //Probably not a great idea.
+                this.own(
+                    this.editingToolbar.on("deactivate", lang.hitch(this, 'saveEdits'))
                 );
             },
             saveNewPoint: function(evt) {
@@ -191,28 +226,34 @@ define([
                 var selectQuery = new Query();
                 selectQuery.geometry = evt.geometry;
 
-                this.editLayer.applyEdits([this.newGraphic], null, null).then(lang.hitch(this,
-                    function() {
-                        topic.publish('app/selectFeature', selectQuery);
-                    },
-                    function() {
-                        topic.publish('app/state', 'Unable to save new point.');
-                    })).always(function() {
-                    this.map.hideLoader();
-                    this.map.graphics.remove(this.newGraphic);
-                });
+                topic.publish('app/operation-edit', ['add', this.newGraphic]);
+
+                this.editLayer.applyEdits([this.newGraphic], null, null)
+                    .then(lang.hitch(this,
+                        function() {
+                            topic.publish('app/selectFeature', selectQuery);
+                        },
+                        function() {
+                            topic.publish('app/state', 'Unable to save new point.');
+                        }))
+                    .always(lang.hitch(this,
+                        function() {
+                            topic.publish('map-activity', -1);
+                            this.map.graphics.remove(this.newGraphic);
+                            this.newGraphic = null;
+                        }));
             },
             activatePointDrawing: function() {
                 // summary:
                 //      enables the toolbar to edit points
                 console.log(this.declaredClass + "::activatePointDrawing", arguments);
 
-                if (this.isActive) {
+                if (this.isDrawing) {
                     this.drawingToolbar.deactivate();
                     return;
                 }
 
-                this.isActive = true;
+                this.isDrawing = true;
                 this.drawingToolbar.activate(Draw.POINT);
             },
             activateEditing: function(evt) {
@@ -221,40 +262,168 @@ define([
                 // layer: the layer added to the map that is going to be edited
                 console.log(this.declaredClass + "::activateEditing", arguments);
 
-                this.set('moveText', 'Save');
+                this.set('moveText', 'Done');
 
                 if (this.editingSignal) {
                     this.editingToolbar.deactivate();
                     this.editingSignal.remove();
                     this.editingSignal = null;
 
-                    if (this.editingGraphic) {
-                        this.editingGraphic.setSymbol(null);
+                    if (this.updatedGraphic) {
+                        this.updatedGraphic.setSymbol(null);
                     }
 
                     this.set('moveText', "Move");
+                    topic.publish('app/state', 'editing-finished');
 
                     return;
                 }
 
-                topic.publish('app/state', 'started.editing');
-                
+                topic.publish('app/state', 'editing-started');
+
                 this.own(
-                    this.editingSignal = this.editLayer.on('mouse-over', lang.hitch(this,
-                        function(evt) {
-                            if (this.editingGraphic !== evt.graphic) {
-                                if (this.editingGraphic) {
-                                    this.editingGraphic.setSymbol(null);
-                                }
-
-                                this.editingToolbar.deactivate(this.editingGraphic);
-
-                                evt.graphic.setSymbol(this.symbol);
-                                this.editingToolbar.activate(Edit.MOVE, evt.graphic);
-                                this.editingGraphic = evt.graphic;
-                            }
-                        }))
+                    this.editingToolbar.on('graphic-move-stop', lang.hitch(this, 'updateMovingGraphic')),
+                    this.editingSignal = this.editLayer.on('mouse-over', lang.hitch(this, 'editPoint'))
                 );
+            },
+            updateMovingGraphic: function(evt) {
+                // summary:
+                //      updates the location of an editing point graphic
+                // evt: the mouse event from grahpic-move-stop
+                console.log(this.declaredClass + "::updateMovingGraphic", arguments);
+
+                this.updatedGraphic = evt.graphic;
+            },
+            editPoint: function(evt) {
+                // summary:
+                //      handles the selection of points and enables/removes the editing functionality
+                // evt: mouse event from the editingLayer's mouse-over evetn
+                console.log(this.declaredClass + "::editPoint", arguments);
+
+                //do nothing if the current editing graphic is already selected.
+                //this happens if mouse-over happens to the already selected graphic
+                //while moving or deciding where to put the point.
+                if (this.updatedGraphic !== evt.graphic) {
+
+                    if (this.updatedGraphic) {
+                        //remove highlighting and stop editing the last graphic
+                        this.updatedGraphic.setSymbol(null);
+                        this.editingToolbar.deactivate(this.updatedGraphic);
+                    }
+
+                    //highlight and activate editing on new graphic
+                    evt.graphic.setSymbol(this.symbol);
+                    this.editingToolbar.activate(Edit.MOVE, evt.graphic);
+
+                    //store pre and post graphic for undo manager
+                    this.updatedGraphic = evt.graphic;
+
+                    //cloning original
+                    this.originalGraphic = new Graphic(evt.graphic.toJson());
+                }
+            },
+            saveEdits: function() {
+                // summary:
+                //      determines what edits to send to the server
+                console.log(this.declaredClass + "::saveEdits", arguments);
+
+                if (this.originalGraphic && (this.originalGraphic.toJson() === this.updatedGraphic.toJson())) {
+                    //nothing to update, they are the same.
+                    console.log('edits are the same skipping');
+                    topic.publish('app/state', 'Skipping save. Items are the same.');
+
+                    return;
+                }
+
+                topic.publish('map-activity', 1);
+
+                this.editLayer.applyEdits(null, [this.updatedGraphic], null)
+                    .then(lang.hitch(this,
+                            function() {
+                                topic.publish('app/state', 'Edit saved successfully');
+                                topic.publish('app/operation-edit', ['update', this.updatedGraphic, this.originalGraphic]);
+                            }),
+                        function(err) {
+                            var message = '';
+                            if (err && err.details && lang.isArray(err.details)) {
+                                message = err.details[0];
+                            }
+
+                            topic.publish('app/state', 'Unable to save. ' + message);
+                        })
+                    .always(
+                        function() {
+                            topic.publish('map-activity', -1);
+                        });
+            },
+            addUndoState: function(params) {
+                // summary:
+                //      handles edit operations/add/delete/update
+                // param: array [type, updated graphic, original graphic]
+                console.log(this.declaredClass + "::addUndoState", arguments);
+
+                var operation,
+                    operationType = params[0],
+                    graphic = params[1],
+                    original = params[2];
+
+                switch (operationType) {
+                    case "add":
+                        operation = new Add({
+                            addedGraphics: [graphic],
+                            featureLayer: this.editLayer
+                        });
+                        break;
+                    case "delete":
+                        operation = new Delete({
+                            deletedGraphics: [graphic],
+                            featureLayer: this.editLayer
+                        });
+                        break;
+                    case "update":
+                        operation = new Update({
+                            preUpdatedGraphics: [graphic],
+                            postUpdatedGraphics: [original],
+                            featureLayer: this.editLayer
+                        });
+                }
+
+                console.log(operation);
+                this.undoManager.add(operation);
+            },
+            undo: function(evt) {
+                // summary:
+                //      undo edit operation
+                // evt: the mouse click event
+                console.log(this.declaredClass + "::undo", arguments);
+
+                if (!this.undoManager.canUndo) {
+                    //disable undo
+                    console.log('nothing to undo');
+                    return;
+                }
+
+                //undo redo don't return promise. can't shot activity
+                //topic.publish('map-activity', 1);
+
+                this.undoManager.undo();
+            },
+            redo: function(evt) {
+                // summary:
+                //      redo operations
+                // evt: the mouse click event
+                console.log(this.declaredClass + "::redo", arguments);
+
+                if (!this.undoManager.canRedo) {
+                    //disable redo
+                    console.log('nothing to redo');
+                    return;
+                }
+
+                //undo redo don't return promise. can't shot activity
+                //topic.publish('map-activity', 1);
+
+                this.undoManager.redo();
             }
         });
     });

@@ -62,7 +62,7 @@ define([
                     case "navigation":
                         this.set('message', 'Click on a point to edit the attributes or remove the point. Use <code>Point</code> to add new points or <code>Move</code> to enable point relocating.');
                         break;
-                    case "started.editing":
+                    case "editing-started":
                         this.set('message', 'Hover over a point and drag it to its new location. Click <code>Move</code> again to end your session.');
                         break;
                     case "editing":
