@@ -1,0 +1,13 @@
+.navbar{
+    min-height: 25px;
+    z-index: 10;
+}
+.app .toaster-text {
+    vertical-align: bottom;
+    line-height: normal;
+}
+.toaster .close {
+    color: #3a87ad;
+    opacity: 1;
+    text-shadow: none;
+}

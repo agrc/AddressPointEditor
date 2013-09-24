@@ -1,10 +1,12 @@
 @import '../../agrc/resources/map/BaseMap.css';
 @import '../../agrc/resources/locate/FindAddress.css';
+@import '../../agrc/resources/locate/MagicZoom.css';
 @import '../../ijit/resources/notify/ChangeRequest.css';
 @import 'SlideInSidebar.css';
 @import 'Leaderboard.css';
 @import 'DownloadSelector.css';
 @import 'Editor.css';
+@import 'Toaster.css';
 
 body {
     overflow: hidden;
@@ -25,7 +27,7 @@ body {
 .navbar {
     opacity: 0.975;
 }
-.app .dropdown-menu {
+.app .navbar-nav>.dropdown>.dropdown-menu {
     padding: 15px;
 }
 .app .dropdown-menu .control-group {
@@ -59,7 +61,7 @@ body {
     top: 60px;
 }
 
-@media (min-width: 920px) and (max-width: 1176px) {
+@media (min-width: 920px) and (max-width: 1120px) {
     .app .esriSimpleSlider {
         top: 115px;
     }

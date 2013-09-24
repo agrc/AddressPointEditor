@@ -18,6 +18,7 @@ define([
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
         'dijit/_WidgetsInTemplateMixin',
+
         'dijit/registry',
 
         'agrc/widgets/map/BaseMap',
@@ -37,7 +38,8 @@ define([
         'app/Leaderboard',
         'app/DownloadSelector',
         'app/Editor',
-        'app/AttributeEditor'
+        'app/AttributeEditor',
+        'app/Toaster'
     ],
 
     function(
@@ -60,14 +62,13 @@ define([
         _WidgetBase,
         _TemplatedMixin,
         _WidgetsInTemplateMixin,
+
         registry,
 
         BaseMap,
         FindAddress,
         MagicZoom,
-
         ChangeRequest,
-
         featureLayer,
         config,
         geomService,
@@ -79,7 +80,8 @@ define([
         Leaderboard,
         DownloadSelector,
         Editor,
-        AttributeEditor
+        AttributeEditor,
+        Toaster
     ) {
         return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
@@ -140,8 +142,6 @@ define([
                 this.downloadWizard = new DownloadSelector({},
                     this.downloadDiv);
 
-                this.wireEvents();
-
                 this.sideBar = new SlideInSidebar({
                     map: this.map
                 }, this.sideBarNode);
@@ -151,6 +151,10 @@ define([
                     linkNode: this.leaderboardDiv,
                     contentNode: this.leaderboardContentDiv
                 });
+
+                this.wireEvents();
+
+                this.toaster = new Toaster({}, this.toasterNode);
 
                 this.editor = new Editor({
                     map: this.map,
@@ -189,6 +193,13 @@ define([
                             $('#suggest-change-dropdown').dropdown('toggle');
                         }, 100);
                     })
+                );
+
+                this.own(
+                    aspect.before(this.sideBar, 'show',
+                        function() {
+                            topic.publish('app/state', 'Fill out the address details for this point.');
+                        })
                 );
 
                 this.own(
@@ -271,7 +282,6 @@ define([
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
                 this.attributeEditor.initialize(evt.layers);
-                this.editor.initialize(evt.layers);
             },
             resize: function() {
                 // summary:

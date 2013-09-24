@@ -8,7 +8,6 @@ define([
         'dojo/dom-geometry',
         'dojo/dom-style',
         
-        'dojo/fx',
         'dojo/topic',
         
         'dojo/text!app/templates/SlideInSidebar.html',
@@ -27,8 +26,7 @@ define([
         
         domGeom,
         domStyle,
-        
-        coreFx,
+
         topic, 
 
         template,
