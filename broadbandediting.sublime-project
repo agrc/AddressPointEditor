@@ -1,0 +1,42 @@
+{
+    "folders": [{
+        "folder_exclude_patterns": [
+            "dist/agrc",
+            "dist/app",
+            "dist/ijit",
+            "dist/dojo",
+            "dist/dojox",
+            "dist/util",
+            "dist/dijit",
+            "dist/bootstrap",
+            "dist/esri",
+            "src/dojo",
+            "src/dojox",
+            "src/util",
+            "src/dijit",
+            "src/esri",
+            "src/StubModule/dojo",
+            "node_modules",
+            ".grunt"
+        ],
+        "file_exclude_patterns": [
+            "*.sublime-workspace"
+        ],
+        "path": "/"
+    }],
+    "build_systems": [
+        {
+            "name": "AGRC Build",
+            "osx": {
+                "cmd": ["bash ./build.sh"],
+                "shell": true,
+                "working_dir": "$project_path"
+            },
+            "windows": {
+                "cmd": ["build.bat"],
+                "shell": false,
+                "path": "C:\\Program Files (x86)\\Java\\jre7\\bin\\;C:\\Program Files (x86)\\Git\\bin;"
+            }
+        }
+    ]
+}
