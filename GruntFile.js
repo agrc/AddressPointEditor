@@ -1,47 +1,61 @@
 module.exports = function(grunt) {
-  // Project configuration.
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    jasmine: {
-      // for embedded map projects...
-      // app: {
-      //   src: ['src/EmbeddedMapLoader.js'],
-      //   options: {
-      //     specs: ['src/app/tests/spec/*.js']
-      //   }
-      // }
-      
-      // for regular apps...
-      app: {
-        src: ['src/app/run.js'],
-        options: {
-        specs: ['src/app/tests/spec/*.js'],
-        vendor: [
-          'src/app/tests/jasmineTestBootstrap.js',
-          'http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.4'
-          ]
+    var srcFiles = 'src/app/**/*.js';
+    var gruntFile = 'GruntFile.js';
+    var internFile = 'tests/intern.js';
+    var packageFile = 'package.json';
+    var jshintFiles = [srcFiles, gruntFile, internFile, packageFile];
+    
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        jshint: {
+            files: jshintFiles,
+            options: {
+                jshintrc: '.jshintrc'
+            }
+        },
+        watch: {
+            jshint: {
+                files: jshintFiles,
+                tasks: ['jshint']
+            },
+            src: {
+                files: [srcFiles],
+                options: {
+                    livereload: true
+                }
+            }
+        },
+        connect: {
+            uses_defaults: {}
+        },
+        open: {
+            intern: {
+                path: 'http://localhost:8000/node_modules/intern-geezer/client.html?config=tests/intern'
+            }
+        },
+        phantom: {
+            options: {
+                port: 4444
+            },
+            intern: {}
+        },
+        intern: {
+            runner: {
+                options: {
+                    runType: 'runner',
+                    config: 'tests/intern'
+                }
+            }
         }
-      }
-    },
-    jshint: {
-      files: ['src/app/**/*.js'],
-      options: {jshintrc: '.jshintrc'}
-    },
-    watch: {
-      files: ['src/app/**/*.js'],
-      tasks: ['jasmine:app:build', 'jshint']
-    },
-    connect: {
-      uses_defaults: {}
-    }
-  });
+    });
 
-  // Register tasks.
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-phantom');
+    grunt.loadNpmTasks('intern-geezer');
 
-  // Default task.
-  grunt.registerTask('default', ['jasmine:app:build', 'jshint', 'connect', 'watch']);
+    grunt.registerTask('default', ['jshint', 'connect', 'open:intern', 'watch']);
+    grunt.registerTask('phantomtest', ['phantom:intern', 'intern:runner']);
 };
