@@ -1,6 +1,18 @@
 <div>
-    <div data-dojo-attach-point="pointButton" data-dojo-attach-event='click: activatePointDrawing' class="editor-divider"><span class="glyphicon glyphicon-map-marker"></span> Point</div>
-    <div data-dojo-attach-point="moveButton" data-dojo-attach-event='click: activateEditing' class="editor-divider"><span class="glyphicon glyphicon-move"></span> <span data-dojo-attach-point="moveTextNode">Move</span></div>
-    <div data-dojo-attach-point="undoNode" class="editor-divider"><span class="glyphicon glyphicon-arrow-left"></span> Undo</div>
-    <div data-dojo-attach-point="redoNode"><span class="glyphicon glyphicon-arrow-right"></span> Redo</div>
+    <div data-dojo-attach-point="pointButton" data-dojo-attach-event='click: activatePointDrawing' class="editor-divider">
+        <span class="glyphicon glyphicon-map-marker"></span>Point</div>
+    <div data-dojo-attach-point="moveButton" data-dojo-attach-event='click: activateEditing' class="editor-divider">
+        <span class="glyphicon glyphicon-move"></span>
+        <span data-dojo-attach-point="moveTextNode">Move</span>
+    </div>
+    <div data-dojo-attach-point="undoNode" class="editor-divider disabled">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Undo
+        <span data-dojo-attach-point='undoCountSpan' class='label label-default'></span>
+    </div>
+    <div data-dojo-attach-point="redoNode" class='disabled'>
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        Redo
+        <span data-dojo-attach-point='redoCountSpan' class='label label-default'></span>
+    </div>
 </div>

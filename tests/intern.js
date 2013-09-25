@@ -103,7 +103,8 @@ define({
     // Non-functional test suite(s) to run in each browser
     suites: [
         /* 'myPackage/tests/foo', 'myPackage/tests/bar' */
-        'src/app/tests/spec/SpecApp'
+        'src/app/tests/spec/SpecApp',
+        'src/app/tests/spec/SpecEditor'
     ],
 
 
