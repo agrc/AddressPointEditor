@@ -1,27 +1,41 @@
-require([
+define([
+    'intern!object',
+    'intern/chai!assert',
     'app/App',
     'dojo/dom-construct',
-    'dojo/_base/window'
+    'dojo/_base/window',
+
+    'app/main'
 
 ],
 
 function (
+    registerSuite,
+    assert,
     App,
     domConstruct,
     win
     ) {
-    describe('app/App', function () {
-        var testWidget;
-        beforeEach(function () {
+    var testWidget;
+    // override alert to console
+    window.alert = function(msg) {
+        console.error('ALERT OVERRIDDEN TO LOG: ' + msg);
+    };
+
+    registerSuite({
+        name: 'app/App', 
+
+        beforeEach: function () {
             testWidget = new App({}, domConstruct.create('div', {}, win.body()));
-        });
-        afterEach(function () {
+        },
+
+        afterEach: function () {
             testWidget.destroy();
             testWidget = null;
-        });
+        },
 
-        it('creates a valid object', function () {
-            expect(testWidget).toEqual(jasmine.any(App));
-        });
+        creates_a_valid_object: function () {
+            assert.equal(testWidget.declaredClass, 'app/App');
+        }
     });
 });

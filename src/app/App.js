@@ -85,7 +85,7 @@ define([
         AttributeEditor,
         Toaster
     ) {
-        return declare("app.App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
+        return declare("app/App", [_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
             // summary:
             //      The main widget for the app
 
