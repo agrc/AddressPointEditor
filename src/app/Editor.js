@@ -7,6 +7,7 @@ define([
         'dojo/topic',
         'dojo/aspect',
         'dojo/on',
+        'dojo/dom-class',
 
         'dijit/_WidgetBase',
         'dijit/_TemplatedMixin',
@@ -38,6 +39,7 @@ define([
         topic,
         aspect,
         on,
+        domClass,
 
         _WidgetBase,
         _TemplatedMixin,
@@ -67,6 +69,13 @@ define([
             widgetsInTemplate: true,
 
             templateString: template,
+
+            // attribute maps
+            undoCount: 0,
+            _setUndoCountAttr: { node: 'undoCountSpan', type: 'innerHTML'},
+
+            redoCount: 0,
+            _setRedoCountAttr: { node: 'redoCountSpan', type: 'innerHTML'},
 
             //drawingToolbar: esri/toolbars/draw: the toolbar used to add new points
 
@@ -256,7 +265,7 @@ define([
                 this.isDrawing = true;
                 this.drawingToolbar.activate(Draw.POINT);
             },
-            activateEditing: function(evt) {
+            activateEditing: function(/*evt*/) {
                 // summary:
                 //      sets up the evetns on the layer
                 // layer: the layer added to the map that is going to be edited
@@ -390,8 +399,10 @@ define([
 
                 console.log(operation);
                 this.undoManager.add(operation);
+                domClass.remove(this.undoNode, 'disabled');
+                this.updateUndoRedoCounts();
             },
-            undo: function(evt) {
+            undo: function(/*evt*/) {
                 // summary:
                 //      undo edit operation
                 // evt: the mouse click event
@@ -399,6 +410,7 @@ define([
 
                 if (!this.undoManager.canUndo) {
                     //disable undo
+                    domClass.add(this.undoNode, 'disabled');
                     console.log('nothing to undo');
                     return;
                 }
@@ -406,9 +418,11 @@ define([
                 //undo redo don't return promise. can't shot activity
                 //topic.publish('map-activity', 1);
 
+                domClass.remove(this.redoNode, 'disabled');
                 this.undoManager.undo();
+                this.updateUndoRedoCounts();
             },
-            redo: function(evt) {
+            redo: function(/*evt*/) {
                 // summary:
                 //      redo operations
                 // evt: the mouse click event
@@ -424,6 +438,19 @@ define([
                 //topic.publish('map-activity', 1);
 
                 this.undoManager.redo();
+                this.updateUndoRedoCounts();
+            },
+            updateUndoRedoCounts: function () {
+                // summary:
+                //      updates the count bubbles next to the undo and redo buttons
+                console.log(this.declaredClass + "::updateUndoRedoCounts", arguments);
+                
+                var position = this.undoManager.position;
+                var len = this.undoManager.length;
+                var undo = (position === 0) ? '' : position;
+                var redo = (len - position === 0) ? '' : len - position;
+                this.set('undoCount', undo);
+                this.set('redoCount', redo);
             }
         });
     });

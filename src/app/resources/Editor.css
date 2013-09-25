@@ -40,3 +40,10 @@
     border-radius: 4px;
     opacity: 1;
 }
+.editor-panel .disabled {
+    cursor: not-allowed;
+    color: #C9C9C9;
+}
+.editor-panel .label {
+    padding: 1px 4px;
+}
