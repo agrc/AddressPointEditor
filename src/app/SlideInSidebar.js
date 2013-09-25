@@ -8,7 +8,7 @@ define([
         'dojo/dom-geometry',
         'dojo/dom-style',
         
-        'dojo/topic',
+        'dojo/on',
         
         'dojo/text!app/templates/SlideInSidebar.html',
 
@@ -27,7 +27,7 @@ define([
         domGeom,
         domStyle,
 
-        topic, 
+        on, 
 
         template,
 
@@ -83,7 +83,7 @@ define([
                 // param: type or return: type
                 console.log(this.declaredClass + "::wireEvents", arguments);
 
-                topic.subscribe('window/resize', lang.hitch(this, 'resize'));
+                this.own(on(window, 'resize', lang.hitch(this, 'resize')));
             },
             show: function() {
                 // summary:

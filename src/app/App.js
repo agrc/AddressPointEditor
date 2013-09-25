@@ -181,7 +181,7 @@ define([
 
                 this.activity.watch('count', lang.hitch(this,
                     function() {
-                        if (this.activity.get('count') !== 0) {
+                        if (this.activity.get('count') > 0) {
                             this.map.showLoader();
                             return;
                         }

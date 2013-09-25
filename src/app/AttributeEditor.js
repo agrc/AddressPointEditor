@@ -22,6 +22,7 @@ define([
         'esri/tasks/query',
         'esri/dijit/AttributeInspector',
         'esri/layers/FeatureLayer',
+        'esri/graphic'
     ],
 
     function(
@@ -46,7 +47,8 @@ define([
         Point,
         Query,
         AttributeInspector,
-        FeatureLayer
+        FeatureLayer,
+        Graphic
     ) {
         // summary:
         //      Handles retrieving and displaying the data in the popup.
@@ -70,6 +72,9 @@ define([
 
             //updateFeature: esri/graphic
             updateFeature: null,
+
+            //esri/graphic: keeps track of the original graphic for the undomanager
+            originalFeature: null,
 
             //activeToolbar: drawing, editing, navigation
             activeToolbar: "navigation",
@@ -114,33 +119,7 @@ define([
 
                 if (this.editLayer) {
                     this.own(
-                        this.editLayer.on("edits-complete", lang.hitch(this,
-                            function(response) {
-                                this.map.hideLoader();
-
-                                var fieldsDefiningSuccess = ['adds', 'updates', 'deletes'];
-                                var editsToTrack = {
-                                    user: 'test',
-                                    changes: []
-                                };
-
-                                array.forEach(fieldsDefiningSuccess,
-                                    function(prop) {
-                                        array.forEach(response[prop],
-                                            function(status) {
-                                                if (!status && !status.success)
-                                                    return;
-
-                                                editsToTrack.changes.push({
-                                                    type: prop
-                                                });
-                                            }, this);
-                                    }, this);
-
-                                //if success send basic edit info to tracking service
-                                console.log("edits-complete");
-                                console.log(editsToTrack);
-                            }))
+                        this.editLayer.on("edits-complete", lang.hitch(this, 'saveEdits'))
                     );
                 }
 
@@ -172,13 +151,16 @@ define([
                     function(features) {
                         if (features.length > 0) {
                             this.updateFeature = features[0];
+                            this.originalFeature = new Graphic(features[0].toJson());
                             this.sideBar.show();
                         } else {
                             this.updateFeature = null;
+                            this.originalFeature = null;
                             this.editLayer.clearSelection();
                             this.sideBar.hide();
                         }
-                        this.map.hideLoader();
+
+                        topic.publish('map-activity', -1);
                     }));
             },
             initialize: function(layer) {
@@ -224,10 +206,11 @@ define([
                 this.own(
                     this.saveButton.on("click", function() {
                         topic.publish('map-activity', 1);
+
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
 
-                        topic.publish('app/operation-edit', ['update', evt.graphic]);
+                        topic.publish('app/operation-edit', ['update', that.originalFeature, that.updateFeature]);
 
                         that.saveButton.set('innerHTML', 'Saving Edits.');
 
@@ -235,11 +218,12 @@ define([
                             .then(function() {
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.saveButton.set('innerHTML', 'Save');
-                                topic.publish('map-activity', -1);
-
                             }, function(response) {
                                 console.log('save error response');
                                 console.log(response);
+                            })
+                            .always(function() {
+                                topic.publish('map-activity', -1);
                             });
                     }),
 
@@ -251,6 +235,7 @@ define([
                     }),
 
                     this.attributeEditor.on("next", function(evt) {
+                        that.originalFeature = new Graphic(evt.feature.toJson());
                         that.updateFeature = evt.feature;
                         console.log('next');
                     }),
@@ -258,25 +243,57 @@ define([
                     this.attributeEditor.on("delete", function(evt) {
                         topic.publish('map-activity', 1);
                         var feature = evt.feature;
+                        that.originalFeature = null;
 
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
-                                
+
                         topic.publish('app/operation', ['delete', evt.graphic]);
 
                         feature.getLayer().applyEdits(null, null, [feature])
                             .then(function() {
-                                topic.publish('map-activity', -1);
-                                
                                 if (that.editLayer.getSelectedFeatures().length === 0) {
                                     that.sideBar.hide();
                                 }
 
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
+                            })
+                            .always(function(){
+                                topic.publish('map-activity', -1);
                             });
                     }));
+            },
+            saveEdits: function(response) {
+                // summary:
+                //      saves the edits from the attribute inspector
+                // response: the edits-complete event from the attribute/inspector
+                console.log(this.declaredClass + "::saveEdits", arguments);
+
+                topic.publish('map-activity', -1);
+
+                var fieldsDefiningSuccess = ['adds', 'updates', 'deletes'];
+
+                var editsToTrack = {
+                    user: 'test',
+                    changes: []
+                };
+
+                array.forEach(fieldsDefiningSuccess,
+                    function(prop) {
+                        array.forEach(response[prop],
+                            function(status) {
+                                if (!status && !status.success)
+                                    return;
+
+                                editsToTrack.changes.push({
+                                    type: prop
+                                });
+                            }, this);
+                    }, this);
+
+                //if success send basic edit info to tracking service
             },
             notifyToolbarActivation: function(toolbar) {
                 // summary:
