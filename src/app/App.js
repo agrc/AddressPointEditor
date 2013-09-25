@@ -11,6 +11,7 @@ define([
         'dojo/on',
         'dojo/aspect',
         'dojo/topic',
+        'dojo/Stateful',
 
         'dojo/dom-construct',
         'dojo/dom-class',
@@ -55,6 +56,7 @@ define([
         on,
         aspect,
         topic,
+        Stateful,
 
         domConstruct,
         domClass,
@@ -106,6 +108,9 @@ define([
             //array: keeping history of edits for tracking
             edits: null,
 
+            //activity: dojo/Stateful number of operations causing activity indicator to show
+            activity: 0,
+
             constructor: function() {
                 // summary:
                 //      first function to fire after page loads
@@ -117,6 +122,10 @@ define([
                 // summary:
                 //      Fires when 
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
+
+                this.activity = new Stateful({
+                    count: 0
+                });
 
                 this.initMap();
 
@@ -170,14 +179,26 @@ define([
             wireEvents: function() {
                 console.log(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
-                this.own(on(window, 'resize',
+                this.activity.watch('count', lang.hitch(this,
                     function() {
-                        topic.publish('window/resize', true);
-                    }
-                ));
-                topic.subscribe('window/resize', lang.hitch(this, 'resize'));
+                        if (this.activity.get('count') !== 0) {
+                            this.map.showLoader();
+                            return;
+                        }
+
+                        this.map.hideLoader();
+                    }));
 
                 this.own(this.map.on("layers-add-result", lang.hitch(this, 'initEditing')));
+
+                this.own(topic.subscribe('map-activity', lang.hitch(this,
+                    function(difference) {
+                        var currentCount = this.activity.get("count");
+                        var count = currentCount += difference;
+
+                        this.activity.set("count", count);
+                    })));
+
                 this.own(
                     on(this.changeRequest, 'drawStart', function() {
                         console.log('on draw start');
@@ -282,17 +303,6 @@ define([
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
                 this.attributeEditor.initialize(evt.layers);
-            },
-            resize: function() {
-                // summary:
-                //      resizes the map and popup divs
-                console.log(this.declaredClass + "::resize", arguments);
-
-                if (!this.map) {
-                    return;
-                }
-
-                this.map.resize();
             }
         });
     });

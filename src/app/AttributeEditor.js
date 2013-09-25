@@ -95,7 +95,6 @@ define([
 
                 this.own(
                     this.map.on("click", lang.hitch(this, function() {
-                        console.log('map::click' + this.activeToolbar);
                         if (this.activeToolbar !== "navigation") {
                             this.sideBar.show();
                         } else {
@@ -109,7 +108,7 @@ define([
 
                 this.own(
                     aspect.before(this, 'buildQuery', function() {
-                        this.map.showLoader();
+                        topic.publish('map-activity', 1);
                     })
                 );
 
@@ -224,18 +223,19 @@ define([
 
                 this.own(
                     this.saveButton.on("click", function() {
-                        that.map.showLoader();
+                        topic.publish('map-activity', 1);
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
+
+                        topic.publish('app/operation-edit', ['update', evt.graphic]);
 
                         that.saveButton.set('innerHTML', 'Saving Edits.');
 
                         that.updateFeature.getLayer().applyEdits(null, [that.updateFeature], null)
                             .then(function() {
-                                // that.saveButton.set('disabled', false);
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.saveButton.set('innerHTML', 'Save');
-                                that.map.hideLoader();
+                                topic.publish('map-activity', -1);
 
                             }, function(response) {
                                 console.log('save error response');
@@ -256,17 +256,19 @@ define([
                     }),
 
                     this.attributeEditor.on("delete", function(evt) {
-                        that.map.showLoader();
+                        topic.publish('map-activity', 1);
                         var feature = evt.feature;
 
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
+                                
+                        topic.publish('app/operation', ['delete', evt.graphic]);
 
                         feature.getLayer().applyEdits(null, null, [feature])
                             .then(function() {
-                                that.map.hideLoader();
-
+                                topic.publish('map-activity', -1);
+                                
                                 if (that.editLayer.getSelectedFeatures().length === 0) {
                                     that.sideBar.hide();
                                 }
