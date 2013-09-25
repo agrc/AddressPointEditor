@@ -139,8 +139,8 @@ define([
                 this.magicZoom = new MagicZoom({
                     map: this.map,
                     mapServiceURL: AGRC.urls.basemap,
-                    searchLayerIndex: 1,
-                    searchField: 'NAME',
+                    searchLayerIndex: 3,
+                    searchField: 'Name',
                     maxResultsToDisplay: 10
                 }, this.magicZoomDiv);
 
