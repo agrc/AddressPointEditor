@@ -391,8 +391,8 @@ define([
                         break;
                     case "update":
                         operation = new Update({
-                            preUpdatedGraphics: [graphic],
-                            postUpdatedGraphics: [original],
+                            preUpdatedGraphics: [original],
+                            postUpdatedGraphics: [graphic],
                             featureLayer: this.editLayer
                         });
                 }

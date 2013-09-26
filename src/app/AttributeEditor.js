@@ -210,7 +210,7 @@ define([
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
 
-                        topic.publish('app/operation-edit', ['update', that.originalFeature, that.updateFeature]);
+                        topic.publish('app/operation-edit', ['update', that.updateFeature, that.originalFeature]);
 
                         that.saveButton.set('innerHTML', 'Saving Edits.');
 

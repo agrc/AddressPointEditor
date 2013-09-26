@@ -31,14 +31,13 @@
     "build_systems": [
         {
             "name": "AGRC Build",
+            "working_dir": "$project_path",
             "osx": {
                 "cmd": ["bash ./build.sh"],
-                "shell": true,
-                "working_dir": "$project_path"
+                "shell": true
             },
             "windows": {
                 "cmd": ["build.bat"],
-                "shell": false,
                 "path": "C:\\Program Files (x86)\\Java\\jre7\\bin\\;C:\\Program Files (x86)\\Git\\bin;"
             }
         }
