@@ -72,10 +72,16 @@ define([
 
             // attribute maps
             undoCount: 0,
-            _setUndoCountAttr: { node: 'undoCountSpan', type: 'innerHTML'},
+            _setUndoCountAttr: {
+                node: 'undoCountSpan',
+                type: 'innerHTML'
+            },
 
             redoCount: 0,
-            _setRedoCountAttr: { node: 'redoCountSpan', type: 'innerHTML'},
+            _setRedoCountAttr: {
+                node: 'redoCountSpan',
+                type: 'innerHTML'
+            },
 
             //drawingToolbar: esri/toolbars/draw: the toolbar used to add new points
 
@@ -218,10 +224,9 @@ define([
                     topic.subscribe('app/operation-edit', lang.hitch(this, 'addUndoState'))
                 );
 
-                //When editing toolbar is deactivated, save edits. 
-                //Probably not a great idea.
                 this.own(
-                    this.editingToolbar.on("deactivate", lang.hitch(this, 'saveEdits'))
+                    topic.subscribe('app/save-edits', lang.hitch(this, 'saveEditsGeneric')),
+                    this.editingToolbar.on("deactivate", lang.hitch(this, 'saveMoveEdits'))
                 );
             },
             saveNewPoint: function(evt) {
@@ -235,22 +240,26 @@ define([
                 var selectQuery = new Query();
                 selectQuery.geometry = evt.geometry;
 
-                topic.publish('app/operation-edit', ['add', this.newGraphic]);
+                var context = this;
 
-                this.editLayer.applyEdits([this.newGraphic], null, null)
-                    .then(lang.hitch(this,
-                        function() {
-                            topic.publish('app/selectFeature', selectQuery);
-                        },
-                        function() {
-                            topic.publish('app/state', 'Unable to save new point.');
-                        }))
-                    .always(lang.hitch(this,
-                        function() {
-                            topic.publish('map-activity', -1);
-                            this.map.graphics.remove(this.newGraphic);
-                            this.newGraphic = null;
-                        }));
+                topic.publish('app/save-edits', 'add', {
+                        adds: [this.newGraphic],
+                        updates: null,
+                        deletes: null,
+                        new: this.newGraphic,
+                        original: null
+                    },
+                    function() {
+                        console.log('success');
+                        topic.publish('app/selectFeature', selectQuery);
+                    },
+                    null,
+                    function() {
+                        console.log('always');
+                        context.map.graphics.remove(context.newGraphic);
+                        context.newGraphic = null;
+                    }
+                );
             },
             activatePointDrawing: function() {
                 // summary:
@@ -265,7 +274,7 @@ define([
                 this.isDrawing = true;
                 this.drawingToolbar.activate(Draw.POINT);
             },
-            activateEditing: function(/*evt*/) {
+            activateEditing: function( /*evt*/ ) {
                 // summary:
                 //      sets up the evetns on the layer
                 // layer: the layer added to the map that is going to be edited
@@ -331,50 +340,104 @@ define([
                     this.originalGraphic = new Graphic(evt.graphic.toJson());
                 }
             },
-            saveEdits: function() {
+            saveEditsGeneric: function(type, edits, successBack, errorBack, alwaysBack) {
+                // summary:
+                //      saves edits
+                // type: string: update, edit or delete
+                // edits: object: containings the edits 
+                //        {adds: [], updates: [], deletes: [], new: contains the new/updated graphic, original: contains the original} 
+                //        null if empty
+                // successBack: function: executed on success
+                // errorBack: function: executed on error
+                // alwaysBack: function: executed always
+                console.log(this.declaredClass + "::saveEditsGeneric", arguments);
+
+                //check on update if anything changed
+                if (type === "update") {
+                    if (edits.original.toJson() === edits.new.toJson()) {
+                        //nothing to update, they are the same.
+                        console.log('edits are the same skipping');
+                        topic.publish('app/state', 'Skipping save. Items are the same.');
+
+                        return;
+                    }
+                }
+
+                //display activity
+                console.log('displaying activity');
+                topic.publish('map-activity', 1);
+
+                //modify callbacks
+                console.log('modifiying activity');
+                var modifiedSuccess = function(response) {
+                    console.log('modified success');
+
+                    topic.publish('app/operation-edit', type, edits.new, edits.original);
+                    topic.publish('app/state', 'Edit saved successfully');
+
+                    if (lang.isFunction(successBack)) {
+                        successBack(response);
+                    }
+                };
+
+                var modifiedError = function(err) {
+                    console.log('modified error');
+                    var message = '';
+                    if (err && err.details && lang.isArray(err.details)) {
+                        message = err.details[0];
+                    }
+
+                    topic.publish('app/state', 'Unable to save. ' + message);
+
+                    if (lang.isFunction(errorBack)) {
+                        errorBack(err);
+                    }
+                };
+
+                var modifiedAlways = function(response) {
+                    console.log('modified always');
+                    topic.publish('map-activity', -1);
+
+                    if (lang.isFunction(alwaysBack)) {
+                        alwaysBack(response);
+                    }
+                };
+
+                //apply edits
+                console.log('applying edits');
+                console.log(edits);
+                this.editLayer.applyEdits(edits.adds, edits.updates, edits.deletes)
+                    .then(modifiedSuccess, modifiedError)
+                    .always(modifiedAlways);
+            },
+            saveMoveEdits: function() {
                 // summary:
                 //      determines what edits to send to the server
-                console.log(this.declaredClass + "::saveEdits", arguments);
-
-                if (this.originalGraphic && (this.originalGraphic.toJson() === this.updatedGraphic.toJson())) {
-                    //nothing to update, they are the same.
-                    console.log('edits are the same skipping');
-                    topic.publish('app/state', 'Skipping save. Items are the same.');
-
-                    return;
-                }
+                console.log(this.declaredClass + "::saveMoveEdits", arguments);
 
                 topic.publish('map-activity', 1);
 
-                this.editLayer.applyEdits(null, [this.updatedGraphic], null)
-                    .then(lang.hitch(this,
-                            function() {
-                                topic.publish('app/state', 'Edit saved successfully');
-                                topic.publish('app/operation-edit', ['update', this.updatedGraphic, this.originalGraphic]);
-                            }),
-                        function(err) {
-                            var message = '';
-                            if (err && err.details && lang.isArray(err.details)) {
-                                message = err.details[0];
-                            }
-
-                            topic.publish('app/state', 'Unable to save. ' + message);
-                        })
-                    .always(
-                        function() {
-                            topic.publish('map-activity', -1);
-                        });
+                topic.publish('app/save-edits', 'update', {
+                        adds: null,
+                        updates: [this.updatedGraphic],
+                        deletes: null,
+                        new: this.updatedGraphic,
+                        original: this.originalGraphic
+                    },
+                    null,
+                    null,
+                    null
+                );
             },
-            addUndoState: function(params) {
+            addUndoState: function(operationType, graphic, original) {
                 // summary:
                 //      handles edit operations/add/delete/update
-                // param: array [type, updated graphic, original graphic]
+                // operationType: string: add, update, delete
+                // graphic: esri/graphic: the new grahpic
+                // original: esri/graphic: the original graphic
                 console.log(this.declaredClass + "::addUndoState", arguments);
 
-                var operation,
-                    operationType = params[0],
-                    graphic = params[1],
-                    original = params[2];
+                var operation;
 
                 switch (operationType) {
                     case "add":
@@ -402,7 +465,7 @@ define([
                 domClass.remove(this.undoNode, 'disabled');
                 this.updateUndoRedoCounts();
             },
-            undo: function(/*evt*/) {
+            undo: function( /*evt*/ ) {
                 // summary:
                 //      undo edit operation
                 // evt: the mouse click event
@@ -422,7 +485,7 @@ define([
                 this.undoManager.undo();
                 this.updateUndoRedoCounts();
             },
-            redo: function(/*evt*/) {
+            redo: function( /*evt*/ ) {
                 // summary:
                 //      redo operations
                 // evt: the mouse click event
@@ -440,11 +503,11 @@ define([
                 this.undoManager.redo();
                 this.updateUndoRedoCounts();
             },
-            updateUndoRedoCounts: function () {
+            updateUndoRedoCounts: function() {
                 // summary:
                 //      updates the count bubbles next to the undo and redo buttons
                 console.log(this.declaredClass + "::updateUndoRedoCounts", arguments);
-                
+
                 var position = this.undoManager.position;
                 var len = this.undoManager.length;
                 var undo = (position === 0) ? '' : position;

@@ -210,21 +210,21 @@ define([
                         that.saveButton.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('disabled', true);
 
-                        topic.publish('app/operation-edit', ['update', that.updateFeature, that.originalFeature]);
-
                         that.saveButton.set('innerHTML', 'Saving Edits.');
 
-                        that.updateFeature.getLayer().applyEdits(null, [that.updateFeature], null)
-                            .then(function() {
+                        topic.publish('app/save-edits', 'update', {
+                                adds: null,
+                                updates: [that.updateFeature],
+                                deletes: null,
+                                new: that.updateFeature,
+                                original: that.originalFeature
+                            },
+                            function() {
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.saveButton.set('innerHTML', 'Save');
-                            }, function(response) {
-                                console.log('save error response');
-                                console.log(response);
-                            })
-                            .always(function() {
-                                topic.publish('map-activity', -1);
-                            });
+                            },
+                            null,
+                            null);
                     }),
 
                     this.attributeEditor.on("attribute-change", function(evt) {
@@ -249,20 +249,23 @@ define([
                         that.attributeEditor.deleteBtn.set('disabled', true);
                         that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
 
-                        topic.publish('app/operation', ['delete', evt.graphic]);
-
-                        feature.getLayer().applyEdits(null, null, [feature])
-                            .then(function() {
+                        topic.publish('app/save-edits', 'delete', {
+                                adds: null,
+                                updates: null,
+                                deletes: [feature],
+                                new: evt.grahpic,
+                                original: null
+                            },
+                            function() {
                                 if (that.editLayer.getSelectedFeatures().length === 0) {
                                     that.sideBar.hide();
                                 }
 
                                 that.attributeEditor.deleteBtn.set('disabled', false);
                                 that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
-                            })
-                            .always(function(){
-                                topic.publish('map-activity', -1);
-                            });
+                            },
+                            null,
+                            null);
                     }));
             },
             saveEdits: function(response) {
