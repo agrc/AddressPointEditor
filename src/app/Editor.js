@@ -472,16 +472,14 @@ define([
                 console.log(this.declaredClass + "::undo", arguments);
 
                 if (!this.undoManager.canUndo) {
-                    //disable undo
-                    domClass.add(this.undoNode, 'disabled');
                     console.log('nothing to undo');
+
                     return;
                 }
 
-                //undo redo don't return promise. can't shot activity
+                //undo redo don't return promise. can't show activity
                 //topic.publish('map-activity', 1);
 
-                domClass.remove(this.redoNode, 'disabled');
                 this.undoManager.undo();
                 this.updateUndoRedoCounts();
             },
@@ -492,8 +490,8 @@ define([
                 console.log(this.declaredClass + "::redo", arguments);
 
                 if (!this.undoManager.canRedo) {
-                    //disable redo
                     console.log('nothing to redo');
+
                     return;
                 }
 
@@ -512,8 +510,19 @@ define([
                 var len = this.undoManager.length;
                 var undo = (position === 0) ? '' : position;
                 var redo = (len - position === 0) ? '' : len - position;
+
                 this.set('undoCount', undo);
                 this.set('redoCount', redo);
+
+                if (this.get('undoCount') < 1) {
+                    domClass.add(this.undoNode, 'disabled');
+                    domClass.remove(this.redoNode, 'disabled');
+                }
+                else
+                {
+                    domClass.add(this.redoNode, 'disabled');
+                    domClass.remove(this.undoNode, 'disabled');
+                }
             }
         });
     });
