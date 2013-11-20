@@ -2,7 +2,7 @@
     "name": "app",
     "version": "0.1",
     "main": "main",
-    "description": "AGRC Boilerplate",
+    "description": "Broadband Address Point Editing",
     "homepage": "https://github.com/agrc/AGRCJavaScriptProjectBoilerPlate",
     "dojoBuild": "package.js"
 }

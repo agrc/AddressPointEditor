@@ -1,0 +1,33 @@
+define([], function() {
+  return [
+    'KANE',
+    'MILLARD',
+    'SANPETE',
+    'CARBON',
+    'UTAH',
+    'CACHE',
+    'SUMMIT',
+    'WASHINGTON',
+    'GRAND',
+    'UINTAH',
+    'TOOELE',
+    'SEVIER',
+    'GARFIELD',
+    'SAN JUAN',
+    'BOX ELDER',
+    'IRON',
+    'WEBER',
+    'EMERY',
+    'RICH',
+    'WASATCH',
+    'BEAVER',
+    'DAGGETT',
+    'DAVIS',
+    'WAYNE',
+    'PIUTE',
+    'MORGAN',
+    'SALT LAKE',
+    'DUCHESNE',
+    'JUAB'
+  ];
+});
