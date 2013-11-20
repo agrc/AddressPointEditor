@@ -25,6 +25,7 @@ define([
         'agrc/widgets/map/BaseMap',
         'agrc/widgets/locate/FindAddress',
         'agrc/widgets/locate/MagicZoom',
+        'agrc/widgets/map/BaseMapSelector',
 
         'ijit/widgets/notify/ChangeRequest',
 
@@ -70,7 +71,10 @@ define([
         BaseMap,
         FindAddress,
         MagicZoom,
+        BaseMapSelector,
+
         ChangeRequest,
+
         featureLayer,
         config,
         geomService,
@@ -239,7 +243,7 @@ define([
                 console.info(this.declaredClass + "::" + arguments.callee.nom, arguments);
 
                 this.map = new BaseMap(this.mapDiv, {
-                    defaultBaseMap: 'Lite',
+                    useDefaultBaseMap: false,
                     extent: new Extent({
                         "type": "extent",
                         "xmin": 442054,
@@ -250,6 +254,14 @@ define([
                             "wkid": 26912
                         }
                     })
+                });
+
+                var selector;
+
+                selector = new BaseMapSelector({
+                    map: this.map,
+                    id: 'claro',
+                    position: 'BR'
                 });
 
                 config.defaults.geometryService = new geomService(AGRC.urls.geometryService);
