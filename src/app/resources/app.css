@@ -1,4 +1,5 @@
 @import '../../agrc/resources/map/BaseMap.css';
+@import '../../agrc/resources/map/BaseMapSelector.css';
 @import '../../agrc/resources/locate/FindAddress.css';
 @import '../../agrc/resources/locate/MagicZoom.css';
 @import '../../ijit/resources/notify/ChangeRequest.css';
@@ -65,4 +66,8 @@ body {
     .app .esriSimpleSlider {
         top: 115px;
     }
+}
+
+.agrc.BR .selectorMain {
+    bottom: 30px;
 }
