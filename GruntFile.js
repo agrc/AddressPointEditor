@@ -1,12 +1,43 @@
+/* jshint camelcase:false */
 module.exports = function(grunt) {
-    var srcFiles = 'src/app/**/*.js';
+    var jsFiles = 'src/app/**/*.js';
+    var otherFiles = [
+        'src/app/**/*.html',
+        'src/app/**/*.css',
+        'src/index.html',
+        'src/ChangeLog.html'
+    ];
     var gruntFile = 'GruntFile.js';
     var internFile = 'tests/intern.js';
-    var packageFile = 'package.json';
-    var jshintFiles = [srcFiles, gruntFile, internFile, packageFile];
-    
+    var jshintFiles = [jsFiles, gruntFile, internFile];
+
+    // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        jasmine: {
+            // for embedded map projects...
+            // app: {
+            //   src: ['src/EmbeddedMapLoader.js'],
+            //   options: {
+            //     specs: ['src/app/tests/spec/*.js']
+            //   }
+            // }
+
+            // for regular apps...
+            'default': {
+                src: ['src/app/run.js'],
+                options: {
+                    specs: ['src/app/**/Spec*.js'],
+                    vendor: [
+                        'src/jasmine-favicon-reporter/vendor/favico.js',
+                        'src/jasmine-favicon-reporter/jasmine-favicon-reporter.js',
+                        'src/app/tests/jasmineTestBootstrap.js',
+                        'src/dojo/dojo.js'
+                    ],
+                    host: 'http://localhost:8000'
+                }
+            }
+        },
         jshint: {
             files: jshintFiles,
             options: {
@@ -16,10 +47,10 @@ module.exports = function(grunt) {
         watch: {
             jshint: {
                 files: jshintFiles,
-                tasks: ['jshint']
+                tasks: ['jshint', 'jasmine:default:build']
             },
             src: {
-                files: [srcFiles],
+                files: jshintFiles.concat(otherFiles),
                 options: {
                     livereload: true
                 }
@@ -28,34 +59,111 @@ module.exports = function(grunt) {
         connect: {
             uses_defaults: {}
         },
-        open: {
-            intern: {
-                path: 'http://localhost:8000/node_modules/intern-geezer/client.html?config=tests/intern'
+        dojo: {
+            prod: {
+                options: {
+                    // You can also specify options to be used in all your tasks
+                    profiles: ['profiles/prod.build.profile.js', 'profiles/build.profile.js'] // Profile for build
+                }
+            },
+            stage: {
+                options: {
+                    // You can also specify options to be used in all your tasks
+                    profiles: ['profiles/stage.build.profile.js', 'profiles/build.profile.js'] // Profile for build
+                }
+            },
+            options: {
+                // You can also specify options to be used in all your tasks
+                dojo: 'src/dojo/dojo.js', // Path to dojo.js file in dojo source
+                load: 'build', // Optional: Utility to bootstrap (Default: 'build')
+                releaseDir: '../dist',
+                require: 'src/app/run.js', // Optional: Module to require for the build (Default: nothing)
+                basePath: './src'
             }
         },
-        phantom: {
-            options: {
-                port: 4444
-            },
-            intern: {}
-        },
-        intern: {
-            runner: {
-                options: {
-                    runType: 'runner',
-                    config: 'tests/intern'
+        processhtml: {
+            options: {},
+            dist: {
+                files: {
+                    'dist/index.html': ['src/index.html']
                 }
+            }
+        },
+        imagemin: {
+            dynamic: {
+                options: {
+                    optimizationLevel: 3
+                },
+                files: [{
+                    expand: true, // Enable dynamic expansion
+                    cwd: 'src/', // Src matches are relative to this path
+                    src: ['**/*.{png,jpg,gif}'], // Actual patterns to match
+                    dest: 'dist/' // Destination path prefix
+                }]
+            }
+        },
+        copy: {
+            main: {
+                src: 'src/ChangeLog.html',
+                dest: 'dist/ChangeLog.html'
+            }
+        },
+        esri_slurp: {
+            options: {
+                version: 3.9
+            }
+        },
+        clean: ['dist'],
+        amdcheck: {
+            dev: {
+                options: {
+                    removeUnusedDependencies: false
+                },
+                files: [{
+                    src: [
+                        'src/app/**/*.js'
+                    ]
+                }]
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-open');
-    grunt.loadNpmTasks('grunt-phantom');
-    grunt.loadNpmTasks('intern-geezer');
+    // Loading dependencies
+    for (var key in grunt.file.readJSON('package.json').devDependencies) {
+        if (key !== 'grunt' && key.indexOf('grunt') === 0) {
+            grunt.loadNpmTasks(key);
+        }
+    }
 
-    grunt.registerTask('default', ['jshint', 'connect', 'open:intern', 'watch']);
-    grunt.registerTask('phantomtest', ['phantom:intern', 'intern:runner']);
+     // Default task.
+    grunt.registerTask('default', [
+        'jshint',
+        'amdcheck',
+        'newer:esri_slurp',
+        'jasmine:default:build',
+        'connect',
+        'watch'
+    ]);
+    grunt.registerTask('build', [
+        'clean',
+        'dojo:prod',
+        'imagemin:dynamic',
+        'copy',
+        'processhtml:dist',
+        'compress'
+    ]);
+    grunt.registerTask('stage-build', [
+        'clean',
+        'dojo:stage',
+        'imagemin:dynamic',
+        'copy',
+        'processhtml:dist',
+        'compress'
+    ]);
+    grunt.registerTask('travis', [
+        'esri_slurp',
+        'jshint',
+        'connect',
+        'jasmine:default'
+    ]);
 };
