@@ -1,11 +1,16 @@
 /*jshint unused:false */
+
+var amdTag = function (filename, mid) {
+    return (/.*\.js$/).test(filename);
+};
+
 var profile = {
     basePath: '../src',
     action: 'release',
     cssOptimize: 'comments',
     mini: true,
-    optimize: 'shrinksafe',
-    layerOptimize: 'shrinksafe',
+    optimize: 'closure',
+    layerOptimize: 'closure',
     stripConsole: 'all',
     selectorEngine: 'acme',
     layers: {
@@ -13,10 +18,13 @@ var profile = {
             include: [
                 'dojo/i18n',
                 'dojo/domReady',
-                'app/main',
                 'app/run',
-                'esri/dijit/Attribution'
+                'esri/dijit/Attribution',
+                'dojox/gfx/path',
+                'dojox/gfx/svg',
+                'dojox/gfx/shape'
             ],
+            includeLocales: ['en-us'],
             customBase: true,
             boot: true
         }
@@ -38,22 +46,12 @@ var profile = {
         // We aren’t loading tests in production
         'dojo-test-sniff': 0
     },
-    packages: [{
-        name: 'dojo',
-        location: 'dojo'
-    }, {
-        name: 'dijit',
-        location: 'dijit'
-    }, {
-        name: 'dojox',
-        location: 'dojox'
-    }, {
+     packages: [{
         name: 'esri',
-        location: 'esri',
-        resourceTags: {
-            amd: function(filename, mid) {
-                return (/.*\.js/).test(filename);
-            }
-        }
-    }]
+        resourceTags: amdTag
+    }],
+    // this is to make sure that the widget templates get built into the layer file.
+    userConfig: {
+        packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri']
+    }
 };

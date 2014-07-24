@@ -1,14 +1,4 @@
-require({
-    async: 0
-});
-
-define([
-    'dojo/parser',
-
-    'jquery/jquery',
-    'bootstrap/js/bootstrap',
-    'app/App'
-], function(parser) {
+define(['dojo/has'], function(has) {
     window.AGRC = {
         // app: app.App
         //      global reference to App
@@ -30,5 +20,16 @@ define([
         }
     };
 
-    parser.parse();
+    if (has('agrc-api-key') === 'prod') {
+        // mapserv.utah.gov
+        window.AGRC.apiKey = 'AGRC-E7FEB434755864';
+    } else if (has('agrc-api-key') === 'stage') {
+        // test.mapserv.utah.gov
+        window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
+    } else {
+        // localhost
+        window.AGRC.apiKey = 'AGRC-B5D62BD2151902';
+    }
+
+    return window.AGRC;
 });

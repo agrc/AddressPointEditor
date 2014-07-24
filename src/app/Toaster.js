@@ -2,7 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
 
-    'dojo/text!app/templates/Toaster.html',
+    'dojo/text!./templates/Toaster.html',
 
     'dojo/topic',
 

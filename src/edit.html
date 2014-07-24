@@ -14,18 +14,22 @@
     <meta charset='utf-8'>
     <link rel="shortcut icon" href="http://mapserv.utah.gov/cdn/images/favicon.ico" />
     <!-- CSS -->
-    <link rel='stylesheet' href='http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css'>
-    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
-    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link rel='stylesheet' href='app/resources/app.css'>
+    <link rel='stylesheet' href='app/resources/App.css'>
+    <link href="bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="claro">
     <div class="agrc-container">
-        <div data-dojo-type='app/App'></div>
-    </div>    
-    <script data-dojo-config="async: 0, isDebug: 1, tlmSiblingOfDojo: 1" src='http://js.arcgis.com/3.6' defer></script>
-    <script src='app/run.js' defer></script>
+        <div id='appDiv'></div>
+    </div>
+    <!-- build:template
+    <script data-dojo-config="deps:['app/run']" src='dojo/dojo.js'></script>
+    /build -->
+
+    <!-- build:remove -->
+    <script data-dojo-config="isDebug: 1" src='dojo/dojo.js'></script>
+    <script src='app/run.js'></script>
+    <!-- /build -->
     <!-- GOOGLE ANALYTICS -->
     <script type="text/javascript">
     </script>

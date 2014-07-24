@@ -1,5 +1,5 @@
 define([
-    'dojo/text!app/templates/App.html',
+    'dojo/text!./templates/App.html',
 
     'dojo/_base/array',
     'dojo/_base/lang',
@@ -36,12 +36,15 @@ define([
     'esri/symbols/SimpleMarkerSymbol',
     'esri/symbols/SimpleLineSymbol',
 
-    'app/SlideInSidebar',
-    'app/Leaderboard',
-    'app/DownloadSelector',
-    'app/Editor',
-    'app/AttributeEditor',
-    'app/Toaster'
+    './config',
+    './SlideInSidebar',
+    './Leaderboard',
+    './DownloadSelector',
+    './Editor',
+    './AttributeEditor',
+    './Toaster',
+
+    'bootstrap'
 ], function(
     template,
 
@@ -74,12 +77,13 @@ define([
     ChangeRequest,
 
     featureLayer,
-    config,
+    esriConfig,
     geomService,
     Extent,
     SimpleMarkerSymbol,
     SimpleLineSymbol,
 
+    config,
     SlideInSidebar,
     Leaderboard,
     DownloadSelector,
@@ -118,7 +122,7 @@ define([
             //      first function to fire after page loads
             console.info('app.App::' + arguments.callee.nom, arguments);
 
-            AGRC.app = this;
+            esriConfig.app = this;
         },
         postCreate: function() {
             // summary:
@@ -262,7 +266,7 @@ define([
                 position: 'BR'
             });
 
-            config.defaults.geometryService = new geomService(AGRC.urls.geometryService);
+            esriConfig.defaults.geometryService = new geomService(AGRC.urls.geometryService);
         },
         addFeatureLayer: function() {
             console.info('app.App::' + arguments.callee.nom, arguments);
