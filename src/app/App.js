@@ -244,10 +244,10 @@ define([
                 useDefaultBaseMap: false,
                 extent: new Extent({
                     'type': 'extent',
-                    'xmin': 442054,
-                    'ymin': 4100235,
-                    'xmax': 446951,
-                    'ymax': 4103608,
+                    'xmin': 387722.41802753304,
+                    'ymin': 4224561.955957659,
+                    'xmax': 389299.2007406538,
+                    'ymax': 4226673.473677837,
                     'spatialReference': {
                         'wkid': 26912
                     }
