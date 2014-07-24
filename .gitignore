@@ -21,6 +21,7 @@ src/spinjs
 src/stubmodule/
 src/util/
 src/mustache/
+src/matchers/
 
 
 #################
