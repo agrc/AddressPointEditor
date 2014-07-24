@@ -5,6 +5,7 @@ module.exports = function(grunt) {
         'src/app/**/*.html',
         'src/app/**/*.css',
         'src/index.html',
+        'src/edit.html',
         'src/ChangeLog.html'
     ];
     var gruntFile = 'GruntFile.js';
@@ -15,15 +16,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jasmine: {
-            // for embedded map projects...
-            // app: {
-            //   src: ['src/EmbeddedMapLoader.js'],
-            //   options: {
-            //     specs: ['src/app/tests/spec/*.js']
-            //   }
-            // }
-
-            // for regular apps...
             'default': {
                 src: ['src/app/run.js'],
                 options: {
@@ -85,7 +77,8 @@ module.exports = function(grunt) {
             options: {},
             dist: {
                 files: {
-                    'dist/index.html': ['src/index.html']
+                    'dist/index.html': ['src/index.html'],
+                    'dist/edit.html': ['src/edit.html']
                 }
             }
         },
@@ -99,6 +92,17 @@ module.exports = function(grunt) {
                     cwd: 'src/', // Src matches are relative to this path
                     src: ['**/*.{png,jpg,gif}'], // Actual patterns to match
                     dest: 'dist/' // Destination path prefix
+                }]
+            }
+        },
+        compress: {
+            main: {
+                options: {
+                    archive: 'deploy/addressEditing.zip'
+                },
+                files: [{
+                    src: ['dist/**'],
+                    dest: '/'
                 }]
             }
         },

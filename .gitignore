@@ -282,3 +282,4 @@ nosetests.xml
 .project
 .pydevproject
 *.sde
+deploy/addressEditing.zip
