@@ -1,10 +1,4 @@
-define([
-        'intern!object',
-
-        'intern/chai!assert',
-
-        'dojo/_base/window',
-
+require([
         'dojo/dom-construct',
         'dojo/dom-class',
 
@@ -13,11 +7,9 @@ define([
     ],
 
     function(
-        registerSuite,
-        assert,
-        win,
         domConstruct,
         domClass,
+
         Editor
     ) {
         var testWidget;
@@ -43,100 +35,98 @@ define([
             }
         };
 
-        registerSuite({
-            name: 'app/Editor',
-
-            beforeEach: function() {
+        describe('app/Editor', function () {
+            beforeEach(function () {
                 testWidget = new Editor({
                     map: mockMap,
                     editLayer: mockFeaturelayer
-                }, domConstruct.create('div', {}, win.body()));
-            },
-            afterEach: function() {
+                }, domConstruct.create('div', {}, document.body));
+            });
+
+            afterEach(function () {
                 testWidget.destroy();
                 testWidget = null;
-            },
+            });
 
-            'creates_a_valid_object': function() {
-                assert.equal(testWidget.declaredClass, 'app.editor');
-            },
+            it('creates_a_valid_object', function () {
+                expect(testWidget).toEqual(jasmine.any(Editor));
+            });
 
-            'bug_17': function() {
+            it('bug_17', function () {
                 //operationType, graphic, original
                 testWidget.addUndoState('update', mockGraphic, mockGraphic);
 
                 testWidget.undo();
                 testWidget.undo();
 
-                assert.isTrue(domClass.contains(testWidget.undoNode, 'disabled'),
-                    'expecting disabled to still be there and it\'s not');
-            },
+                expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(true);
+            });
 
-            'addUndoState': {
-                'enables undo button': function() {
+            describe('addUndoState', function () {
+                it('enables undo button', function () {
                     testWidget.addUndoState('update', mockGraphic, mockGraphic);
 
-                    assert.isFalse(domClass.contains(testWidget.undoNode, 'disabled'));
-                }
-            },
-            'undo': {
-                'disables undo button if there are no more operations to undo': function() {
+                    expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(true);
+                });
+            });
+            describe('undo', function () {
+                it('disables undo button if there are no more operations to undo', function () {
                     domClass.remove(testWidget.undoNode, 'disabled');
                     testWidget.undoManager.canUndo = true;
 
                     testWidget.undo();
 
-                    assert.isTrue(domClass.contains(testWidget.undoNode, 'disabled'));
+                    expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(true);
 
                     testWidget.undoManager.canUndo = false;
                     testWidget.undo();
 
-                    assert.isTrue(domClass.contains(testWidget.undoNode, 'disabled'));
-                },
-                'enables redo button': function() {
+                    expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(true);
+                });
+                it('enables redo button', function () {
                     domClass.add(testWidget.undoNode, 'disabled');
 
                     testWidget.undo();
 
-                    assert.isFalse(domClass.contains(testWidget.redoNode, 'disabled'));
-                }
-            },
-            'updateUndoRedoCounts': {
-                'shows correct counts when there is no available undos': function() {
+                    expect(domClass.contains(testWidget.redoNode, 'disabled')).toBe(true);
+                });
+            });
+            describe('updateUndoRedoCounts', function () {
+                it('shows correct counts when there is no available undos', function () {
                     testWidget.undoManager.length = 0;
 
                     testWidget.updateUndoRedoCounts();
 
-                    assert.strictEqual(testWidget.undoCount, '');
-                    assert.strictEqual(testWidget.redoCount, '');
-                },
-                'shows the correct counts when there are 3 undos but none have been undone': function() {
+                    expect(testWidget.undoCount, '').toBe(true);
+                    expect(testWidget.redoCount, '').toBe(true);
+                });
+                it('shows the correct counts when there are 3 undos but none have been undone', function () {
                     testWidget.undoManager.length = 3;
                     testWidget.undoManager.position = 3;
 
                     testWidget.updateUndoRedoCounts();
 
-                    assert.strictEqual(testWidget.undoCount, 3);
-                    assert.strictEqual(testWidget.redoCount, '');
-                },
-                'shows the correct counts when there are 3 undos and 2 have been undone': function() {
+                    expect(testWidget.undoCount, 3).toBe(true);
+                    expect(testWidget.redoCount, '').toBe(true);
+                });
+                it('shows the correct counts when there are 3 undos and 2 have been undone', function () {
                     testWidget.undoManager.length = 3;
                     testWidget.undoManager.position = 1;
 
                     testWidget.updateUndoRedoCounts();
 
-                    assert.strictEqual(testWidget.undoCount, 1);
-                    assert.strictEqual(testWidget.redoCount, 2);
-                },
-                'shows the correct counts when there are 3 undos and 3 have been undone': function() {
+                    expect(testWidget.undoCount, 1).toBe(true);
+                    expect(testWidget.redoCount, 2).toBe(true);
+                });
+                it('shows the correct counts when there are 3 undos and 3 have been undone', function () {
                     testWidget.undoManager.length = 3;
                     testWidget.undoManager.position = 0;
 
                     testWidget.updateUndoRedoCounts();
 
-                    assert.strictEqual(testWidget.undoCount, '');
-                    assert.strictEqual(testWidget.redoCount, 3);
-                }
-            }
+                    expect(testWidget.undoCount, '').toBe(true);
+                    expect(testWidget.redoCount, 3).toBe(true);
+                });
+            });
         });
     });
