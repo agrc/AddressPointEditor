@@ -1,0 +1,20 @@
+{
+  "name": "addres_point_editing",
+  "version": "0.1.0",
+  "dependencies": {
+    "agrc": "agrc-widgets#*",
+    "bootstrap": "~3.1",
+    "dojo": "1.9",
+    "dojox": "1.9",
+    "dijit": "1.9",
+    "ijit": "agrc-ijit#*",
+    "jquery": "~1",
+    "mustache": "~0.7",
+    "util": "dojo-util#1.9"
+  },
+  "devDependencies": {
+    "matchers": "agrc-jasmine-matchers#~0.1",
+    "jasmine-favicon-reporter": "*",
+    "stubmodule": null
+  }
+}

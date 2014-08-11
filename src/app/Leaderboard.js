@@ -7,10 +7,10 @@ define([
 
     'dijit/_WidgetBase',
 
-    'dojo/text!app/templates/LeaderboardTemplate.html',
-    'dojo/text!app/templates/LeaderboardMiniTemplate.html',
+    'dojo/text!./templates/LeaderboardTemplate.html',
+    'dojo/text!./templates/LeaderboardMiniTemplate.html',
 
-    'mustache/mustache',
+    'mustache',
 
     'esri/request'
 ], function(

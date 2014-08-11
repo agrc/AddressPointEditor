@@ -1,3 +1,29 @@
+*.pyc
+*.sublime-workspace
+.DS_Store
+.grunt/
+api/FiberVerification.Editing.Api/.nuget/
+api/FiberVerification.Editing.Api/Web.config
+deploy/fiberVerification.zip
+dist/
+node_modules/
+src/agrc/
+src/bootstrap/
+src/dijit/
+src/dojo/
+src/dojox/
+src/esri/
+src/favico.js/
+src/ijit/
+src/jasmine-favicon-reporter/
+src/jquery/
+src/spinjs
+src/stubmodule/
+src/util/
+src/mustache/
+src/matchers/
+
+
 #################
 ## Eclipse
 #################
@@ -257,3 +283,4 @@ nosetests.xml
 .project
 .pydevproject
 *.sde
+deploy/addressEditing.zip

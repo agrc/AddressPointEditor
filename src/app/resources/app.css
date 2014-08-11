@@ -1,8 +1,11 @@
+@import '../../dijit/themes/claro/claro.css';
+@import '../../esri/css/esri.css';
 @import '../../agrc/resources/map/BaseMap.css';
 @import '../../agrc/resources/map/BaseMapSelector.css';
 @import '../../agrc/resources/locate/FindAddress.css';
 @import '../../agrc/resources/locate/MagicZoom.css';
 @import '../../ijit/resources/notify/ChangeRequest.css';
+@import '../../ijit/resources/authentication/LoginRegister.css';
 @import 'SlideInSidebar.css';
 @import 'Leaderboard.css';
 @import 'DownloadSelector.css';
