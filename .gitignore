@@ -213,6 +213,7 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 *.sublime-workspace
+*.sublime-project
 /dist/
 .grunt/
 _SpecRunner.html
