@@ -115,6 +115,9 @@ module.exports = function(grunt) {
         esri_slurp: {
             options: {
                 version: 3.9
+            },
+            missing: {
+                dest: 'src/esri'
             }
         },
         clean: ['dist'],
@@ -143,7 +146,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', [
         'jshint',
         'amdcheck',
-        'newer:esri_slurp',
+        'if-missing:esri_slurp:missing',
         'jasmine:default:build',
         'connect',
         'watch'

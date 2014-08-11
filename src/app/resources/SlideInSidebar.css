@@ -28,7 +28,7 @@
     position: absolute;
     width: 32px;
     height: 32px;
-    background: url('../../agrc/resources/images/loader_MAP.gif');
+    /*background: url('../../agrc/resources/images/loader_MAP.gif');*/
     top: 174px;
     left: 190px;
     display: none;
