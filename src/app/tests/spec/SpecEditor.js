@@ -2,7 +2,8 @@ require([
         'dojo/dom-construct',
         'dojo/dom-class',
 
-        'app/Editor'
+        'app/Editor',
+        'app/config'
 
     ],
 
@@ -10,8 +11,10 @@ require([
         domConstruct,
         domClass,
 
-        Editor
+        Editor,
+        config
     ) {
+        var fn = config.fieldNames;
         var testWidget;
         var mockMap = {
             loaded: true
@@ -126,6 +129,29 @@ require([
 
                     expect(testWidget.undoCount, '').toBe(true);
                     expect(testWidget.redoCount, 3).toBe(true);
+                });
+            });
+            describe('applyEditTracking', function () {
+                it('adds user name and dates to passed in graphics', function () {
+                    var edits = {
+                        adds: [{
+                            attributes: {}
+                        }],
+                        updates: [{
+                            attributes: {}
+                        },{
+                            attributes: {}
+                        }]
+                    };
+                    var email = 'blah1';
+                    window.AGRC.user = {
+                        email: email
+                    };
+
+                    testWidget.applyEditTracking(edits);
+
+                    expect(edits.adds[0].attributes[fn.Editor]).toEqual(email);
+                    expect(edits.updates[1].attributes[fn.ModifyDate]).toBeDefined();
                 });
             });
         });

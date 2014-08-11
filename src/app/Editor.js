@@ -2,7 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/Color',
-    'dojo/_base/json',
+    'dojo/_base/array',
 
     'dojo/topic',
     'dojo/aspect',
@@ -27,12 +27,14 @@ define([
     'esri/symbols/SimpleLineSymbol',
     'esri/dijit/editing/Add',
     'esri/dijit/editing/Delete',
-    'esri/dijit/editing/Update'
+    'esri/dijit/editing/Update',
+
+    'app/config'
 ], function(
     declare,
     lang,
     Color,
-    dojo,
+    array,
 
     topic,
     aspect,
@@ -57,7 +59,9 @@ define([
     SimpleLineSymbol,
     Add,
     Delete,
-    Update
+    Update,
+
+    config
 ) {
     // summary:
     //      Handles retrieving and displaying the data in the popup.
@@ -373,11 +377,28 @@ define([
             var modifiedSuccess = function(response) {
                 console.log('modified success');
 
-                topic.publish('app/operation-edit', type, edits.news, edits.original);
-                topic.publish('app/state', 'Edit saved successfully');
+                var error;
+                var check = function (edits) {
+                    return array.every(edits, function (e) {
+                        if (!e.success) {
+                            error = e.error;
+                        }
+                        return e.success;
+                    });
+                };
 
-                if (lang.isFunction(successBack)) {
-                    successBack(response);
+                if (check(response.adds) &&
+                    check(response.deletes) &&
+                    check(response.updates)) {
+
+                    topic.publish('app/operation-edit', type, edits.news, edits.original);
+                    topic.publish('app/state', 'Edit saved successfully');
+
+                    if (lang.isFunction(successBack)) {
+                        successBack(response);
+                    }
+                } else {
+                    modifiedError(error);
                 }
             };
 
@@ -404,12 +425,35 @@ define([
                 }
             };
 
+            this.applyEditTracking(edits);
+
             //apply edits
-            console.log('applying edits');
-            console.log(edits);
             this.editLayer.applyEdits(edits.adds, edits.updates, edits.deletes)
-                .then(modifiedSuccess, modifiedError)
+                .then(null, modifiedError)
                 .always(modifiedAlways);
+
+            // couldn't get the correct response object by passing modifiedSuccess to 
+            // then above. Had to wire it to the event.
+            this.editLayer.on('edits-complete', modifiedSuccess);
+        },
+        applyEditTracking: function (edits) {
+            // summary:
+            //      adds user name and current date to edit tracking fields
+            // edits: object: containings the edits
+            //        {adds: [],
+            //        updates: [],
+            //        deletes: []
+            console.log('app.editor:applyEditTracking', arguments);
+
+            var addAttributes = function (features) {
+                array.forEach(features, function (f) {
+                    f.attributes[config.fieldNames.Editor] = AGRC.user.email;
+                    f.attributes[config.fieldNames.ModifyDate] = Date.now();
+                });
+            };
+
+            addAttributes(edits.adds);
+            addAttributes(edits.updates);
         },
         saveMoveEdits: function() {
             // summary:
