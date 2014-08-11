@@ -17,7 +17,7 @@ class Toolbox(object):
 
 class DownloadTool(object):
 
-    version = '1.0.2'
+    version = '1.0.3'
     database_connections = None
     feature_name = 'AddressPoints'
     county = None
@@ -121,7 +121,7 @@ class DownloadTool(object):
         arcpy.MakeFeatureLayer_management(location, 'selection', where_clause)
 
     def _get_address_points(self):
-        address_fc = 'Address.DBO.AddressPoints'
+        address_fc = 'AddressPoints'
         location = os.path.join(self.database_connections['addresses'],
                                 address_fc)
 
@@ -177,12 +177,13 @@ class DownloadTool(object):
         self.select_features(self.county)
 
         arcpy.AddMessage('Reprojecting and Exporting')
+        name = '{}_{}'.format(self.county.lower(), self.feature_name)
         arcpy.FeatureClassToFeatureClass_conversion('address_points',
                                                     output_location,
                                                     self.feature_name)
 
         arcpy.AddMessage('Zipping result')
-        zip_location = os.path.join(folder_to_zip, self.feature_name + '.zip')
+        zip_location = os.path.join(folder_to_zip, name + '.zip')
 
         self.zip_output_directory(folder_to_zip, zip_location)
 
