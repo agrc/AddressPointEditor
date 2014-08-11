@@ -1,7 +1,10 @@
-import arcpy, os
+import arcpy
+import os
 from zipfile import ZipFile, ZIP_DEFLATED
 
+
 class Toolbox(object):
+
     def __init__(self):
         """Define the toolbox (the name of the toolbox is the name of the
         .pyt file)."""
@@ -13,44 +16,60 @@ class Toolbox(object):
 
 
 class DownloadTool(object):
+
+    version = '1.0.2'
+    database_connections = None
+    feature_name = 'AddressPoints'
+    county = None
+    file_type = None
+    coordinate_system = None
+
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "Download Address Points"
         self.description = "Download a counties address points."
         self.canRunInBackground = False
+        self.database_connections = {
+            'addresses': os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'Address on sqlexpress.sde'),
+            'sgid': os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'SGID10 on agrc@itdb104sp.dts.utah.gov.sde')
+        }
 
     def getParameterInfo(self):
         """Define parameter definitions"""
 
         p0 = arcpy.Parameter(
-                displayName="County",
-                name="county",
-                datatype="String",
-                parameterType="Required",
-                direction="Input")
+            displayName='County',
+            name='county',
+            datatype='String',
+            parameterType='Required',
+            direction='Input')
 
         p1 = arcpy.Parameter(
-                displayName="File type",
-                name="f_type",
-                datatype="String",
-                parameterType="Required",
-                direction="Input")
+            displayName='File type',
+            name='f_type',
+            datatype='String',
+            parameterType='Required',
+            direction='Input')
 
         p2 = arcpy.Parameter(
-                displayName="Coordinate System",
-                name="c_system",
-                datatype="String",
-                parameterType="Required",
-                direction="Input")
+            displayName='Coordinate System',
+            name='c_system',
+            datatype='String',
+            parameterType='Required',
+            direction='Input')
 
         p3 = arcpy.Parameter(
-                displayName="Zip file",
-                name="zip",
-                datatype="File",
-                parameterType = "Derived",
-                direction="Output")
+            displayName='Zip file',
+            name='zip',
+            datatype='File',
+            parameterType='Derived',
+            direction='Output')
 
-        ps = [p0,p1,p2,p3]
+        ps = [p0, p1, p2, p3]
 
         return ps
 
@@ -75,39 +94,61 @@ class DownloadTool(object):
 
     def get_extension(self, f):
         file_name, file_extension = os.path.splitext(f)
-        
+
         return file_extension.lower()
 
     def zip_output_directory(self, location, name):
-        with ZipFile(name, "w", ZIP_DEFLATED) as z:
+        with ZipFile(name, 'w', ZIP_DEFLATED) as z:
             for root, dirs, files in os.walk(location):
-                if "scratch.gdb" in root:
+                if 'scratch.gdb' in root:
                     continue
                 for fn in files:
                     arcpy.AddMessage(fn)
-                    if self.get_extension(fn) == ".zip":
-                        arcpy.AddMessage("added")
+                    if self.get_extension(fn) == '.zip':
+                        arcpy.AddMessage('added')
                         continue
 
                     absfn = os.path.join(root, fn)
-                    zfn = absfn[len(location)+len(os.sep):] #XXX: relative path
+                    # XXX: relative path
+                    zfn = absfn[len(location) + len(os.sep):]
                     z.write(absfn, zfn)
+
+    def _get_county(self, county):
+        county_fc = 'SGID10.BOUNDARIES.Counties'
+        location = os.path.join(self.database_connections['sgid'], county_fc)
+        where_clause = "NAME = '{}'".format(county)
+
+        arcpy.MakeFeatureLayer_management(location, 'selection', where_clause)
+
+    def _get_address_points(self):
+        address_fc = 'Address.DBO.AddressPoints'
+        location = os.path.join(self.database_connections['addresses'],
+                                address_fc)
+
+        arcpy.MakeFeatureLayer_management(location, 'address_points')
+
+    def select_features(self, county):
+        self._get_county(county)
+        self._get_address_points()
+
+        arcpy.SelectLayerByLocation_management('address_points',
+                                               'intersect',
+                                               'selection')
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
-        arcpy.AddMessage('---executing')
+        arcpy.AddMessage('---executing version ' + self.version)
 
-        database_connection = r"C:\Projects\GitHub\Broadband.Editing\src\gp\AddressTest on itdb110sp.dts.utah.gov.sde\{}"
-        feature_name = None
-        county = parameters[0].valueAsText
-        file_type = parameters[1].valueAsText
-        coordinate_system = parameters[2].valueAsText
+        self.county = parameters[0].valueAsText
+        self.file_type = parameters[1].valueAsText
+        self.coordinate_system = parameters[2].valueAsText
 
-        arcpy.AddMessage("{}, {}, {}".format(county, file_type, coordinate_system))
+        arcpy.AddMessage('{}, {}, {}'.format(
+            self.county, self.file_type, self.coordinate_system))
 
         output_location = arcpy.env.scratchFolder
-        
+
         folder_to_zip = output_location
 
         self._create_scratch_folder(output_location)
@@ -116,38 +157,35 @@ class DownloadTool(object):
             'stateplane_south': 3567,
             'stateplane_central': 3566,
             'stateplane_north': 3560,
-            'utm12' : 26912
+            'utm12': 26912
         }
 
-        county_lookup = {
-            'kane':  "AddressTest.ADDRESSADMIN.KaneAP"
-        }
+        if self.file_type == 'fgdb':
+            arcpy.AddMessage('Creating File Geodatabase')
 
-        database_connection = database_connection.format(county_lookup[county])
-        feature_name = "{}AddressPoints".format(county)
-
-        if file_type == "fgdb":
-            arcpy.AddMessage("Creating File Geodatabase")
-
-            fgdb = "AddressPoints.gdb"
+            fgdb = 'AddressPoints.gdb'
             arcpy.CreateFileGDB_management(output_location, fgdb)
 
             output_location = os.path.join(output_location, fgdb)
 
         arcpy.AddMessage(output_location)
-        
-        arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(spatial_reference[coordinate_system])
-        
-        arcpy.AddMessage("Reprojecting and Exporting")
-        arcpy.FeatureClassToFeatureClass_conversion(database_connection, 
-                                                    output_location, 
-                                                    feature_name)
 
-        arcpy.AddMessage("Zipping result")
-        zip_location = os.path.join(folder_to_zip, feature_name + ".zip")    
-        
+        arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(
+            spatial_reference[self.coordinate_system])
+
+        arcpy.AddMessage('Selecting Features')
+        self.select_features(self.county)
+
+        arcpy.AddMessage('Reprojecting and Exporting')
+        arcpy.FeatureClassToFeatureClass_conversion('address_points',
+                                                    output_location,
+                                                    self.feature_name)
+
+        arcpy.AddMessage('Zipping result')
+        zip_location = os.path.join(folder_to_zip, self.feature_name + '.zip')
+
         self.zip_output_directory(folder_to_zip, zip_location)
 
         arcpy.SetParameterAsText(3, zip_location)
-        
+
         return
