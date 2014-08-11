@@ -78,12 +78,12 @@ define([
         activeToolbar: 'navigation',
 
         constructor: function() {
-            console.info('app.attrubuteEditor::constructor', arguments);
+            console.info('app.attributeEditor::constructor', arguments);
         },
         postCreate: function() {
             // summary:
             //      dom is ready
-            console.info('app.attrubuteEditor::postCreate', arguments);
+            console.info('app.attributeEditor::postCreate', arguments);
 
             this.inherited(arguments);
 
@@ -94,7 +94,7 @@ define([
         wireEvents: function() {
             // summary:
             //      sets up the events for this widget
-            console.log('app.attrubuteEditor::wireEvents', arguments);
+            console.log('app.attributeEditor::wireEvents', arguments);
 
             this.own(
                 this.map.on('click', lang.hitch(this, function() {
@@ -128,7 +128,7 @@ define([
             // summary:
             //      builds the query to pass to the select features method
             // evt: the click event
-            console.log('app.attrubuteEditor::buildQuery', arguments);
+            console.log('app.attributeEditor::buildQuery', arguments);
 
             this.selectQuery.geometry = this._screenPointToEnvelope(mouseEvt);
 
@@ -140,7 +140,7 @@ define([
             // summary:
             //      selects the feature
             // selectQuery: the query to find the feature
-            console.log('app.attrubuteEditor::selectFeature', arguments);
+            console.log('app.attributeEditor::selectFeature', arguments);
 
             if (lang.isArray(selectQuery)) {
                 selectQuery = selectQuery[0];
@@ -163,29 +163,12 @@ define([
                 }));
         },
         initialize: function(layer) {
-            console.log('app.attrubuteEditor::initialize', arguments);
-
-            var featureLayerInfos = array.map(layer, function(result) {
-                return {
-                    'featureLayer': result.layer
-                };
-            });
+            console.log('app.attributeEditor::initialize', arguments);
 
             var layerInfos = [{
-                'featureLayer': featureLayerInfos[0].featureLayer,
+                'featureLayer': layer,
                 'showAttachments': false,
-                'isEditable': true,
-                'fieldInfos': [{
-                    'fieldName': 'HouseAddr',
-                    'isEditable': true,
-                    'tooltip': 'The House Address',
-                    'label': 'House Address:'
-                }, {
-                    'fieldName': 'FullAddr',
-                    'isEditable': true,
-                    'tooltip': 'The full address',
-                    'label': 'FullAddr:'
-                }]
+                'isEditable': true
             }];
 
             this.attributeEditor = new AttributeInspector({
@@ -271,7 +254,7 @@ define([
             // summary:
             //      saves the edits from the attribute inspector
             // response: the edits-complete event from the attribute/inspector
-            console.log('app.attrubuteEditor::saveEdits', arguments);
+            console.log('app.attributeEditor::saveEdits', arguments);
 
             topic.publish('map-activity', -1);
 
@@ -302,7 +285,7 @@ define([
             // summary:
             //      lets the applicaiton know what toolbars are active
             // toolbar: string "drawing" or "editing" or "navigation"
-            console.log('app.attrubuteEditor::notifyToolbarActivation', arguments);
+            console.log('app.attributeEditor::notifyToolbarActivation', arguments);
 
             this.activeToolbar = 'navigation';
 
@@ -313,7 +296,7 @@ define([
             this.activeToolbar = toolbar[0];
         },
         _screenPointToEnvelope: function(evt) {
-            console.log('app.attrubuteEditor::_screenPointToEnvelope', arguments);
+            console.log('app.attributeEditor::_screenPointToEnvelope', arguments);
 
             var centerPoint = new Point(evt.mapPoint.x, evt.mapPoint.y, evt.mapPoint.spatialReference);
             var mapWidth = this.map.extent.getWidth();

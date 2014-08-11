@@ -286,17 +286,7 @@ define([
             this.editLayer = new FeatureLayer(AGRC.urls.featureLayer + id, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
-                outFields: ['HouseAddr',
-                    'FullAddr',
-                    'HouseNum',
-                    'PreDir',
-                    'StreetName',
-                    'StreetType',
-                    'SufDir',
-                    'UnitNumber',
-                    'City',
-                    'ZipCode'
-                ]
+                outFields: ['*']
             });
 
             var symbol = new SimpleMarkerSymbol(
@@ -328,7 +318,7 @@ define([
             //      initializes the editing settings/widget
             console.info('app.App::App', arguments);
 
-            this.attributeEditor.initialize(evt.layers);
+            this.attributeEditor.initialize(evt.layers[0].layer);
         }
     });
 });
