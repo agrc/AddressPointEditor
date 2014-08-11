@@ -30,12 +30,8 @@ class DownloadTool(object):
         self.description = "Download a counties address points."
         self.canRunInBackground = False
         self.database_connections = {
-            'addresses': os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                'Address on sqlexpress.sde'),
-            'sgid': os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                'SGID10 on agrc@itdb104sp.dts.utah.gov.sde')
+            'addresses': 'C:\\Projects\\GitHub\\Broadband.Editing\\src\\gp\\Address.sde',
+            'sgid': 'C:\\Projects\\GitHub\\Broadband.Editing\\src\\gp\\SGID10.sde'
         }
 
     def getParameterInfo(self):
@@ -115,15 +111,14 @@ class DownloadTool(object):
 
     def _get_county(self, county):
         county_fc = 'SGID10.BOUNDARIES.Counties'
-        location = os.path.join(self.database_connections['sgid'], county_fc)
+        location = self.database_connections['sgid'] + '\\' + county_fc
         where_clause = "NAME = '{}'".format(county)
 
         arcpy.MakeFeatureLayer_management(location, 'selection', where_clause)
 
     def _get_address_points(self):
         address_fc = 'AddressPoints'
-        location = os.path.join(self.database_connections['addresses'],
-                                address_fc)
+        location = self.database_connections['addresses'] + '\\' + address_fc
 
         arcpy.MakeFeatureLayer_management(location, 'address_points')
 
