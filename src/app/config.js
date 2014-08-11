@@ -12,7 +12,6 @@ define(['dojo/has'], function(has) {
         apiKey: 'AGRC-FFCDAD6B933051',
 
         urls: {
-            leaderboard: './webapi/api/leaderboard',
             basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseMap-Vector/MapServer',
             featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
