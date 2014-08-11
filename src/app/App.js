@@ -38,7 +38,6 @@ define([
 
     './config',
     './SlideInSidebar',
-    './Leaderboard',
     './DownloadSelector',
     './Editor',
     './AttributeEditor',
@@ -85,7 +84,6 @@ define([
 
     config,
     SlideInSidebar,
-    Leaderboard,
     DownloadSelector,
     Editor,
     AttributeEditor,
@@ -160,12 +158,6 @@ define([
             this.sideBar = new SlideInSidebar({
                 map: this.map
             }, this.sideBarNode);
-
-            this.leaderboard = new Leaderboard({
-                url: AGRC.urls.leaderboard,
-                linkNode: this.leaderboardDiv,
-                contentNode: this.leaderboardContentDiv
-            });
 
             this.wireEvents();
 
