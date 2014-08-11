@@ -11,6 +11,8 @@ define(['dojo/has'], function(has) {
         //apiKey: 'AGRC-B5D62BD2151902', // localhost
         apiKey: 'AGRC-FFCDAD6B933051',
 
+        appName: 'addressediting',
+
         urls: {
             basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',

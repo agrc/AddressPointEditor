@@ -49,7 +49,7 @@
           </ul>
         </li>
         <li>
-          <a data-toggle="modal" href="#loginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+          <div data-dojo-attach-point="logoutDiv"></div>
         </li>
       </ul>
     </div>
@@ -57,70 +57,6 @@
   <div data-dojo-attach-point="mapDiv" class="map-div"></div>
   <div data-dojo-attach-point='sideBarNode'></div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="loginModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Login</h4>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="form-group">
-              <label for="loginEmail">Email address</label>
-              <input type="text" class="form-control" id="loginEmail" placeholder="Enter email" data-required>
-            </div>
-            <div class="form-group">
-              <label for="loginPassword">Password</label>
-              <input type="password" class="form-control" id="loginPassword" placeholder="Password" data-required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-         <a href="#registerModal" class="btn btn-warning" data-toggle="modal" data-dismiss="modal">Register</a>
-         <button type="submit" class="btn btn-success">Sign in</button>
-       </div>
-     </div><!-- /.modal-content -->
-   </div><!-- /.modal-dialog -->
- </div><!-- /.modal -->
- <div class="modal fade" id="registerModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Register</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="registerEmail">Email address</label>
-            <input type="text" class="form-control" id="registerEmail" placeholder="Enter email" data-required>
-          </div>
-          <div class="form-group">
-            <label for="registerPassword">Password</label>
-            <input type="password" class="form-control" id="registerPassword" placeholder="Password" data-required>
-            <label for="registerPassword2">Password</label>
-            <input type="password" class="form-control" id="registerPassword2" placeholder="Password" data-required>
-          </div>
-          <div class="form-group">
-            <label for="registerAgency">Agency</label>
-            <input type="text" class="form-control" id="registerAgency" placeholder="Enter Company" data-required>
-          </div>
-          <div class="form-group">
-            <label for="registerPosition">Position <span class="label label-info">Optional</span></label>
-            <input type="text" class="form-control" id="registerPosition" placeholder="Job Title">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-       <button type="submit" class="btn btn-success">Sign in</button>
-     </div>
-   </div><!-- /.modal-content -->
- </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-<div data-dojo-attach-point="toasterNode">
+  <div data-dojo-attach-point="toasterNode">
 </div>
 </div>
