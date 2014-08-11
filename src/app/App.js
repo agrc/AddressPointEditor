@@ -28,6 +28,7 @@ define([
     'agrc/widgets/map/BaseMapSelector',
 
     'ijit/widgets/notify/ChangeRequest',
+    'ijit/widgets/authentication/LoginRegister',
 
     'esri/layers/FeatureLayer',
     'esri/config',
@@ -74,6 +75,7 @@ define([
     BaseMapSelector,
 
     ChangeRequest,
+    LoginRegister,
 
     FeatureLayer,
     esriConfig,
@@ -126,6 +128,14 @@ define([
             // summary:
             //      Fires when
             console.log('app.App::App', arguments);
+
+            var login = new LoginRegister({
+                appName: config.appName,
+                logoutDiv: this.logoutDiv,
+                showOnLoad: false,
+                securedServicesBaseUrl: config.urls.featureLayer
+            });
+            login.startup();
 
             this.activity = new Stateful({
                 count: 0
