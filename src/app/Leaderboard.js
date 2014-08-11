@@ -103,10 +103,12 @@ define([
 
             if (this.data && this.data.standings) {
                 this.data.standings.sort(function(a, b) {
-                    if (a.editCount > b.editCount)
+                    if (a.editCount > b.editCount) {
                         return -1;
-                    if (a.editCount < b.editCount)
+                    }
+                    if (a.editCount < b.editCount) {
                         return 1;
+                    }
                     return 0;
                 });
 

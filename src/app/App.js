@@ -76,9 +76,9 @@ define([
 
     ChangeRequest,
 
-    featureLayer,
+    FeatureLayer,
     esriConfig,
-    geomService,
+    GeomService,
     Extent,
     SimpleMarkerSymbol,
     SimpleLineSymbol,
@@ -120,14 +120,14 @@ define([
         constructor: function() {
             // summary:
             //      first function to fire after page loads
-            console.info('app.App::' + arguments.callee.nom, arguments);
+            console.info('app.App::App', arguments);
 
             esriConfig.app = this;
         },
         postCreate: function() {
             // summary:
             //      Fires when
-            console.log('app.App::' + arguments.callee.nom, arguments);
+            console.log('app.App::App', arguments);
 
             this.activity = new Stateful({
                 count: 0
@@ -183,7 +183,7 @@ define([
             });
         },
         wireEvents: function() {
-            console.log('app.App::' + arguments.callee.nom, arguments);
+            console.log('app.App::App', arguments);
 
             this.activity.watch('count', lang.hitch(this,
                 function() {
@@ -242,7 +242,7 @@ define([
         initMap: function() {
             // summary:
             //      Sets up the map
-            console.info('app.App::' + arguments.callee.nom, arguments);
+            console.info('app.App::App', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
                 useDefaultBaseMap: false,
@@ -266,10 +266,10 @@ define([
                 position: 'BR'
             });
 
-            esriConfig.defaults.geometryService = new geomService(AGRC.urls.geometryService);
+            esriConfig.defaults.geometryService = new GeomService(AGRC.urls.geometryService);
         },
         addFeatureLayer: function() {
-            console.info('app.App::' + arguments.callee.nom, arguments);
+            console.info('app.App::App', arguments);
 
             var id = 0;
 
@@ -281,10 +281,20 @@ define([
                 this.map.removeLayer(this.editLayer);
             }
 
-            this.editLayer = new featureLayer(AGRC.urls.featureLayer + id, {
-                mode: featureLayer.MODE_ONDEMAND,
+            this.editLayer = new FeatureLayer(AGRC.urls.featureLayer + id, {
+                mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
-                outFields: ['HouseAddr', 'FullAddr', 'HouseNum', 'PreDir', 'StreetName', 'StreetType', 'SufDir', 'UnitNumber', 'City', 'ZipCode']
+                outFields: ['HouseAddr',
+                    'FullAddr',
+                    'HouseNum',
+                    'PreDir',
+                    'StreetName',
+                    'StreetType',
+                    'SufDir',
+                    'UnitNumber',
+                    'City',
+                    'ZipCode'
+                ]
             });
 
             var symbol = new SimpleMarkerSymbol(
@@ -299,7 +309,7 @@ define([
             this.map.addLayers([this.editLayer]);
         },
         fullExtent: function() {
-            console.info('app.App::' + arguments.callee.nom, arguments);
+            console.info('app.App::App', arguments);
 
             this.map.setExtent(new Extent({
                 xmin: 81350,
@@ -314,7 +324,7 @@ define([
         initEditing: function(evt) {
             // sumamry:
             //      initializes the editing settings/widget
-            console.info('app.App::' + arguments.callee.nom, arguments);
+            console.info('app.App::App', arguments);
 
             this.attributeEditor.initialize(evt.layers);
         }

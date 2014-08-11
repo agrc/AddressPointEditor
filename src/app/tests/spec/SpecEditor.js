@@ -25,21 +25,20 @@ define([
             loaded: true
         };
         var mockFeaturelayer = {
-            applyEdits: function(){
+            applyEdits: function() {
                 return true;
             }
         };
         var mockGraphic = {
-            setGeometry: function()
-            {
+            setGeometry: function() {
                 return true;
             },
-            setAttributes: function(){
+            setAttributes: function() {
                 return true;
             },
             geometry: {
                 toJson: function() {
-                    return "";
+                    return '';
                 }
             }
         };
@@ -64,17 +63,18 @@ define([
 
             'bug_17': function() {
                 //operationType, graphic, original
-                testWidget.addUndoState("update", mockGraphic, mockGraphic);
+                testWidget.addUndoState('update', mockGraphic, mockGraphic);
 
                 testWidget.undo();
                 testWidget.undo();
 
-                assert.isTrue(domClass.contains(testWidget.undoNode, 'disabled'), "expecting disabled to still be there and it's not");
+                assert.isTrue(domClass.contains(testWidget.undoNode, 'disabled'),
+                    'expecting disabled to still be there and it\'s not');
             },
 
             'addUndoState': {
                 'enables undo button': function() {
-                    testWidget.addUndoState("update", mockGraphic, mockGraphic);
+                    testWidget.addUndoState('update', mockGraphic, mockGraphic);
 
                     assert.isFalse(domClass.contains(testWidget.undoNode, 'disabled'));
                 }

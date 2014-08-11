@@ -343,7 +343,10 @@ define([
             //      saves edits
             // type: string: update, edit or delete
             // edits: object: containings the edits
-            //        {adds: [], updates: [], deletes: [], news: contains the new/updated graphic, original: contains the original}
+            //        {adds: [],
+            //        updates: [],
+            //        deletes: [],
+            //        news: contains the new/updated graphic, original: contains the original}
             //        null if empty
             // successBack: function: executed on success
             // errorBack: function: executed on error

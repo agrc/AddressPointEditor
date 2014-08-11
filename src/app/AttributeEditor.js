@@ -142,8 +142,9 @@ define([
             // selectQuery: the query to find the feature
             console.log('app.attrubuteEditor::selectFeature', arguments);
 
-            if (lang.isArray(selectQuery))
+            if (lang.isArray(selectQuery)) {
                 selectQuery = selectQuery[0];
+            }
 
             this.editLayer.selectFeatures(selectQuery, FeatureLayer.SELECTION_NEW, lang.hitch(this,
                 function(features) {
@@ -285,8 +286,9 @@ define([
                 function(prop) {
                     array.forEach(response[prop],
                         function(status) {
-                            if (!status && !status.success)
+                            if (!status && !status.success) {
                                 return;
+                            }
 
                             editsToTrack.changes.push({
                                 type: prop
@@ -304,8 +306,9 @@ define([
 
             this.activeToolbar = 'navigation';
 
-            if (!toolbar || !lang.isArray(toolbar))
+            if (!toolbar || !lang.isArray(toolbar)) {
                 return;
+            }
 
             this.activeToolbar = toolbar[0];
         },

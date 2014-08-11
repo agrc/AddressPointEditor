@@ -174,10 +174,12 @@ define([
                     a = a;
                     b = b;
 
-                    if (a > b)
+                    if (a > b) {
                         return 1;
-                    if (a < b)
+                    }
+                    if (a < b) {
                         return -1;
+                    }
 
                     return 0;
                 });
@@ -219,7 +221,7 @@ define([
             console.log('app.downloadSelector::submitJob', arguments);
 
             if (!this.valid()) {
-                this.messagebox.innerHTML = "You haven't selected all the parts.";
+                this.messagebox.innerHTML = 'You haven\'t selected all the parts.';
                 return;
             }
 
@@ -311,7 +313,7 @@ define([
                     domAttr.set(this.downloadButton, 'disabled', true);
                     domClass.add(this.downloadButton, 'hidden');
 
-                    this.messagebox.innerHTML = "I'm sorry but the job failed.";
+                    this.messagebox.innerHTML = 'I\'m sorry but the job failed.';
 
                     break;
             }

@@ -14,9 +14,9 @@ define(['dojo/has'], function(has) {
         urls: {
             leaderboard: './webapi/api/leaderboard',
             basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseMap-Vector/MapServer',
-            featureLayer: "/arcgis/rest/services/Broadband/Editing/FeatureServer/",
-            geometryService: "/arcgis/rest/services/Geometry/GeometryServer",
-            downloadGp: "/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points"
+            featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
+            geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
+            downloadGp: '/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points'
         }
     };
 
