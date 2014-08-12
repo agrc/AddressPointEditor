@@ -117,25 +117,22 @@ define([
         //activity: dojo/Stateful number of operations causing activity indicator to show
         activity: 0,
 
+        // childWidgets: _WidgetBase[]
+        childWidgets: null,
+
         constructor: function() {
             // summary:
             //      first function to fire after page loads
             console.info('app.App::App', arguments);
 
             esriConfig.app = this;
+
+            this.childWidgets = [];
         },
         postCreate: function() {
             // summary:
             //      Fires when
             console.log('app.App::App', arguments);
-
-            var login = new LoginRegister({
-                appName: config.appName,
-                logoutDiv: this.logoutDiv,
-                showOnLoad: false,
-                securedServicesBaseUrl: config.urls.featureLayer
-            });
-            login.startup();
 
             this.activity = new Stateful({
                 count: 0
@@ -145,70 +142,67 @@ define([
 
             this.addFeatureLayer();
 
-            this.findAddress = new FindAddress({
-                map: this.map,
-                apiKey: AGRC.apiKey
-            }, this.findAddressDiv);
-
-            this.magicZoom = new MagicZoom({
-                map: this.map,
-                mapServiceURL: AGRC.urls.basemap,
-                searchLayerIndex: 3,
-                searchField: 'Name',
-                maxResultsToDisplay: 10
-            }, this.magicZoomDiv);
-
-            this.changeRequest = new ChangeRequest({
-                map: this.map,
-                redliner: config.urls.redline
-            }, this.suggestChangeDiv);
-
-            this.downloadWizard = new DownloadSelector({},
-                this.downloadDiv);
-
-            this.sideBar = new SlideInSidebar({
-                map: this.map
-            }, this.sideBarNode);
+            this.childWidgets.push(
+                new LoginRegister({
+                    appName: config.appName,
+                    logoutDiv: this.logoutDiv,
+                    showOnLoad: false,
+                    securedServicesBaseUrl: config.urls.featureLayer
+                }),
+                this.findAddress = new FindAddress({
+                    map: this.map,
+                    apiKey: AGRC.apiKey
+                }, this.findAddressDiv),
+                this.magicZoom = new MagicZoom({
+                    map: this.map,
+                    mapServiceURL: AGRC.urls.basemap,
+                    searchLayerIndex: 3,
+                    searchField: 'Name',
+                    maxResultsToDisplay: 10
+                }, this.magicZoomDiv),
+                this.changeRequest = new ChangeRequest({
+                    map: this.map,
+                    redliner: config.urls.redline
+                }, this.suggestChangeDiv),
+                this.downloadWizard = new DownloadSelector({},
+                    this.downloadDiv),
+                this.sideBar = new SlideInSidebar({
+                    map: this.map
+                }, this.sideBarNode),
+                this.toaster = new Toaster({}, this.toasterNode),
+                this.editor = new Editor({
+                    map: this.map,
+                    editLayer: this.editLayer
+                }, domConstruct.place('<div>', this.map.container, 'last')),
+                this.attributeEditor = new AttributeEditor({
+                    sideBar: this.sideBar,
+                    editLayer: this.editLayer,
+                    map: this.map
+                })
+            );
 
             this.wireEvents();
-
-            this.toaster = new Toaster({}, this.toasterNode);
-
-            this.editor = new Editor({
-                map: this.map,
-                editLayer: this.editLayer
-            }, domConstruct.place('<div>', this.map.container, 'last'));
-
-            this.attributeEditor = new AttributeEditor({
-                sideBar: this.sideBar,
-                editLayer: this.editLayer,
-                map: this.map
-            });
         },
         wireEvents: function() {
             console.log('app.App::App', arguments);
 
-            this.activity.watch('count', lang.hitch(this,
-                function() {
-                    if (this.activity.get('count') > 0) {
-                        this.map.showLoader();
-                        return;
-                    }
+            this.activity.watch('count', lang.hitch(this, function() {
+                if (this.activity.get('count') > 0) {
+                    this.map.showLoader();
+                    return;
+                }
 
-                    this.map.hideLoader();
-                }));
+                this.map.hideLoader();
+            }));
 
-            this.own(this.map.on('layers-add-result', lang.hitch(this, 'initEditing')));
-
-            this.own(topic.subscribe('map-activity', lang.hitch(this,
-                function(difference) {
+            this.own(
+                this.map.on('layers-add-result', lang.hitch(this, 'initEditing')),
+                topic.subscribe('map-activity', lang.hitch(this, function(difference) {
                     var currentCount = this.activity.get('count');
                     var count = currentCount += difference;
 
                     this.activity.set('count', count);
-                })));
-
-            this.own(
+                })),
                 on(this.changeRequest, 'drawStart', function() {
                     console.log('on draw start');
                     var ddl = $('#suggest-change-dropdown');
@@ -216,30 +210,21 @@ define([
                     ddl.blur();
                     $('.dropdown').blur();
                 }),
-
                 on(this.changeRequest, 'drawEnd', function() {
                     console.log('on draw end');
                     setTimeout(function() {
                         $('#suggest-change-dropdown').dropdown('toggle');
                     }, 100);
-                })
-            );
-
-            this.own(
-                aspect.before(this.sideBar, 'show',
-                    function() {
-                        topic.publish('app/state', 'Fill out the address details for this point.');
-                    })
-            );
-
-            this.own(
-                aspect.after(this.findAddress, 'done', lang.hitch(this,
-                    function() {
-                        setTimeout(lang.hitch(this,
-                            function() {
-                                this.findAddress.graphicsLayer.remove(this.findAddress._graphic);
-                            }), 5000);
-                    }))
+                }),
+                aspect.before(this.sideBar, 'show', function() {
+                    topic.publish('app/state', 'Fill out the address details for this point.');
+                }),
+                aspect.after(this.findAddress, 'done', lang.hitch(this, function() {
+                    setTimeout(lang.hitch(this,
+                        function() {
+                            this.findAddress.graphicsLayer.remove(this.findAddress._graphic);
+                        }), 5000);
+                }))
             );
         },
         initMap: function() {
@@ -260,14 +245,14 @@ define([
                     }
                 })
             });
-
-            var selector;
-
-            selector = new BaseMapSelector({
-                map: this.map,
-                id: 'claro',
-                position: 'BR'
-            });
+            
+            this.childWidgets.push(
+                new BaseMapSelector({
+                    map: this.map,
+                    id: 'claro',
+                    position: 'BR'
+                })
+            );
 
             esriConfig.defaults.geometryService = new GeomService(AGRC.urls.geometryService);
         },
@@ -300,6 +285,20 @@ define([
             this.editLayer.setSelectionSymbol(symbol);
 
             this.map.addLayers([this.editLayer]);
+        },
+        startup: function() {
+            // summary:
+            //      Fires after postCreate when all of the child widgets are finished laying out.
+            console.log('app.App::startup', arguments);
+
+            var that = this;
+            array.forEach(this.childWidgets, function (widget) {
+                console.log('widget.declaredClass', widget.declaredClass);
+                that.own(widget);
+                widget.startup();
+            });
+
+            this.inherited(arguments);
         },
         fullExtent: function() {
             console.info('app.App::App', arguments);

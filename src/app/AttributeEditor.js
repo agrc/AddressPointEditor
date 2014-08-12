@@ -80,8 +80,13 @@ define([
         //activeToolbar: drawing, editing, navigation
         activeToolbar: 'navigation',
 
+        // childWidgets: _WidgetBase[]
+        childWidgets: null,
+
         constructor: function() {
             console.info('app.attributeEditor::constructor', arguments);
+
+            this.childWidgets = [];
         },
         postCreate: function() {
             // summary:
@@ -93,6 +98,19 @@ define([
             this.selectQuery = new Query();
 
             this.wireEvents();
+        },
+        startup: function() {
+            // summary:
+            //      Fires after postCreate when all of the child widgets are finished laying out.
+            console.log('app.App::startup', arguments);
+
+            var that = this;
+            array.forEach(this.childWidgets, function (widget) {
+                that.own(widget);
+                widget.startup();
+            });
+
+            this.inherited(arguments);
         },
         wireEvents: function() {
             // summary:
@@ -108,14 +126,12 @@ define([
                         this.editLayer.clearSelection();
                     }
                 })),
-
-                this.editLayer.on('click', lang.hitch(this, 'buildQuery'))
-            );
-
-            this.own(
+                this.editLayer.on('click', lang.hitch(this, 'buildQuery')),
                 aspect.before(this, 'buildQuery', function() {
                     topic.publish('map-activity', 1);
-                })
+                }),
+                topic.subscribe('app/toolbar', lang.hitch(this, 'notifyToolbarActivation')),
+                topic.subscribe('app/selectFeature', lang.hitch(this, 'selectFeature'))
             );
 
             if (this.editLayer) {
@@ -123,9 +139,6 @@ define([
                     this.editLayer.on('edits-complete', lang.hitch(this, 'saveEdits'))
                 );
             }
-
-            topic.subscribe('app/toolbar', lang.hitch(this, 'notifyToolbarActivation'));
-            topic.subscribe('app/selectFeature', lang.hitch(this, 'selectFeature'));
         },
         buildQuery: function(mouseEvt) {
             // summary:
@@ -185,14 +198,15 @@ define([
                 fieldInfos: fieldInfos
             }];
 
-            this.attributeEditor = new AttributeInspector({
-                layerInfos: layerInfos
-            }, domConstruct.create('div', null, this.sideBar.contentDiv, 'first'));
-
-            this.saveButton = new Button({
-                label: 'Save',
-                'class': 'atiSaveButton'
-            });
+            this.childWidgets.push(
+                this.attributeEditor = new AttributeInspector({
+                    layerInfos: layerInfos
+                }, domConstruct.create('div', null, this.sideBar.contentDiv, 'first')),
+                this.saveButton = new Button({
+                    label: 'Save',
+                    'class': 'atiSaveButton'
+                })
+            );
 
             this.saveButton.set('disabled', true);
 

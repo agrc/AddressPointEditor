@@ -128,6 +128,17 @@ define([
             node: 'moveTextNode',
             type: 'innerHTML'
         },
+
+        // childWidgets: _WidgetBase[]
+        childWidgets: null,
+
+        constructor: function () {
+            // summary:
+            //      constructor
+            console.log('app.editor::constructor', arguments);
+        
+            this.childWidgets = [];
+        },
         postCreate: function() {
             // summary:
             //      dom is ready
@@ -148,25 +159,24 @@ define([
                 maxOperations: 5
             });
 
-            new Tooltip({
-                connectId: [this.pointButton],
-                label: 'Add address points to the map.'
-            });
-
-            new Tooltip({
-                connectId: [this.moveButton],
-                label: 'Enable moving of address points on the map. Hover over a point, then drag to move it.'
-            });
-
-            new Tooltip({
-                connectId: [this.undoNode],
-                label: 'Make a mistake? Undo the last editing action.'
-            });
-
-            new Tooltip({
-                connectId: [this.redoNode],
-                label: 'Redo the last editing action.'
-            });
+            this.childWidgets.push(
+                new Tooltip({
+                    connectId: [this.pointButton],
+                    label: 'Add address points to the map.'
+                }),
+                new Tooltip({
+                    connectId: [this.moveButton],
+                    label: 'Enable moving of address points on the map. Hover over a point, then drag to move it.'
+                }),
+                new Tooltip({
+                    connectId: [this.undoNode],
+                    label: 'Make a mistake? Undo the last editing action.'
+                }),
+                new Tooltip({
+                    connectId: [this.redoNode],
+                    label: 'Redo the last editing action.'
+                })
+            );
 
             jsapiBundle.toolbars.draw.addPoint = 'Click on the map to place your new address point.';
 
@@ -230,6 +240,19 @@ define([
                 topic.subscribe('app/save-edits', lang.hitch(this, 'saveEditsGeneric')),
                 this.editingToolbar.on('deactivate', lang.hitch(this, 'saveMoveEdits'))
             );
+        },
+        startup: function() {
+            // summary:
+            //      Fires after postCreate when all of the child widgets are finished laying out.
+            console.log('app.App::startup', arguments);
+
+            var that = this;
+            array.forEach(this.childWidgets, function (widget) {
+                that.own(widget);
+                widget.startup();
+            });
+
+            this.inherited(arguments);
         },
         saveNewPoint: function(evt) {
             // summary:
