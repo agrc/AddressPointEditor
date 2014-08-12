@@ -11,15 +11,21 @@
 @import 'Editor.css';
 @import 'Toaster.css';
 
-body {
+body, html {
     overflow: hidden;
 }
 .app, .agrc-container, .map-div {
     width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
+}
+.app .map-div {
+    top: 50px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    position: absolute;
 }
 .navbar .navbar-brand {
     font-weight: bold;
@@ -36,40 +42,18 @@ body {
 .app .dropdown-menu .control-group {
     margin: 0;
 }
-
-.atiSaveButton, .atiDeleteButton
-{
-    float: left;
-    margin: 0.2em !important;
-}
-
 @media (min-width: 992px){
-    .container {
+    .agrc-container {
         max-width: 100%;
     }
 }
-
 @media (min-width: 768px) {
-  .container {
+  .agrc-container {
     max-width: 100%;
 }
 }
-
 @media (min-width: 1200px) {
-  .container {
+  .agrc-container {
     max-width: 100%;
 }
-}
-.app .esriSimpleSlider {
-    top: 60px;
-}
-
-@media (min-width: 920px) and (max-width: 1120px) {
-    .app .esriSimpleSlider {
-        top: 115px;
-    }
-}
-
-.agrc.BR .selectorMain {
-    bottom: 50px;
 }

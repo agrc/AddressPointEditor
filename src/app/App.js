@@ -238,7 +238,7 @@ define([
                 new BaseMapSelector({
                     map: this.map,
                     id: 'claro',
-                    position: 'BR'
+                    position: 'TR'
                 })
             );
 

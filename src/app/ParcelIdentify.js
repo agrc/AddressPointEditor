@@ -1,0 +1,197 @@
+define([
+    'dojo/text!./templates/ParcelIdentify.html',
+
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+
+    'dojo/on',
+    'dojo/string',
+
+    'dijit/_WidgetBase',
+    'dijit/_TemplatedMixin',
+
+    'agrc/modules/WebAPI',
+    'agrc/modules/string',
+
+    'app/config'
+], function(
+    template,
+
+    declare,
+    lang,
+
+    on,
+    string,
+
+    _WidgetBase,
+    _TemplatedMixin,
+
+    WebApi,
+    stringHelper,
+
+    config
+) {
+    return declare([_WidgetBase, _TemplatedMixin], {
+        // description:
+        //      Takes a map click and sends it to the search api. Then publishes the results to the toaster.
+
+        templateString: template,
+        baseClass: 'parcel-identify',
+
+        _setParcelIdAttr: {
+            node: 'parcelIdNode',
+            type: 'innerHTML'
+        },
+        _setAddressAttr: {
+            node: 'addressNode',
+            type: 'innerHTML'
+        },
+        _setCityAttr: {
+            node: 'cityNode',
+            type: 'innerHTML'
+        },
+        _setZipAttr: {
+            node: 'zipNode',
+            type: 'innerHTML'
+        },
+        _setOwnershipAttr: {
+            node: 'ownershipNode',
+            type: 'innerHTML'
+        },
+        _setMessageAttr: {
+            node: 'messageNode',
+            type: 'innerHTML'
+        },
+
+        // the agrc web api helper
+        api: null,
+
+        // Properties to be sent into constructor
+
+        map: null,
+
+        postCreate: function() {
+            // summary:
+            //      Overrides method of same name in dijit._Widget.
+            // tags:
+            //      private
+            console.log('app.ParcelIdentify::postCreate', arguments);
+
+            this.setupConnections();
+
+            this.api = new WebApi({
+                apiKey: config.apiKey
+            });
+
+            this.inherited(arguments);
+        },
+        identify: function(evt) {
+            // summary:
+            //      sends a request to the web api
+            //
+            // map click evt
+            console.log('app.ParcelIdentify::identify', arguments);
+
+            var apiPoint = string.substitute('point:[${x},${y}]', evt.mapPoint);
+            this._reset(null);
+
+            this._getCounty(apiPoint)
+                .then(lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)))
+                .then(lang.hitch(this, this._setValues));
+        },
+        _setValues: function(parcelResults) {
+            // summary:
+            //      gets the parcel search api result
+            // parcelResults
+            console.log('app.ParcelIdentify::_setValues', arguments);
+
+            if (!parcelResults || parcelResults.length < 1) {
+                this._reset('No parcel found');
+                return;
+            }
+
+            var parcel = parcelResults[0].attributes;
+
+            if (!parcel) {
+                this._reset('No parcel found');
+                return;
+            }
+
+            /*jshint -W106*/
+            this.set('parcelId', parcel.parcel_id);
+            this.set('address', parcel.parcel_add);
+            this.set('city', parcel.parcel_city);
+            this.set('zip', parcel.parcel_zip);
+            this.set('ownership', parcel.own_type);
+            /*jshint +W106*/
+        },
+        _getParcelInfo: function(apiPoint, countyResult) {
+            // summary:
+            //      gets the parcel information from the search api
+            // apiPoint, county
+            console.log('app.ParcelIdentify::_getParcelInfo', arguments);
+
+            if (!countyResult || countyResult.length < 1) {
+                this._reset('No county found');
+                return;
+            }
+
+            var county = stringHelper.removeWhiteSpace(countyResult[0].attributes.name.toLowerCase());
+
+            if (!county) {
+                this._reset('No county found');
+                return;
+            }
+
+            var fc = 'sgid10.cadastre.parcels_' + county;
+            return this.api.search(fc, [
+                'parcel_id',
+                'parcel_add',
+                'parcel_city',
+                'parcel_zip',
+                'own_type'
+            ], {
+                geometry: apiPoint,
+                attributeStyle: 'lower',
+                spatialReference: this.map.spatialReference.wkid
+            });
+        },
+        _getCounty: function(apiPoint) {
+            // summary:
+            //      gets the county name from the search api
+            // apiPoint - the string x,y formatted for the searcha pi
+            console.log('app.ParcelIdentify::_getCounty', arguments);
+
+            return this.api.search('sgid10.boundaries.counties', ['name'], {
+                geometry: apiPoint,
+                attributeStyle: 'lower',
+                spatialReference: this.map.spatialReference.wkid
+            });
+        },
+        _reset: function(message) {
+            // summary:
+            //      reset identify and set message
+            // message
+            console.log('app.ParcelIdentify::_reset', arguments);
+
+            this.set('parcelId', 'null');
+            this.set('address', 'null');
+            this.set('city', 'null');
+            this.set('zip', 'null');
+            this.set('ownership', 'null');
+            this.set('message', message);
+        },
+        setupConnections: function() {
+            // summary:
+            //      wire events, and such
+            console.log('app.ParcelIdentify::setupConnections', arguments);
+
+            var scoped = this;
+            this.own(
+                on(this.map, 'click', function(e) {
+                    scoped.identify(e);
+                })
+            );
+        }
+    });
+});

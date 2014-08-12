@@ -21,7 +21,7 @@ define([
     _TemplatedMixin
 ) {
     return declare([_WidgetBase, _TemplatedMixin], {
-        baseClass: 'toaster',
+        baseClass: 'alert alert-info alert-dismissable toaster',
         templateString: template,
 
         //messageNode: dom/node,
