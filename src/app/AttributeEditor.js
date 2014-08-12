@@ -182,8 +182,15 @@ define([
             console.log('app.attributeEditor::initialize', arguments);
 
             var fieldInfos = [];
+            var hideFields = {
+                OBJECTID: 1,
+                Shape: 1
+            };
+            hideFields[config.fieldNames.Editor] = 1;
+            hideFields[config.fieldNames.ModifyDate] = 1;
+
             array.forEach(layer.fields, function (f) {
-                if (f.name !== config.fieldNames.Editor && f.name !== config.fieldNames.ModifyDate) {
+                if (!(f.name in hideFields)) {
                     fieldInfos.push({
                         fieldName: f.name,
                         isEditable: f.editable,
@@ -198,7 +205,7 @@ define([
                 fieldInfos: fieldInfos
             }];
 
-            this.childWidgets.push(
+            this.own(
                 this.attributeEditor = new AttributeInspector({
                     layerInfos: layerInfos
                 }, domConstruct.create('div', null, this.sideBar.contentDiv, 'first')),
@@ -215,8 +222,6 @@ define([
 
             this.own(
                 this.saveButton.on('click', function() {
-                    topic.publish('map-activity', 1);
-
                     that.saveButton.set('disabled', true);
                     that.attributeEditor.deleteBtn.set('disabled', true);
 

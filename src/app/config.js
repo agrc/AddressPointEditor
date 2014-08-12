@@ -1,13 +1,8 @@
 define([
-    'dojo/has',
-    'dojo/topic',
-
-    'ijit/widgets/authentication/LoginRegister'
+    'dojo/has'
 ], function(
-    has,
-    topic,
-
-    LoginRegister) {
+    has
+    ) {
     var apiKey, redlineUrl;
 
     if (has('agrc-api-key') === 'prod') {
@@ -40,7 +35,8 @@ define([
 
         urls: {
             basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
-            featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
+            editLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
+            viewLayer:  '/arcgis/rest/services/Broadband/Viewing/MapServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points',
             redline: redlineUrl
@@ -51,10 +47,6 @@ define([
             ModifyDate: 'ModifyDate'
         }
     };
-
-    topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
-        window.AGRC.user = result.user;
-    });
 
     return window.AGRC;
 });

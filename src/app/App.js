@@ -134,6 +134,13 @@ define([
             //      Fires when
             console.log('app.App::App', arguments);
 
+            var that = this;
+            topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
+                window.AGRC.user = result.user;
+
+                that.addFeatureLayer();
+            });
+
             this.activity = new Stateful({
                 count: 0
             });
@@ -169,16 +176,7 @@ define([
                 this.sideBar = new SlideInSidebar({
                     map: this.map
                 }, this.sideBarNode),
-                this.toaster = new Toaster({}, this.toasterNode),
-                this.editor = new Editor({
-                    map: this.map,
-                    editLayer: this.editLayer
-                }, domConstruct.place('<div>', this.map.container, 'last')),
-                this.attributeEditor = new AttributeEditor({
-                    sideBar: this.sideBar,
-                    editLayer: this.editLayer,
-                    map: this.map
-                })
+                this.toaster = new Toaster({}, this.toasterNode)
             );
 
             this.wireEvents();
@@ -233,17 +231,7 @@ define([
             console.info('app.App::App', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
-                useDefaultBaseMap: false,
-                extent: new Extent({
-                    'type': 'extent',
-                    'xmin': 387722.41802753304,
-                    'ymin': 4224561.955957659,
-                    'xmax': 389299.2007406538,
-                    'ymax': 4226673.473677837,
-                    'spatialReference': {
-                        'wkid': 26912
-                    }
-                })
+                useDefaultBaseMap: false
             });
             
             this.childWidgets.push(
@@ -269,7 +257,8 @@ define([
                 this.map.removeLayer(this.editLayer);
             }
 
-            this.editLayer = new FeatureLayer(AGRC.urls.featureLayer + id, {
+            var url = (config.user) ? AGRC.urls.editLayer : AGRC.urls.viewLayer;
+            this.editLayer = new FeatureLayer(url + id, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
                 outFields: ['*']
@@ -300,23 +289,32 @@ define([
 
             this.inherited(arguments);
         },
-        fullExtent: function() {
-            console.info('app.App::App', arguments);
-
-            this.map.setExtent(new Extent({
-                xmin: 81350,
-                ymin: 3962431,
-                xmax: 800096,
-                ymax: 4785283,
-                spatialReference: {
-                    wkid: 26912
-                }
-            }));
-        },
         initEditing: function(evt) {
             // sumamry:
             //      initializes the editing settings/widget
             console.info('app.App::App', arguments);
+
+            if (this.attributeEditor) {
+                this.attributeEditor.destroyRecursive();
+            }
+
+            this.own(
+                this.attributeEditor = new AttributeEditor({
+                    sideBar: this.sideBar,
+                    editLayer: this.editLayer,
+                    map: this.map
+                })
+            );
+
+            // show editor if logged in
+            if (config.user) {
+                this.own(
+                    this.editor = new Editor({
+                        map: this.map,
+                        editLayer: this.editLayer
+                    }, domConstruct.place('<div>', this.map.container, 'last'))
+                );
+            }
 
             this.attributeEditor.initialize(evt.layers[0].layer);
         }
