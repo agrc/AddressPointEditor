@@ -8,6 +8,22 @@ define([
     topic,
 
     LoginRegister) {
+    var apiKey, redlineUrl;
+
+    if (has('agrc-api-key') === 'prod') {
+        // mapserv.utah.gov
+        apiKey = 'AGRC-E7FEB434755864';
+        redlineUrl = 'http://mapserv.utah.gov/chalkdust';
+    } else if (has('agrc-api-key') === 'stage') {
+        // test.mapserv.utah.gov
+        apiKey = 'AGRC-FFCDAD6B933051';
+        redlineUrl = 'http://test.mapserv.utah.gov/chalkdust';
+    } else {
+        // localhost
+        apiKey = 'AGRC-B5D62BD2151902';
+        redlineUrl = 'http://localhost/git/chalkdust/dist/';
+    }
+
     window.AGRC = {
         // app: app.App
         //      global reference to App
@@ -18,7 +34,7 @@ define([
         version: '0.1.0',
 
         //apiKey: 'AGRC-B5D62BD2151902', // localhost
-        apiKey: 'AGRC-FFCDAD6B933051',
+        apiKey: apiKey,
 
         appName: 'addressediting',
 
@@ -26,7 +42,8 @@ define([
             basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
-            downloadGp: '/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points'
+            downloadGp: '/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points',
+            redline: redlineUrl
         },
 
         fieldNames: {
@@ -35,20 +52,9 @@ define([
         }
     };
 
-    topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function (result) {
+    topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
         window.AGRC.user = result.user;
     });
-
-    if (has('agrc-api-key') === 'prod') {
-        // mapserv.utah.gov
-        window.AGRC.apiKey = 'AGRC-E7FEB434755864';
-    } else if (has('agrc-api-key') === 'stage') {
-        // test.mapserv.utah.gov
-        window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
-    } else {
-        // localhost
-        window.AGRC.apiKey = 'AGRC-B5D62BD2151902';
-    }
 
     return window.AGRC;
 });
