@@ -134,6 +134,13 @@ define([
             //      Fires when
             console.log('app.App::App', arguments);
 
+            var that = this;
+            topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
+                window.AGRC.user = result.user;
+
+                that.addFeatureLayer();
+            });
+
             this.activity = new Stateful({
                 count: 0
             });
@@ -169,16 +176,7 @@ define([
                 this.sideBar = new SlideInSidebar({
                     map: this.map
                 }, this.sideBarNode),
-                this.toaster = new Toaster({}, this.toasterNode),
-                this.editor = new Editor({
-                    map: this.map,
-                    editLayer: this.editLayer
-                }, domConstruct.place('<div>', this.map.container, 'last')),
-                this.attributeEditor = new AttributeEditor({
-                    sideBar: this.sideBar,
-                    editLayer: this.editLayer,
-                    map: this.map
-                })
+                this.toaster = new Toaster({}, this.toasterNode)
             );
 
             this.wireEvents();
@@ -259,7 +257,8 @@ define([
                 this.map.removeLayer(this.editLayer);
             }
 
-            this.editLayer = new FeatureLayer(AGRC.urls.featureLayer + id, {
+            var url = (config.user) ? AGRC.urls.editLayer : AGRC.urls.viewLayer;
+            this.editLayer = new FeatureLayer(url + id, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
                 outFields: ['*']
@@ -294,6 +293,28 @@ define([
             // sumamry:
             //      initializes the editing settings/widget
             console.info('app.App::App', arguments);
+
+            if (this.attributeEditor) {
+                this.attributeEditor.destroyRecursive();
+            }
+
+            this.own(
+                this.attributeEditor = new AttributeEditor({
+                    sideBar: this.sideBar,
+                    editLayer: this.editLayer,
+                    map: this.map
+                })
+            );
+
+            // show editor if logged in
+            if (config.user) {
+                this.own(
+                    this.editor = new Editor({
+                        map: this.map,
+                        editLayer: this.editLayer
+                    }, domConstruct.place('<div>', this.map.container, 'last'))
+                );
+            }
 
             this.attributeEditor.initialize(evt.layers[0].layer);
         }
