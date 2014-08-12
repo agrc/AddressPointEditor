@@ -359,7 +359,8 @@ define([
 
             //check on update if anything changed
             if (type === 'update') {
-                if (edits.original.toJson() === edits.news.toJson()) {
+                if (JSON.stringify(edits.original.geometry) === JSON.stringify(edits.news.geometry) &&
+                    JSON.stringify(edits.original.attributes) === JSON.stringify(edits.news.attributes)) {
                     //nothing to update, they are the same.
                     console.log('edits are the same skipping');
                     topic.publish('app/state', 'Skipping save. Items are the same.');
