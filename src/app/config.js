@@ -1,4 +1,13 @@
-define(['dojo/has'], function(has) {
+define([
+    'dojo/has',
+    'dojo/topic',
+
+    'ijit/widgets/authentication/LoginRegister'
+], function(
+    has,
+    topic,
+
+    LoginRegister) {
     window.AGRC = {
         // app: app.App
         //      global reference to App
@@ -18,8 +27,17 @@ define(['dojo/has'], function(has) {
             featureLayer: '/arcgis/rest/services/Broadband/Editing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/Broadband/DownloadTool/GPServer/Download%20Address%20Points'
+        },
+
+        fieldNames: {
+            Editor: 'Editor',
+            ModifyDate: 'ModifyDate'
         }
     };
+
+    topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function (result) {
+        window.AGRC.user = result.user;
+    });
 
     if (has('agrc-api-key') === 'prod') {
         // mapserv.utah.gov

@@ -22,7 +22,9 @@ define([
     'esri/tasks/query',
     'esri/dijit/AttributeInspector',
     'esri/layers/FeatureLayer',
-    'esri/graphic'
+    'esri/graphic',
+
+    'app/config'
 ], function(
     declare,
     lang,
@@ -46,7 +48,8 @@ define([
     Query,
     AttributeInspector,
     FeatureLayer,
-    Graphic
+    Graphic,
+    config
 ) {
     // summary:
     //      Handles retrieving and displaying the data in the popup.
@@ -165,10 +168,21 @@ define([
         initialize: function(layer) {
             console.log('app.attributeEditor::initialize', arguments);
 
+            var fieldInfos = [];
+            array.forEach(layer.fields, function (f) {
+                if (f.name !== config.fieldNames.Editor && f.name !== config.fieldNames.ModifyDate) {
+                    fieldInfos.push({
+                        fieldName: f.name,
+                        isEditable: f.editable,
+                        label: f.alias
+                    });
+                }
+            });
             var layerInfos = [{
-                'featureLayer': layer,
-                'showAttachments': false,
-                'isEditable': true
+                featureLayer: layer,
+                showAttachments: false,
+                isEditable: true,
+                fieldInfos: fieldInfos
             }];
 
             this.attributeEditor = new AttributeInspector({

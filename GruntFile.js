@@ -9,8 +9,7 @@ module.exports = function(grunt) {
         'src/ChangeLog.html'
     ];
     var gruntFile = 'GruntFile.js';
-    var internFile = 'tests/intern.js';
-    var jshintFiles = [jsFiles, gruntFile, internFile];
+    var jshintFiles = [jsFiles, gruntFile];
 
     // Project configuration.
     grunt.initConfig({

@@ -1,19 +1,13 @@
-define([
-        'intern!object',
-        'intern/chai!assert',
+require([
         'app/App',
-        'dojo/dom-construct',
-        'dojo/_base/window',
 
-        'app/main'
+        'dojo/dom-construct'
     ],
 
     function(
-        registerSuite,
-        assert,
         App,
-        domConstruct,
-        win
+
+        domConstruct
     ) {
         var testWidget;
         // override alert to console
@@ -21,20 +15,18 @@ define([
             console.error('ALERT OVERRIDDEN TO LOG: ' + msg);
         };
 
-        registerSuite({
-            name: 'app/App',
+        describe('app/App', function () {
+            beforeEach(function () {
+                testWidget = new App({}, domConstruct.create('div', {}, document.body));
+            });
 
-            beforeEach: function() {
-                testWidget = new App({}, domConstruct.create('div', {}, win.body()));
-            },
-
-            afterEach: function() {
+            afterEach(function () {
                 testWidget.destroy();
                 testWidget = null;
-            },
+            });
 
-            createsAValidObject: function() {
-                assert.equal(testWidget.declaredClass, 'app/App');
-            }
+            it('createsAValidObject', function () {
+                expect(testWidget).toEqual(jasmine.any(App));
+            });
         });
     });
