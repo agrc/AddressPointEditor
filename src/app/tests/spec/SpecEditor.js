@@ -69,7 +69,7 @@ require([
                 it('enables undo button', function () {
                     testWidget.addUndoState('update', mockGraphic, mockGraphic);
 
-                    expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(true);
+                    expect(domClass.contains(testWidget.undoNode, 'disabled')).toBe(false);
                 });
             });
             describe('undo', function () {
@@ -100,8 +100,8 @@ require([
 
                     testWidget.updateUndoRedoCounts();
 
-                    expect(testWidget.undoCount, '').toBe(true);
-                    expect(testWidget.redoCount, '').toBe(true);
+                    expect(testWidget.undoCount).toBe('');
+                    expect(testWidget.redoCount).toBe('');
                 });
                 it('shows the correct counts when there are 3 undos but none have been undone', function () {
                     testWidget.undoManager.length = 3;
@@ -109,8 +109,8 @@ require([
 
                     testWidget.updateUndoRedoCounts();
 
-                    expect(testWidget.undoCount, 3).toBe(true);
-                    expect(testWidget.redoCount, '').toBe(true);
+                    expect(testWidget.undoCount).toBe(3);
+                    expect(testWidget.redoCount).toBe('');
                 });
                 it('shows the correct counts when there are 3 undos and 2 have been undone', function () {
                     testWidget.undoManager.length = 3;
@@ -118,8 +118,8 @@ require([
 
                     testWidget.updateUndoRedoCounts();
 
-                    expect(testWidget.undoCount, 1).toBe(true);
-                    expect(testWidget.redoCount, 2).toBe(true);
+                    expect(testWidget.undoCount).toBe(1);
+                    expect(testWidget.redoCount).toBe(2);
                 });
                 it('shows the correct counts when there are 3 undos and 3 have been undone', function () {
                     testWidget.undoManager.length = 3;
@@ -127,8 +127,8 @@ require([
 
                     testWidget.updateUndoRedoCounts();
 
-                    expect(testWidget.undoCount, '').toBe(true);
-                    expect(testWidget.redoCount, 3).toBe(true);
+                    expect(testWidget.undoCount).toBe('');
+                    expect(testWidget.redoCount).toBe(3);
                 });
             });
             describe('applyEditTracking', function () {
