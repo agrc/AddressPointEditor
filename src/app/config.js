@@ -1,13 +1,8 @@
 define([
-    'dojo/has',
-    'dojo/topic',
-
-    'ijit/widgets/authentication/LoginRegister'
+    'dojo/has'
 ], function(
-    has,
-    topic,
-
-    LoginRegister) {
+    has
+    ) {
     var apiKey, redlineUrl;
 
     if (has('agrc-api-key') === 'prod') {
@@ -51,10 +46,6 @@ define([
             ModifyDate: 'ModifyDate'
         }
     };
-
-    topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
-        window.AGRC.user = result.user;
-    });
 
     return window.AGRC;
 });

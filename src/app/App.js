@@ -233,17 +233,7 @@ define([
             console.info('app.App::App', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
-                useDefaultBaseMap: false,
-                extent: new Extent({
-                    'type': 'extent',
-                    'xmin': 387722.41802753304,
-                    'ymin': 4224561.955957659,
-                    'xmax': 389299.2007406538,
-                    'ymax': 4226673.473677837,
-                    'spatialReference': {
-                        'wkid': 26912
-                    }
-                })
+                useDefaultBaseMap: false
             });
             
             this.childWidgets.push(
@@ -299,19 +289,6 @@ define([
             });
 
             this.inherited(arguments);
-        },
-        fullExtent: function() {
-            console.info('app.App::App', arguments);
-
-            this.map.setExtent(new Extent({
-                xmin: 81350,
-                ymin: 3962431,
-                xmax: 800096,
-                ymax: 4785283,
-                spatialReference: {
-                    wkid: 26912
-                }
-            }));
         },
         initEditing: function(evt) {
             // sumamry:
