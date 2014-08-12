@@ -159,7 +159,8 @@ define([
             }, this.magicZoomDiv);
 
             this.changeRequest = new ChangeRequest({
-                map: this.map
+                map: this.map,
+                redliner: config.urls.redline
             }, this.suggestChangeDiv);
 
             this.downloadWizard = new DownloadSelector({},
