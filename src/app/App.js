@@ -181,8 +181,7 @@ define([
                 }, this.sideBarNode),
                 this.toaster = new Toaster({}, this.toasterNode),
                 this.parcelIdentify = new ParcelIdentify({
-                    map: this.map,
-                    toaster: this.toaster
+                    map: this.map
                 }, this.parcelIdentifyNode)
             );
 

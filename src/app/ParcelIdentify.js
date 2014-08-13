@@ -14,7 +14,7 @@ define([
     'dijit/_TemplatedMixin',
 
     'agrc/modules/WebAPI',
-    'agrc/modules/string',
+    'agrc/modules/String',
 
     'app/config'
 ], function(
@@ -102,9 +102,12 @@ define([
             var apiPoint = string.substitute('point:[${x},${y}]', evt.mapPoint);
             this._reset(null);
 
+            var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)),
+                setValues = lang.hitch(this, this._setValues);
+
             this._getCounty(apiPoint)
-                .then(lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)))
-                .then(lang.hitch(this, this._setValues));
+                .then(getParcel)
+                .then(setValues);
         },
         _setValues: function(parcelResults) {
             // summary:
