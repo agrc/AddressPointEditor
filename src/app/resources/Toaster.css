@@ -2,4 +2,6 @@
     position: absolute;
     top: 70px;
     left: 72px;
+    max-width: 275px;
+    width: 250px
 }

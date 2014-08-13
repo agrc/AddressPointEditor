@@ -1,21 +1,25 @@
 define([
+    'dojo/text!./templates/Toaster.html',
+
     'dojo/_base/declare',
     'dojo/_base/lang',
 
-    'dojo/text!./templates/Toaster.html',
-
     'dojo/topic',
+
+    'dojo/dom-class',
 
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin'
 
 ], function(
+    template,
+
     declare,
     lang,
 
-    template,
-
     topic,
+
+    domClass,
 
     _WidgetBase,
     _TemplatedMixin
@@ -87,7 +91,15 @@ define([
             //      description
             console.log('app.toaster::remove', arguments);
 
-            this.destroy();
+            this._hide();
+        },
+        _hide: function() {
+            // summary:
+            //      hide's the toaster.
+            //
+            console.log('app.toaster::_hide', arguments);
+
+            domClass.replace(this.domNode, 'hide', 'show');
         }
     });
 });

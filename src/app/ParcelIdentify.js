@@ -8,6 +8,8 @@ define([
     'dojo/string',
     'dojo/topic',
 
+    'dojo/dom-class',
+
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
 
@@ -24,6 +26,8 @@ define([
     on,
     string,
     topic,
+
+    domClass,
 
     _WidgetBase,
     _TemplatedMixin,
@@ -110,6 +114,8 @@ define([
 
             if (!parcelResults || parcelResults.length < 1) {
                 this._reset('No parcel found');
+                topic.publish('app/state', this);
+
                 return;
             }
 
@@ -117,6 +123,8 @@ define([
 
             if (!parcel) {
                 this._reset('No parcel found');
+                topic.publish('app/state', this);
+
                 return;
             }
 
@@ -186,6 +194,27 @@ define([
             this.set('ownership', null);
             this.set('message', message);
         },
+        _updateVisibility: function(name, value) {
+            // summary:
+            //      hides and shows empty dt items
+            // name, value
+            console.log('app.ParcelIdentify::_updateVisibility', arguments);
+
+            if (name === 'message' && value) {
+                domClass.replace(this.dlNode, 'hide', 'show');
+                domClass.replace(this.messageNode, 'show', 'hide');
+
+                return;
+            } else if (name === 'parcelId' && value) {
+                domClass.replace(this.messageNode, 'hide', 'show');
+                domClass.replace(this.dlNode, 'show', 'hide');
+
+                return;
+            }
+
+            domClass.replace(this.messageNode, 'hide', 'show');
+            domClass.replace(this.dlNode, 'hide', 'show');
+        },
         setupConnections: function() {
             // summary:
             //      wire events, and such
@@ -197,6 +226,16 @@ define([
                     scoped.identify(e);
                 })
             );
+
+            this.watch('message', function(name, oldValue, value) {
+                // get the current value from the textbox and set it in the node
+                scoped._updateVisibility(name, value);
+            });
+
+            this.watch('parcelId', function(name, oldValue, value) {
+                // get the current value from the textbox and set it in the node
+                scoped._updateVisibility(name, value);
+            });
         }
     });
 });
