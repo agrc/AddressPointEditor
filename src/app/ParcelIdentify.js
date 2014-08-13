@@ -6,6 +6,7 @@ define([
 
     'dojo/on',
     'dojo/string',
+    'dojo/topic',
 
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
@@ -22,6 +23,7 @@ define([
 
     on,
     string,
+    topic,
 
     _WidgetBase,
     _TemplatedMixin,
@@ -68,6 +70,7 @@ define([
 
         // Properties to be sent into constructor
 
+        // reference to the map
         map: null,
 
         postCreate: function() {
@@ -124,6 +127,8 @@ define([
             this.set('zip', parcel.parcel_zip);
             this.set('ownership', parcel.own_type);
             /*jshint +W106*/
+
+            topic.publish('app/state', this);
         },
         _getParcelInfo: function(apiPoint, countyResult) {
             // summary:
@@ -174,11 +179,11 @@ define([
             // message
             console.log('app.ParcelIdentify::_reset', arguments);
 
-            this.set('parcelId', 'null');
-            this.set('address', 'null');
-            this.set('city', 'null');
-            this.set('zip', 'null');
-            this.set('ownership', 'null');
+            this.set('parcelId', null);
+            this.set('address', null);
+            this.set('city', null);
+            this.set('zip', null);
+            this.set('ownership', null);
             this.set('message', message);
         },
         setupConnections: function() {

@@ -73,6 +73,12 @@ define([
                         'Click <code>Save</code> if you are done.');
                     break;
                 default:
+                    if(message.domNode){
+                        this.set('message', '');
+                        this.messageNode.appendChild(message.domNode);
+                        return;
+                    }
+
                     this.set('message', message);
             }
         },

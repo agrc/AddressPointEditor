@@ -10,6 +10,7 @@
 @import 'DownloadSelector.css';
 @import 'Editor.css';
 @import 'Toaster.css';
+@import 'ParcelIdentify.css';
 
 body, html {
     overflow: hidden;
