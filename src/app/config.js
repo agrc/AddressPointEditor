@@ -24,7 +24,7 @@ define([
         //      global reference to App
         app: null,
 
-        // version: String
+        // version.: String
         //      The version number.
         version: '0.1.0',
 

@@ -10,6 +10,12 @@ module.exports = function(grunt) {
     ];
     var gruntFile = 'GruntFile.js';
     var jshintFiles = [jsFiles, gruntFile];
+    var bumpFiles = [
+        'package.json',
+        'src/app/package.json',
+        'bower.json',
+        'src/app/config.js'
+    ];
 
     // Project configuration.
     grunt.initConfig({
@@ -130,6 +136,13 @@ module.exports = function(grunt) {
                         'src/app/**/*.js'
                     ]
                 }]
+            }
+        },
+        bump: {
+            options: {
+                files: bumpFiles,
+                commitFiles: bumpFiles,
+                push: false
             }
         }
     });
