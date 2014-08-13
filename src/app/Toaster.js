@@ -49,7 +49,8 @@ define([
             this.set('message', 'Welcome to the address point editor.');
             this.own(
                 topic.subscribe('app/toolbar', lang.hitch(this, 'updateMessage')),
-                topic.subscribe('app/state', lang.hitch(this, 'updateMessage'))
+                topic.subscribe('app/state', lang.hitch(this, 'updateMessage')),
+                topic.subscribe('app/identify', lang.hitch(this, 'showIdentify'))
             );
         },
         updateMessage: function(message) {
@@ -77,14 +78,22 @@ define([
                         'Click <code>Save</code> if you are done.');
                     break;
                 default:
-                    if(message.domNode){
-                        this.set('message', '');
-                        this.messageNode.appendChild(message.domNode);
-                        return;
-                    }
-
                     this.set('message', message);
             }
+        },
+        showIdentify: function(identifyWidget) {
+            // summary:
+            //      makes sure the toaster displays itself
+            // identifyNode
+            console.log('app.toaster::showIdentify', arguments);
+
+            if (!identifyWidget.domNode) {
+                return;
+            }
+
+            this.set('message', null);
+            this.messageNode.appendChild(identifyWidget.domNode);
+            domClass.replace(this.domNode, 'show', 'hide');
         },
         remove: function() {
             // summary:

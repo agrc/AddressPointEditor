@@ -114,7 +114,7 @@ define([
 
             if (!parcelResults || parcelResults.length < 1) {
                 this._reset('No parcel found');
-                topic.publish('app/state', this);
+                topic.publish('app/identify', this);
 
                 return;
             }
@@ -123,7 +123,7 @@ define([
 
             if (!parcel) {
                 this._reset('No parcel found');
-                topic.publish('app/state', this);
+                topic.publish('app/identify', this);
 
                 return;
             }
@@ -136,7 +136,7 @@ define([
             this.set('ownership', parcel.own_type);
             /*jshint +W106*/
 
-            topic.publish('app/state', this);
+            topic.publish('app/identify', this);
         },
         _getParcelInfo: function(apiPoint, countyResult) {
             // summary:
