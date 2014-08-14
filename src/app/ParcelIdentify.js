@@ -44,25 +44,45 @@ define([
         templateString: template,
         baseClass: 'parcel-identify',
 
-        _setParcelIdAttr: {
-            node: 'parcelIdNode',
-            type: 'innerHTML'
+        _setParcelIdAttr: function(value) {
+            if(!value){
+                value = 'No Data';
+            }
+
+            this._set('parcelId', value);
+            this.parcelIdNode.innerHTML = value;
         },
-        _setAddressAttr: {
-            node: 'addressNode',
-            type: 'innerHTML'
+        _setAddressAttr: function(value) {
+            if(!value){
+                value = 'No Data';
+            }
+
+            this._set('address', value);
+            this.addressNode.innerHTML = value;
         },
-        _setCityAttr: {
-            node: 'cityNode',
-            type: 'innerHTML'
+        _setCityAttr: function(value) {
+            if(!value){
+                value = 'No Data';
+            }
+
+            this._set('city', value);
+            this.cityNode.innerHTML = value;
         },
-        _setZipAttr: {
-            node: 'zipNode',
-            type: 'innerHTML'
+        _setZipAttr: function(value) {
+            if(!value){
+                value = 'No Data';
+            }
+
+            this._set('zip', value);
+            this.zipNode.innerHTML = value;
         },
-        _setOwnershipAttr: {
-            node: 'ownershipNode',
-            type: 'innerHTML'
+        _setOwnershipAttr: function(value) {
+            if(!value){
+                value = 'No Data';
+            }
+
+            this._set('ownership', value);
+            this.ownershipNode.innerHTML = value;
         },
         _setMessageAttr: {
             node: 'messageNode',
