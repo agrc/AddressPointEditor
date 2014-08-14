@@ -46,7 +46,8 @@ define([
             //      setup
             console.log('app.toaster::postCreate', arguments);
 
-            this.set('message', 'Welcome to the address point editor.');
+            this.set('message', 'Welcome to the address point editor. ' +
+                'Did you know you can click on a parcel to identify?');
             this.own(
                 topic.subscribe('app/toolbar', lang.hitch(this, 'updateMessage')),
                 topic.subscribe('app/state', lang.hitch(this, 'updateMessage')),

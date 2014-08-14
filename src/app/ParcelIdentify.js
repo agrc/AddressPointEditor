@@ -237,15 +237,10 @@ define([
                 domClass.replace(this.messageNode, 'show', 'hide');
 
                 return;
-            } else if (name === 'parcelId' && value) {
-                domClass.replace(this.messageNode, 'hide', 'show');
-                domClass.replace(this.dlNode, 'show', 'hide');
-
-                return;
             }
 
             domClass.replace(this.messageNode, 'hide', 'show');
-            domClass.replace(this.dlNode, 'hide', 'show');
+            domClass.replace(this.dlNode, 'show', 'hide');
         },
         setupConnections: function() {
             // summary:
