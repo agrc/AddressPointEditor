@@ -123,11 +123,12 @@ define([
             this._reset(null);
 
             var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)),
-                setValues = lang.hitch(this, this._setValues);
+                setValues = lang.hitch(this, this._setValues),
+                networkError = lang.hitch(this, this._networkError);
 
             this._getCounty(apiPoint)
-                .then(getParcel)
-                .then(setValues);
+                .then(getParcel, networkError)
+                .then(setValues, networkError);
         },
         _setValues: function(parcelResults) {
             // summary:
@@ -203,6 +204,14 @@ define([
                 attributeStyle: 'lower',
                 spatialReference: this.map.spatialReference.wkid
             });
+        },
+        _networkError: function(e) {
+            // summary:
+            //      handles xhr errors
+            // e
+            console.log('app.ParcelIdentify::_networkError', arguments);
+
+            this._reset('Search Failure. Please try again.' + e.message || null);
         },
         _reset: function(message) {
             // summary:
