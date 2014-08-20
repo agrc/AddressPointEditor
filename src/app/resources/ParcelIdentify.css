@@ -1,0 +1,11 @@
+@media (min-width: 768px) {
+    .parcel-identify dl {
+        margin-top: 21px;
+    }
+    .parcel-identify .dl-horizontal dt {
+        width: 85px;
+    }
+    .parcel-identify .dl-horizontal dd {
+        margin-left: 100px;
+    }
+}

@@ -24,9 +24,9 @@ define([
         //      global reference to App
         app: null,
 
-        // version: String
+        // version.: String
         //      The version number.
-        version: '0.1.0',
+        version: '0.1.4',
 
         //apiKey: 'AGRC-B5D62BD2151902', // localhost
         apiKey: apiKey,

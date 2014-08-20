@@ -1,27 +1,31 @@
 define([
+    'dojo/text!./templates/Toaster.html',
+
     'dojo/_base/declare',
     'dojo/_base/lang',
 
-    'dojo/text!./templates/Toaster.html',
-
     'dojo/topic',
+
+    'dojo/dom-class',
 
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin'
 
 ], function(
+    template,
+
     declare,
     lang,
 
-    template,
-
     topic,
+
+    domClass,
 
     _WidgetBase,
     _TemplatedMixin
 ) {
     return declare([_WidgetBase, _TemplatedMixin], {
-        baseClass: 'toaster',
+        baseClass: 'alert alert-info alert-dismissable toaster',
         templateString: template,
 
         //messageNode: dom/node,
@@ -42,10 +46,12 @@ define([
             //      setup
             console.log('app.toaster::postCreate', arguments);
 
-            this.set('message', 'Welcome to the address point editor.');
+            this.set('message', 'Welcome to the address point editor. ' +
+                'Did you know you can click on a parcel to identify?');
             this.own(
                 topic.subscribe('app/toolbar', lang.hitch(this, 'updateMessage')),
-                topic.subscribe('app/state', lang.hitch(this, 'updateMessage'))
+                topic.subscribe('app/state', lang.hitch(this, 'updateMessage')),
+                topic.subscribe('app/identify', lang.hitch(this, 'showIdentify'))
             );
         },
         updateMessage: function(message) {
@@ -76,12 +82,34 @@ define([
                     this.set('message', message);
             }
         },
+        showIdentify: function(identifyWidget) {
+            // summary:
+            //      makes sure the toaster displays itself
+            // identifyNode
+            console.log('app.toaster::showIdentify', arguments);
+
+            if (!identifyWidget.domNode) {
+                return;
+            }
+
+            this.set('message', null);
+            this.messageNode.appendChild(identifyWidget.domNode);
+            domClass.replace(this.domNode, 'show', 'hide');
+        },
         remove: function() {
             // summary:
             //      description
             console.log('app.toaster::remove', arguments);
 
-            this.destroy();
+            this._hide();
+        },
+        _hide: function() {
+            // summary:
+            //      hide's the toaster.
+            //
+            console.log('app.toaster::_hide', arguments);
+
+            domClass.replace(this.domNode, 'hide', 'show');
         }
     });
 });

@@ -10,6 +10,12 @@ module.exports = function(grunt) {
     ];
     var gruntFile = 'GruntFile.js';
     var jshintFiles = [jsFiles, gruntFile];
+    var bumpFiles = [
+        'package.json',
+        'src/app/package.json',
+        'bower.json',
+        'src/app/config.js'
+    ];
 
     // Project configuration.
     grunt.initConfig({
@@ -97,11 +103,13 @@ module.exports = function(grunt) {
         compress: {
             main: {
                 options: {
-                    archive: 'deploy/addressEditing.zip'
+                    archive: 'deploy/addresspointeditor.zip'
                 },
                 files: [{
-                    src: ['dist/**'],
-                    dest: '/'
+                    src: ['**', '!build-report.txt', '!util/**'],
+                    dest: '/addresspointeditor',
+                    cwd: 'dist/',
+                    expand: true
                 }]
             }
         },
@@ -113,7 +121,7 @@ module.exports = function(grunt) {
         },
         esri_slurp: {
             options: {
-                version: 3.9
+                version: '3.9'
             },
             missing: {
                 dest: 'src/esri'
@@ -131,6 +139,13 @@ module.exports = function(grunt) {
                     ]
                 }]
             }
+        },
+        bump: {
+            options: {
+                files: bumpFiles,
+                commitFiles: bumpFiles,
+                push: false
+            }
         }
     });
 
@@ -141,7 +156,7 @@ module.exports = function(grunt) {
         }
     }
 
-     // Default task.
+    // Default task.
     grunt.registerTask('default', [
         'jshint',
         'amdcheck',

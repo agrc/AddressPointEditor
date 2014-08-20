@@ -43,6 +43,8 @@ define([
     './Editor',
     './AttributeEditor',
     './Toaster',
+    './ParcelIdentify',
+
 
     'bootstrap'
 ], function(
@@ -89,7 +91,8 @@ define([
     DownloadSelector,
     Editor,
     AttributeEditor,
-    Toaster
+    Toaster,
+    ParcelIdentify
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
@@ -176,7 +179,10 @@ define([
                 this.sideBar = new SlideInSidebar({
                     map: this.map
                 }, this.sideBarNode),
-                this.toaster = new Toaster({}, this.toasterNode)
+                this.toaster = new Toaster({}, this.toasterNode),
+                this.parcelIdentify = new ParcelIdentify({
+                    map: this.map
+                }, this.parcelIdentifyNode)
             );
 
             this.wireEvents();
@@ -233,12 +239,12 @@ define([
             this.map = new BaseMap(this.mapDiv, {
                 useDefaultBaseMap: false
             });
-            
+
             this.childWidgets.push(
                 new BaseMapSelector({
                     map: this.map,
                     id: 'claro',
-                    position: 'BR'
+                    position: 'TR'
                 })
             );
 

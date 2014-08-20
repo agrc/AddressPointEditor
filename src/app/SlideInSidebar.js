@@ -52,8 +52,6 @@ define([
 
             this.wireEvents();
 
-            this.resize();
-
             this.width = domGeom.getMarginBox(this.domNode).w;
 
             this.showAni = fx.animateProperty({
@@ -70,18 +68,10 @@ define([
                 }
             });
         },
-        resize: function() {
-            // summary:
-            //      resets the height of the div
-            console.log('app.SlideInSidebar::resize', arguments);
-
-            domStyle.set(this.domNode, 'height', (domGeom.getMarginBox(win.body()).h - 41) + 'px');
-        },
         wireEvents: function() {
             // param: type or return: type
             console.log('app.SlideInSidebar::wireEvents', arguments);
 
-            this.own(on(window, 'resize', lang.hitch(this, 'resize')));
         },
         show: function() {
             // summary:
