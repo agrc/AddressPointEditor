@@ -1,0 +1,9 @@
+{
+  "application": {
+    "name":"addressediting",
+    "description": "Address Editing Application"
+  },
+  "adminEmails":["sgourley@utah.gov"],
+  "roles": ["admin", "editor", "viewer"],
+  "creationToken": "super_token"
+}

@@ -49,6 +49,7 @@ define([
     AttributeInspector,
     FeatureLayer,
     Graphic,
+
     config
 ) {
     // summary:
@@ -118,10 +119,9 @@ define([
             console.log('app.attributeEditor::wireEvents', arguments);
 
             this.own(
-                this.map.on('click', lang.hitch(this, function() {
-                    if (this.activeToolbar !== 'navigation') {
-                        this.sideBar.show();
-                    } else {
+                this.map.on('click', lang.hitch(this, function(evt) {
+                    if (this.activeToolbar === 'navigation') {
+                        topic.publish('app/identify-click', evt);
                         this.sideBar.hide();
                         this.editLayer.clearSelection();
                     }
@@ -129,7 +129,7 @@ define([
                 this.editLayer.on('click', lang.hitch(this, 'buildQuery')),
                 aspect.before(this, 'buildQuery', function() {
                     topic.publish('map-activity', 1);
-                }),
+                }, true),
                 topic.subscribe('app/toolbar', lang.hitch(this, 'notifyToolbarActivation')),
                 topic.subscribe('app/selectFeature', lang.hitch(this, 'selectFeature'))
             );
@@ -322,11 +322,11 @@ define([
 
             this.activeToolbar = 'navigation';
 
-            if (!toolbar || !lang.isArray(toolbar)) {
+            if (!toolbar) {
                 return;
             }
 
-            this.activeToolbar = toolbar[0];
+            this.activeToolbar = toolbar;
         },
         _screenPointToEnvelope: function(evt) {
             console.log('app.attributeEditor::_screenPointToEnvelope', arguments);

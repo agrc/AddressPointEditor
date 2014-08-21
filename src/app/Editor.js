@@ -19,12 +19,20 @@ define([
     'dojo/i18n!esri/nls/jsapi', //this is where esri.bundle is located
 
     'esri/undoManager',
+
     'esri/toolbars/draw',
-    'esri/graphic',
-    'esri/tasks/query',
     'esri/toolbars/edit',
+
+    'esri/graphic',
+
+    'esri/tasks/query',
+
+    'esri/geometry/Extent',
+    'esri/geometry/Point',
+
     'esri/symbols/SimpleMarkerSymbol',
     'esri/symbols/SimpleLineSymbol',
+
     'esri/dijit/editing/Add',
     'esri/dijit/editing/Delete',
     'esri/dijit/editing/Update',
@@ -51,12 +59,20 @@ define([
     jsapiBundle,
 
     UndoManager,
+
     Draw,
-    Graphic,
-    Query,
     Edit,
+
+    Graphic,
+
+    Query,
+
+    Extent,
+    Point,
+
     SimpleMarkerSymbol,
     SimpleLineSymbol,
+
     Add,
     Delete,
     Update,
@@ -136,7 +152,7 @@ define([
             // summary:
             //      constructor
             console.log('app.editor::constructor', arguments);
-        
+
             this.childWidgets = [];
         },
         postCreate: function() {
@@ -257,13 +273,13 @@ define([
         saveNewPoint: function(evt) {
             // summary:
             //      applies the edits to the feature layer
-            console.log('app.editor::wireEvents', arguments);
+            console.log('app.editor::saveNewPoint', arguments);
 
             this.newGraphic = new Graphic(evt.geometry, this.symbol, null, null);
             this.map.graphics.add(this.newGraphic);
 
             var selectQuery = new Query();
-            selectQuery.geometry = evt.geometry;
+            selectQuery.geometry = this._screenPointToEnvelope(evt.geometry);
 
             var context = this;
 
@@ -275,12 +291,12 @@ define([
                     original: null
                 },
                 function() {
-                    console.log('success');
+                    console.log('app.editor::saveNewPoint::success');
                     topic.publish('app/selectFeature', selectQuery);
                 },
                 null,
                 function() {
-                    console.log('always');
+                    console.log('app.editor::saveNewPoint::always');
                     context.map.graphics.remove(context.newGraphic);
                     context.newGraphic = null;
                 }
@@ -385,7 +401,7 @@ define([
                 if (JSON.stringify(edits.original.geometry) === JSON.stringify(edits.news.geometry) &&
                     JSON.stringify(edits.original.attributes) === JSON.stringify(edits.news.attributes)) {
                     //nothing to update, they are the same.
-                    console.log('edits are the same skipping');
+                    console.log('app.editor::saveEditsGeneric::edits are the same skipping');
                     topic.publish('app/state', 'Skipping save. Items are the same.');
 
                     return;
@@ -393,13 +409,13 @@ define([
             }
 
             //display activity
-            console.log('displaying activity');
+            console.log('app.editor::saveEditsGeneric::displaying activity');
             topic.publish('map-activity', 1);
 
             //modify callbacks
-            console.log('modifiying activity');
+            console.log('app.editor::saveEditsGeneric::modifiying activity');
             var modifiedSuccess = function(response) {
-                console.log('modified success');
+                console.log('app.editor::saveEditsGeneric::modified success');
 
                 var error;
                 var check = function (edits) {
@@ -427,7 +443,7 @@ define([
             };
 
             var modifiedError = function(err) {
-                console.log('modified error');
+                console.log('app.editor::saveEditsGeneric::modified error');
                 var message = '';
                 if (err && err.details && lang.isArray(err.details)) {
                     message = err.details[0];
@@ -441,7 +457,7 @@ define([
             };
 
             var modifiedAlways = function(response) {
-                console.log('modified always');
+                console.log('app.editor::saveEditsGeneric::modified always');
                 topic.publish('map-activity', -1);
 
                 if (lang.isFunction(alwaysBack)) {
@@ -456,7 +472,7 @@ define([
                 .then(null, modifiedError)
                 .always(modifiedAlways);
 
-            // couldn't get the correct response object by passing modifiedSuccess to 
+            // couldn't get the correct response object by passing modifiedSuccess to
             // then above. Had to wire it to the event.
             this.editLayer.on('edits-complete', modifiedSuccess);
         },
@@ -476,7 +492,6 @@ define([
                 });
             };
 
-            addAttributes(edits.adds);
             addAttributes(edits.updates);
         },
         saveMoveEdits: function() {
@@ -541,7 +556,7 @@ define([
             console.log('app.editor::undo', arguments);
 
             if (!this.undoManager.canUndo) {
-                console.log('nothing to undo');
+                console.log('app.editor::undo::nothing to undo');
 
                 return;
             }
@@ -559,7 +574,7 @@ define([
             console.log('app.editor::redo', arguments);
 
             if (!this.undoManager.canRedo) {
-                console.log('nothing to redo');
+                console.log('app.editor::redo::nothing to redo');
 
                 return;
             }
@@ -590,6 +605,14 @@ define([
                 domClass.add(this.redoNode, 'disabled');
                 domClass.remove(this.undoNode, 'disabled');
             }
+        },
+        _screenPointToEnvelope: function(geom) {
+            console.log('app.attributeEditor::_screenPointToEnvelope', arguments);
+
+            //Build tolerance envelope and set it as the query geometry
+            var queryExtent = new Extent(geom.x - 5, geom.y - 5, geom.x + 5, geom.y + 5, geom.spatialReference);
+
+            return queryExtent;
         }
     });
 });
