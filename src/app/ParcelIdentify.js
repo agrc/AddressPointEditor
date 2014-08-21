@@ -248,11 +248,15 @@ define([
             console.log('app.ParcelIdentify::setupConnections', arguments);
 
             var scoped = this;
-            this.own(
-                on(this.map, 'click', function(e) {
+            topic.subscribe('app/identify-click', function(e) {
                     scoped.identify(e);
-                })
-            );
+                });
+
+            // this.own(
+            //     on(this.map, 'click', function(e) {
+            //         scoped.identify(e);
+            //     })
+            // );
 
             this.watch('message', function(name, oldValue, value) {
                 // get the current value from the textbox and set it in the node

@@ -6,6 +6,7 @@ api/FiberVerification.Editing.Api/.nuget/
 api/FiberVerification.Editing.Api/Web.config
 deploy/fiberVerification.zip
 dist/
+deploy/
 node_modules/
 src/agrc/
 src/bootstrap/
