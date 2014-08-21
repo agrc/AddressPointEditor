@@ -92,7 +92,12 @@ define([
                 return;
             }
 
-            this.set('message', null);
+            while (this.messageNode.lastChild) {
+                this.messageNode.removeChild(this.messageNode.lastChild);
+            }
+
+            this.set('message', '');
+
             this.messageNode.appendChild(identifyWidget.domNode);
             domClass.replace(this.domNode, 'show', 'hide');
         },
