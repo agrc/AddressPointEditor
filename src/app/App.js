@@ -172,7 +172,8 @@ define([
                 }, this.magicZoomDiv),
                 this.changeRequest = new ChangeRequest({
                     map: this.map,
-                    redliner: config.urls.redline
+                    redliner: config.urls.redline,
+                    toIds: [3, 5, 6]
                 }, this.suggestChangeDiv),
                 this.downloadWizard = new DownloadSelector({},
                     this.downloadDiv),
@@ -287,7 +288,7 @@ define([
             console.log('app.App::startup', arguments);
 
             var that = this;
-            array.forEach(this.childWidgets, function (widget) {
+            array.forEach(this.childWidgets, function(widget) {
                 console.log('widget.declaredClass', widget.declaredClass);
                 that.own(widget);
                 widget.startup();
