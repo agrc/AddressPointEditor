@@ -1,6 +1,6 @@
 {
   "name": "address_point_editor",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-amdcheck": "~0.3",
