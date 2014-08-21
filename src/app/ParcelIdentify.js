@@ -127,7 +127,7 @@ define([
                 networkError = lang.hitch(this, this._networkError);
 
             this._getCounty(apiPoint)
-                .then(getParcel, networkError)
+                .then(getParcel)
                 .then(setValues, networkError);
         },
         _setValues: function(parcelResults) {
@@ -211,7 +211,7 @@ define([
             // e
             console.log('app.ParcelIdentify::_networkError', arguments);
 
-            this._reset('Search Failure. Please try again.' + e.message || null);
+            this._reset('Search Failure. Please try again.' + e || 'There was a problem searching.');
         },
         _reset: function(message) {
             // summary:
@@ -251,12 +251,6 @@ define([
             topic.subscribe('app/identify-click', function(e) {
                     scoped.identify(e);
                 });
-
-            // this.own(
-            //     on(this.map, 'click', function(e) {
-            //         scoped.identify(e);
-            //     })
-            // );
 
             this.watch('message', function(name, oldValue, value) {
                 // get the current value from the textbox and set it in the node
