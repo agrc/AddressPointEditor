@@ -26,7 +26,7 @@ define([
 
         // version.: String
         //      The version number.
-        version: '0.1.4',
+        version: '0.1.5',
 
         //apiKey: 'AGRC-B5D62BD2151902', // localhost
         apiKey: apiKey,
