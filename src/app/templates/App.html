@@ -1,63 +1,97 @@
 <div>
-  <div class="navbar navbar-inverse navbar-fixed-top" >
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Address Point Editor</a>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">About</h4>
+                </div>
+                <div class="modal-body">
+                    <p>This application was initiated through the Utah Broadband Project. The Utah Broadband Project is a part of the <abbr title="State Broadband Initiative">SBI</abbr> grants funded by
+                    <abbr title="National Telecommunications and Information Administration">NTIA</abbr>. The
+                    <abbr title="State Broadband Initiative">SBI</abbr> program, led by states, works to facilitate the integration of broadband and information technology into state and local economies. Through the <abbr title="State Broadband Initiative">SBI</abbr> program,
+                    <abbr title="National Telecommunications and Information Administration">NTIA</abbr> and the
+                    <abbr title="Federal Communications Commission">FCC</abbr> maintain the National Broadband Map, based on data collected from states.</p>
+                    <p>Address points are used by the Utah Broadband Project, as well as other projects, to create a more accurate inventory of known address locations in support of broadband accessibility analysis, public safety applications and many other uses. This address point editing platform allows data stewards to maintain their address point data in an efficient, browser-based process.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
-    <div class="collapse navbar-collapse navbar-main-collapse">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" id='suggest-change-dropdown' class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-pencil"></span> Suggest Change</a>
-          <div class='dropdown-menu'>
-            <div data-dojo-attach-point="suggestChangeDiv"></div>
-          </div>
-        </li>
-        <li class="dropdown">
-          <a href="#" class='dropdown-toggle' data-toggle='dropdown'><span class="glyphicon glyphicon-map-marker"></span> Find Address</a>
-          <div class='dropdown-menu'>
-            <div data-dojo-attach-point="findAddressDiv"></div>
-          </div>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-globe"></span> Find Place</a>
-          <div class='dropdown-menu'>
-            <form onsubmit='return false;'>
-              <div data-dojo-attach-point="magicZoomDiv"></div>
-            </form>
-          </div>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" href="#" data-toggle='dropdown'><span class="glyphicon glyphicon-cloud-download"></span> Download</a>
-          <div class='dropdown-menu'>
-            <div data-dojo-attach-point="downloadDiv"></div>
-          </div>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-link"></span> Links <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">About</a></li>
-            <li><a href="#">SGID</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">911 Registration</a></li>
-          </ul>
-        </li>
-        <li>
-          <div data-dojo-attach-point="logoutDiv"></div>
-        </li>
-      </ul>
+    <!-- /.modal -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Address Point Editor</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-main-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" id='suggest-change-dropdown' class='dropdown-toggle' data-toggle='dropdown'>
+                        <span class="glyphicon glyphicon-pencil"></span>&nbsp;Suggest Change</a>
+                    <div class='dropdown-menu'>
+                        <div data-dojo-attach-point="suggestChangeDiv"></div>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class='dropdown-toggle' data-toggle='dropdown'>
+                        <span class="glyphicon glyphicon-map-marker"></span>&nbsp;Find Address</a>
+                    <div class='dropdown-menu'>
+                        <div data-dojo-attach-point="findAddressDiv"></div>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle='dropdown'>
+                        <span class="glyphicon glyphicon-globe"></span>&nbsp;Find Place</a>
+                    <div class='dropdown-menu'>
+                        <form onsubmit='return false;'>
+                            <div data-dojo-attach-point="magicZoomDiv"></div>
+                        </form>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle='dropdown'>
+                        <span class="glyphicon glyphicon-cloud-download"></span>&nbsp;Download</a>
+                    <div class='dropdown-menu'>
+                        <div data-dojo-attach-point="downloadDiv"></div>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-link"></span>&nbsp;Links <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="http://broadband.utah.gov/map/">Utah Broadband Project</a>
+                        </li>
+                        <li><a href="http://gis.utah.gov/data/location/address-data/">SGID</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#" data-toggle="modal" data-target="#myModal">About</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div data-dojo-attach-point="logoutDiv"></div>
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
-  <div data-dojo-attach-point="mapDiv" class="map-div"></div>
-  <div data-dojo-attach-point='sideBarNode'></div>
-
-  <div data-dojo-attach-point="toasterNode">
-  <div data-dojo-attach-point="parcelIdentifyNode">
-</div>
-</div>
+    <div data-dojo-attach-point="mapDiv" class="map-div"></div>
+    <div data-dojo-attach-point='sideBarNode'></div>
+    <div data-dojo-attach-point="toasterNode">
+        <div data-dojo-attach-point="parcelIdentifyNode">
+        </div>
+    </div>
