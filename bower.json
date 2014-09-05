@@ -1,6 +1,6 @@
 {
   "name": "addres_point_editing",
-  "version": "0.1.7",
+  "version": "1.0.0",
   "dependencies": {
     "agrc": "agrc-widgets#2.5.1",
     "bootstrap": "~3.1",
