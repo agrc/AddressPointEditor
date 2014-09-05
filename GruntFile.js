@@ -16,6 +16,19 @@ module.exports = function(grunt) {
         'bower.json',
         'src/app/config.js'
     ];
+    var deployDir = 'AddressPointEditor';
+    var secrets;
+    try {
+        secrets = grunt.file.readJSON('secrets.json');
+    } catch (e) {
+        // swallow for build server
+        secrets = {
+            stageHost: '',
+            prodHost: '',
+            username: '',
+            password: ''
+        };
+    }
 
     // Project configuration.
     grunt.initConfig({
@@ -146,6 +159,50 @@ module.exports = function(grunt) {
                 commitFiles: bumpFiles,
                 push: false
             }
+        },
+        secrets: secrets,
+        sftp: {
+            stage: {
+                files: {
+                    './': 'deploy/addresspointeditor.zip'
+                },
+                options: {
+                    host: '<%= secrets.stageHost %>'
+                }
+            },
+            prod: {
+                files: {
+                    './': 'deploy/addresspointeditor.zip'
+                },
+                options: {
+                    host: '<%= secrets.prodHost %>'
+                }
+            },
+            options: {
+                path: './' + deployDir + '/',
+                srcBasePath: 'deploy/',
+                username: '<%= secrets.username %>',
+                password: '<%= secrets.password %>',
+                showProgress: true
+            }
+        },
+        sshexec: {
+            options: {
+                username: '<%= secrets.username %>',
+                password: '<%= secrets.password %>'
+            },
+            stage: {
+                command: ['cd ' + deployDir, 'unzip -o addresspointeditor.zip', 'rm addresspointeditor.zip'].join(';'),
+                options: {
+                    host: '<%= secrets.stageHost %>'
+                }
+            },
+            prod: {
+                command: ['cd ' + deployDir, 'unzip -o addresspointeditor.zip', 'rm addresspointeditor.zip'].join(';'),
+                options: {
+                    host: '<%= secrets.prodHost %>'
+                }
+            }
         }
     });
 
@@ -173,13 +230,19 @@ module.exports = function(grunt) {
         'processhtml:dist',
         'compress'
     ]);
-    grunt.registerTask('stage-build', [
+    grunt.registerTask('stage', [
         'clean',
         'dojo:stage',
         'imagemin:dynamic',
         'copy',
         'processhtml:dist',
         'compress'
+    ]);
+    grunt.registerTask('deploy', [
+        'clean:deploy',
+        'compress:main',
+        'sftp:prod',
+        'sshexec:prod'
     ]);
     grunt.registerTask('travis', [
         'esri_slurp',

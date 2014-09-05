@@ -285,3 +285,4 @@ nosetests.xml
 .pydevproject
 *.sde
 deploy/addressEditing.zip
+secrets.json

@@ -144,6 +144,9 @@ define([
                 that.addFeatureLayer();
             });
 
+
+            this.version.innerHTML = config.version;
+
             this.activity = new Stateful({
                 count: 0
             });

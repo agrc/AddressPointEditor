@@ -4,20 +4,21 @@
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-amdcheck": "~0.3",
-    "grunt-bump": "0.0.15",
+    "grunt-bump": "0.0",
     "grunt-contrib-clean": "~0",
     "grunt-contrib-compress": "~0.9",
     "grunt-contrib-connect": "~0.6",
     "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-imagemin": "git+https://github.com/gruntjs/grunt-contrib-imagemin#80e9c667f90c7cbb414cb38efdc63001fb3be970",
-    "grunt-contrib-jasmine": "^0.7.0",
+    "grunt-contrib-imagemin": "^0.8",
+    "grunt-contrib-jasmine": "^0.7",
     "grunt-contrib-jshint": "~0.9",
     "grunt-contrib-watch": "~0.5",
     "grunt-dojo": "~0.3",
     "grunt-esri-slurp": "~0",
-    "grunt-if-missing": "^1.0.0",
+    "grunt-if-missing": "^1.0",
     "grunt-newer": "~0.7",
-    "grunt-processhtml": "~0.3"
+    "grunt-processhtml": "~0.3",
+    "grunt-ssh": "^0.11"
   },
   "scripts": {
     "test": "grunt travis --verbose"
