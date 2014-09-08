@@ -119,8 +119,8 @@ module.exports = function(grunt) {
                     archive: 'deploy/addresspointeditor.zip'
                 },
                 files: [{
-                    src: ['**', '!build-report.txt', '!util/**'],
-                    dest: '/addresspointeditor',
+                    src: ['**', '!build-report.txt', '!util/**', '!jasmine-facicon-reporter/**'],
+                    dest: '/',
                     cwd: 'dist/',
                     expand: true
                 }]
