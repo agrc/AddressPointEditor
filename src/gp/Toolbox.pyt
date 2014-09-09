@@ -29,9 +29,11 @@ class DownloadTool(object):
         self.label = "Download Address Points"
         self.description = "Download a counties address points."
         self.canRunInBackground = False
+        # these need to be copied to the server occasionally.
+        # check for g_ESRI_varialble1 and 2 and make sure paths look ok.
         self.database_connections = {
-            'addresses': 'C:\\Projects\\GitHub\\Broadband.Editing\\src\\gp\\Address.sde',
-            'sgid': 'C:\\Projects\\GitHub\\Broadband.Editing\\src\\gp\\SGID10.sde'
+            'addresses': 'Address.sde',
+            'sgid': 'SGID10.sde'
         }
 
     def getParameterInfo(self):
@@ -118,6 +120,8 @@ class DownloadTool(object):
 
     def _get_address_points(self):
         address_fc = 'AddressPoints'
+        # this might need to be modified on the server to contain db.user info
+        # it's picky
         location = self.database_connections['addresses'] + '\\' + address_fc
 
         arcpy.MakeFeatureLayer_management(location, 'address_points')

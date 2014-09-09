@@ -1,23 +1,34 @@
 /* jshint camelcase:false */
 module.exports = function(grunt) {
-    var jsFiles = 'src/app/**/*.js';
-    var otherFiles = [
+    var jsFiles = 'src/app/**/*.js',
+    otherFiles = [
         'src/app/**/*.html',
         'src/app/**/*.css',
         'src/index.html',
-        'src/edit.html',
         'src/ChangeLog.html'
-    ];
-    var gruntFile = 'GruntFile.js';
-    var jshintFiles = [jsFiles, gruntFile];
-    var bumpFiles = [
+    ],
+    gruntFile = 'GruntFile.js',
+    jshintFiles = [jsFiles, gruntFile],
+    bumpFiles = [
         'package.json',
         'src/app/package.json',
         'bower.json',
         'src/app/config.js'
-    ];
-    var deployDir = 'AddressPointEditor';
-    var secrets;
+    ],
+    deployFiles = [
+        '**',
+        '!build-report.txt',
+        '!util/**',
+        '!jasmine-favicon-reporter/**',
+        '!**/*.uncompressed.js',
+        '!**/*consoleStripped.js',
+        '!**/*.min.*',
+        '!**/tests/**',
+        '!**/bootstrap/test-infra/**',
+        '!**/bootstrap/less/**'
+    ],
+    deployDir = 'AddressPointEditor',
+    secrets;
     try {
         secrets = grunt.file.readJSON('secrets.json');
     } catch (e) {
@@ -95,8 +106,7 @@ module.exports = function(grunt) {
             options: {},
             dist: {
                 files: {
-                    'dist/index.html': ['src/index.html'],
-                    'dist/edit.html': ['src/edit.html']
+                    'dist/index.html': ['src/index.html']
                 }
             }
         },
@@ -119,8 +129,8 @@ module.exports = function(grunt) {
                     archive: 'deploy/addresspointeditor.zip'
                 },
                 files: [{
-                    src: ['**', '!build-report.txt', '!util/**', '!jasmine-facicon-reporter/**'],
-                    dest: '/',
+                    src: deployFiles,
+                    dest: './',
                     cwd: 'dist/',
                     expand: true
                 }]
@@ -140,7 +150,10 @@ module.exports = function(grunt) {
                 dest: 'src/esri'
             }
         },
-        clean: ['dist'],
+        clean: {
+            build: ['dist'],
+            deploy: ['deploy']
+        },
         amdcheck: {
             dev: {
                 options: {
