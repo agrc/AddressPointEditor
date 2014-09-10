@@ -126,7 +126,7 @@ module.exports = function(grunt) {
         compress: {
             main: {
                 options: {
-                    archive: 'deploy/addresspointeditor.zip'
+                    archive: 'deploy/deploy.zip'
                 },
                 files: [{
                     src: deployFiles,
@@ -177,7 +177,7 @@ module.exports = function(grunt) {
         sftp: {
             stage: {
                 files: {
-                    './': 'deploy/addresspointeditor.zip'
+                    './': 'deploy/deploy.zip'
                 },
                 options: {
                     host: '<%= secrets.stageHost %>'
@@ -185,7 +185,7 @@ module.exports = function(grunt) {
             },
             prod: {
                 files: {
-                    './': 'deploy/addresspointeditor.zip'
+                    './': 'deploy/deploy.zip'
                 },
                 options: {
                     host: '<%= secrets.prodHost %>'
@@ -205,13 +205,13 @@ module.exports = function(grunt) {
                 password: '<%= secrets.password %>'
             },
             stage: {
-                command: ['cd ' + deployDir, 'unzip -o addresspointeditor.zip', 'rm addresspointeditor.zip'].join(';'),
+                command: ['cd ' + deployDir, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.stageHost %>'
                 }
             },
             prod: {
-                command: ['cd ' + deployDir, 'unzip -o addresspointeditor.zip', 'rm addresspointeditor.zip'].join(';'),
+                command: ['cd ' + deployDir, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.prodHost %>'
                 }
