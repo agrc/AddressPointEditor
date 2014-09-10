@@ -25,13 +25,17 @@ define([
     'agrc/widgets/map/BaseMap',
     'agrc/widgets/locate/FindAddress',
     'agrc/widgets/locate/MagicZoom',
+    'agrc/widgets/locate/ZoomToCoords',
+
     'agrc/widgets/map/BaseMapSelector',
 
     'ijit/widgets/notify/ChangeRequest',
     'ijit/widgets/authentication/LoginRegister',
 
-    'esri/layers/FeatureLayer',
     'esri/config',
+    'esri/graphic',
+
+    'esri/layers/FeatureLayer',
     'esri/tasks/GeometryService',
     'esri/geometry/Extent',
     'esri/symbols/SimpleMarkerSymbol',
@@ -74,13 +78,17 @@ define([
     BaseMap,
     FindAddress,
     MagicZoom,
+    ZoomToCoords,
+
     BaseMapSelector,
 
     ChangeRequest,
     LoginRegister,
 
-    FeatureLayer,
     esriConfig,
+    Graphic,
+
+    FeatureLayer,
     GeomService,
     Extent,
     SimpleMarkerSymbol,
@@ -160,7 +168,7 @@ define([
                     appName: config.appName,
                     logoutDiv: this.logoutDiv,
                     showOnLoad: false,
-                    securedServicesBaseUrl: config.urls.featureLayer
+                    securedServicesBaseUrl: config.urls.editLayer
                 }),
                 this.findAddress = new FindAddress({
                     map: this.map,
@@ -173,6 +181,9 @@ define([
                     searchField: 'Name',
                     maxResultsToDisplay: 10
                 }, this.magicZoomDiv),
+                this.zoomCoords = new ZoomToCoords({
+                    map: this.map
+                }, this.coordDiv),
                 this.changeRequest = new ChangeRequest({
                     map: this.map,
                     redliner: config.urls.redline,
@@ -205,6 +216,7 @@ define([
 
             this.own(
                 this.map.on('layers-add-result', lang.hitch(this, 'initEditing')),
+                this.zoomCoords.on('zoom', lang.hitch(this, 'showPoint')),
                 topic.subscribe('map-activity', lang.hitch(this, function(difference) {
                     var currentCount = this.activity.get('count');
                     var count = currentCount += difference;
@@ -327,6 +339,35 @@ define([
             }
 
             this.attributeEditor.initialize(evt.layers[0].layer);
+        },
+        showPoint: function(evt) {
+            // summary:
+            //      shows the point for a duration and hides the dropdown
+            // evt
+            console.log('app.App::showPoint', arguments);
+
+            this.graphicsLayer = this.map.graphics;
+
+            var symbol = new SimpleMarkerSymbol(
+                SimpleMarkerSymbol.STYLE_CIRCLE, 8,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color('#F012BE'), 1),
+                new Color('#7FDBFF')
+            );
+
+            this._graphic = new Graphic(evt.point, symbol);
+            this.graphicsLayer.add(this._graphic);
+
+            domClass.remove(this.zoomDropdown, 'open');
+
+            var self = this;
+
+            this.timeout = setTimeout(function(){
+                if (self._graphic) {
+                    self.graphicsLayer.remove(self._graphic);
+                    clearTimeout(self.timeout);
+                }
+            }, 5000);
         }
     });
 });

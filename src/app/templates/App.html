@@ -52,17 +52,22 @@
                 </li>
                 <li class="dropdown">
                     <a href="#" class='dropdown-toggle' data-toggle='dropdown'>
-                        <span class="glyphicon glyphicon-map-marker"></span>&nbsp;Find Address</a>
+                        <span class="glyphicon glyphicon-map-marker"></span>&nbsp;Find</a>
                     <div class='dropdown-menu'>
                         <div data-dojo-attach-point="findAddressDiv"></div>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" href="#" data-toggle='dropdown'>
-                        <span class="glyphicon glyphicon-globe"></span>&nbsp;Find Place</a>
-                    <div class='dropdown-menu'>
+                        <hr/>
+                        <h4>Place</h4>
                         <form onsubmit='return false;'>
                             <div data-dojo-attach-point="magicZoomDiv"></div>
+                        </form>
+                    </div>
+                </li>
+                <li class="dropdown" data-dojo-attach-point="zoomDropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle='dropdown'>
+                        <span class="glyphicon glyphicon-globe"></span>&nbsp;Zoom</a>
+                    <div class='dropdown-menu'>
+                        <form onsubmit='return false;'>
+                            <div data-dojo-attach-point="coordDiv"></div>
                         </form>
                     </div>
                 </li>
