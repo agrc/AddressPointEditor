@@ -27,7 +27,8 @@ module.exports = function(grunt) {
         '!**/bootstrap/test-infra/**',
         '!**/bootstrap/less/**'
     ],
-    deployDir = 'AddressPointEditor',
+    deployDirProd = 'AddressPointEditor',
+    deployDirStage = 'wwwroot/AddressPointEditor',
     secrets;
     try {
         secrets = grunt.file.readJSON('secrets.json');
@@ -177,7 +178,8 @@ module.exports = function(grunt) {
                     './': 'deploy/deploy.zip'
                 },
                 options: {
-                    host: '<%= secrets.stageHost %>'
+                    host: '<%= secrets.stageHost %>',
+                    path: './' + deployDirStage + '/'
                 }
             },
             prod: {
@@ -185,11 +187,11 @@ module.exports = function(grunt) {
                     './': 'deploy/deploy.zip'
                 },
                 options: {
-                    host: '<%= secrets.prodHost %>'
+                    host: '<%= secrets.prodHost %>',
+                    path: './' + deployDirProd + '/'
                 }
             },
             options: {
-                path: './' + deployDir + '/',
                 srcBasePath: 'deploy/',
                 username: '<%= secrets.username %>',
                 password: '<%= secrets.password %>',
@@ -202,13 +204,13 @@ module.exports = function(grunt) {
                 password: '<%= secrets.password %>'
             },
             stage: {
-                command: ['cd ' + deployDir, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
+                command: ['cd ' + deployDirStage, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.stageHost %>'
                 }
             },
             prod: {
-                command: ['cd ' + deployDir, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
+                command: ['cd ' + deployDirProd, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.prodHost %>'
                 }
