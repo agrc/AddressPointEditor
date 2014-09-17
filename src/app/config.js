@@ -34,7 +34,7 @@ define([
         appName: 'addressediting',
 
         urls: {
-            basemap: 'http://mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
+            basemap: '//mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             editLayer: '/arcgis/rest/services/AddressEditor/Editing/FeatureServer/',
             viewLayer:  '/arcgis/rest/services/AddressEditor/Viewing/MapServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
