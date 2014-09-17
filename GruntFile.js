@@ -204,13 +204,13 @@ module.exports = function(grunt) {
                 password: '<%= secrets.password %>'
             },
             stage: {
-                command: ['cd ' + deployDirStage, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
+                command: ['cd ' + deployDirStage, 'unzip -oq deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.stageHost %>'
                 }
             },
             prod: {
-                command: ['cd ' + deployDirProd, 'unzip -o deploy.zip', 'rm deploy.zip'].join(';'),
+                command: ['cd ' + deployDirProd, 'unzip -oq deploy.zip', 'rm deploy.zip'].join(';'),
                 options: {
                     host: '<%= secrets.prodHost %>'
                 }
