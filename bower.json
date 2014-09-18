@@ -1,8 +1,8 @@
 {
   "name": "addres_point_editing",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "dependencies": {
-    "agrc": "agrc-widgets#2.6.0",
+    "agrc": "agrc-widgets#2.6.1",
     "bootstrap": "~3.1",
     "dojo": "1.9",
     "dojox": "1.9",
