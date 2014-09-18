@@ -45,7 +45,7 @@ define([
         baseClass: 'parcel-identify',
 
         _setParcelIdAttr: function(value) {
-            if(!value){
+            if (!value) {
                 value = 'No Data';
             }
 
@@ -53,7 +53,7 @@ define([
             this.parcelIdNode.innerHTML = value;
         },
         _setAddressAttr: function(value) {
-            if(!value){
+            if (!value) {
                 value = 'No Data';
             }
 
@@ -61,7 +61,7 @@ define([
             this.addressNode.innerHTML = value;
         },
         _setCityAttr: function(value) {
-            if(!value){
+            if (!value) {
                 value = 'No Data';
             }
 
@@ -69,7 +69,7 @@ define([
             this.cityNode.innerHTML = value;
         },
         _setZipAttr: function(value) {
-            if(!value){
+            if (!value) {
                 value = 'No Data';
             }
 
@@ -77,7 +77,7 @@ define([
             this.zipNode.innerHTML = value;
         },
         _setOwnershipAttr: function(value) {
-            if(!value){
+            if (!value) {
                 value = 'No Data';
             }
 
@@ -88,13 +88,17 @@ define([
             node: 'messageNode',
             type: 'innerHTML'
         },
+        _setReverseAttr: {
+            node: 'reverseNode',
+            type: 'innerHTML'
+        },
         _setXAttr: function(value) {
-            value = +(Math.round(value + 'e+2')  + 'e-2');
+            value = +(Math.round(value + 'e+2') + 'e-2');
             this._set('x', value);
             this.xNode.innerHTML = value;
         },
         _setYAttr: function(value) {
-            value = +(Math.round(value + 'e+2')  + 'e-2');
+            value = +(Math.round(value + 'e+2') + 'e-2');
             this._set('y', value);
             this.yNode.innerHTML = value;
         },
@@ -136,7 +140,11 @@ define([
 
             var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)),
                 setValues = lang.hitch(this, this._setValues),
+                updateAddress = lang.hitch(this, this._updateAddress),
                 networkError = lang.hitch(this, this._networkError);
+
+            this._reverseGeocode(evt.mapPoint)
+                .then(updateAddress);
 
             this._getCounty(apiPoint)
                 .then(getParcel)
@@ -219,6 +227,38 @@ define([
                 spatialReference: this.map.spatialReference.wkid
             });
         },
+        _reverseGeocode: function(point) {
+            // summary:
+            //      description
+            // point
+            console.log('app.ParcelIdentify::_reverseGeocode', arguments);
+
+            return this.api.reverseGeocode(point.x, point.y, {
+                distance: 50
+            });
+        },
+        _updateAddress: function(reverseResults) {
+            // summary:
+            //      sets the value
+            // apiPoint
+            console.log('app.ParcelIdentify::_updateAddress', arguments);
+
+            if (!reverseResults || reverseResults.length < 1) {
+                this.set('reverse', 'No address found');
+
+                return;
+            }
+
+            var address = reverseResults.address;
+
+            if (!address) {
+                this.set('reverse', 'No address found');
+
+                return;
+            }
+
+            this.set('reverse', address.street);
+        },
         _networkError: function(e) {
             // summary:
             //      handles xhr errors
@@ -263,8 +303,8 @@ define([
 
             var scoped = this;
             topic.subscribe('app/identify-click', function(e) {
-                    scoped.identify(e);
-                });
+                scoped.identify(e);
+            });
 
             this.watch('message', function(name, oldValue, value) {
                 // get the current value from the textbox and set it in the node
