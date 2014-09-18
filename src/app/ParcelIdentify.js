@@ -88,6 +88,16 @@ define([
             node: 'messageNode',
             type: 'innerHTML'
         },
+        _setXAttr: function(value) {
+            value = +(Math.round(value + 'e+2')  + 'e-2');
+            this._set('x', value);
+            this.xNode.innerHTML = value;
+        },
+        _setYAttr: function(value) {
+            value = +(Math.round(value + 'e+2')  + 'e-2');
+            this._set('y', value);
+            this.yNode.innerHTML = value;
+        },
 
         // the agrc web api helper
         api: null,
@@ -119,7 +129,9 @@ define([
             // map click evt
             console.log('app.ParcelIdentify::identify', arguments);
 
+            this.mapPoint = evt.mapPoint;
             var apiPoint = string.substitute('point:[${x},${y}]', evt.mapPoint);
+
             this._reset(null);
 
             var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)),
@@ -158,6 +170,8 @@ define([
             this.set('city', parcel.parcel_city);
             this.set('zip', parcel.parcel_zip);
             this.set('ownership', parcel.own_type);
+            this.set('x', this.mapPoint.x);
+            this.set('y', this.mapPoint.y);
             /*jshint +W106*/
 
             topic.publish('app/identify', this);
