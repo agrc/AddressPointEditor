@@ -250,9 +250,11 @@ define([
                 }),
 
                 this.attributeEditor.on('next', function(evt) {
+                    if(!evt || !evt.feature){
+                        return;
+                    }
                     that.originalFeature = new Graphic(evt.feature.toJson());
                     that.updateFeature = evt.feature;
-                    console.log('next');
                 }),
 
                 this.attributeEditor.on('delete', function(evt) {

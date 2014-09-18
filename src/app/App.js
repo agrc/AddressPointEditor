@@ -36,10 +36,14 @@ define([
     'esri/graphic',
 
     'esri/layers/FeatureLayer',
+    'esri/layers/GraphicsLayer',
+    'esri/layers/LabelLayer',
     'esri/tasks/GeometryService',
     'esri/geometry/Extent',
     'esri/symbols/SimpleMarkerSymbol',
     'esri/symbols/SimpleLineSymbol',
+    'esri/symbols/TextSymbol',
+    'esri/renderers/SimpleRenderer',
 
     './config',
     './SlideInSidebar',
@@ -89,10 +93,14 @@ define([
     Graphic,
 
     FeatureLayer,
+    GraphicsLayer,
+    LabelLayer,
     GeomService,
     Extent,
     SimpleMarkerSymbol,
     SimpleLineSymbol,
+    TextSymbol,
+    SimpleRenderer,
 
     config,
     SlideInSidebar,
@@ -131,10 +139,15 @@ define([
         // childWidgets: _WidgetBase[]
         childWidgets: null,
 
+        // searchGraphics: esri/layers/GraphicsLayer
+        // summary:
+        //      the graphics layer to be used with the find address task
+        searchGraphics: null,
+
         constructor: function() {
             // summary:
             //      first function to fire after page loads
-            console.info('app.App::App', arguments);
+            console.info('app.App::constructor', arguments);
 
             esriConfig.app = this;
 
@@ -143,15 +156,15 @@ define([
         postCreate: function() {
             // summary:
             //      Fires when
-            console.log('app.App::App', arguments);
+            console.log('app.App::postCreate', arguments);
 
+            // needs to happen here since remember me race condition
             var that = this;
             topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
                 window.AGRC.user = result.user;
-
-                that.addFeatureLayer();
+                that.identifyTopic.remove();
+                that.enableEditingLayer();
             });
-
 
             this.version.innerHTML = config.version;
 
@@ -161,7 +174,7 @@ define([
 
             this.initMap();
 
-            this.addFeatureLayer();
+            this.initGraphicLayers();
 
             this.childWidgets.push(
                 new LoginRegister({
@@ -172,6 +185,7 @@ define([
                 }),
                 this.findAddress = new FindAddress({
                     map: this.map,
+                    graphicsLayer: this.searchGraphics,
                     apiKey: AGRC.apiKey
                 }, this.findAddressDiv),
                 this.magicZoom = new MagicZoom({
@@ -179,6 +193,7 @@ define([
                     mapServiceURL: AGRC.urls.basemap,
                     searchLayerIndex: 3,
                     searchField: 'Name',
+                    graphicsLayer: this.searchGraphics,
                     maxResultsToDisplay: 10
                 }, this.magicZoomDiv),
                 this.zoomCoords = new ZoomToCoords({
@@ -202,55 +217,10 @@ define([
 
             this.wireEvents();
         },
-        wireEvents: function() {
-            console.log('app.App::App', arguments);
-
-            this.activity.watch('count', lang.hitch(this, function() {
-                if (this.activity.get('count') > 0) {
-                    this.map.showLoader();
-                    return;
-                }
-
-                this.map.hideLoader();
-            }));
-
-            this.own(
-                this.map.on('layers-add-result', lang.hitch(this, 'initEditing')),
-                this.zoomCoords.on('zoom', lang.hitch(this, 'showPoint')),
-                topic.subscribe('map-activity', lang.hitch(this, function(difference) {
-                    var currentCount = this.activity.get('count');
-                    var count = currentCount += difference;
-
-                    this.activity.set('count', count);
-                })),
-                on(this.changeRequest, 'drawStart', function() {
-                    console.log('on draw start');
-                    var ddl = $('#suggest-change-dropdown');
-                    ddl.dropdown('toggle');
-                    ddl.blur();
-                    $('.dropdown').blur();
-                }),
-                on(this.changeRequest, 'drawEnd', function() {
-                    console.log('on draw end');
-                    setTimeout(function() {
-                        $('#suggest-change-dropdown').dropdown('toggle');
-                    }, 100);
-                }),
-                aspect.before(this.sideBar, 'show', function() {
-                    topic.publish('app/state', 'Fill out the address details for this point.');
-                }),
-                aspect.after(this.findAddress, 'done', lang.hitch(this, function() {
-                    setTimeout(lang.hitch(this,
-                        function() {
-                            this.findAddress.graphicsLayer.remove(this.findAddress._graphic);
-                        }), 5000);
-                }))
-            );
-        },
         initMap: function() {
             // summary:
             //      Sets up the map
-            console.info('app.App::App', arguments);
+            console.info('app.App::initMap', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
                 useDefaultBaseMap: false
@@ -266,36 +236,80 @@ define([
 
             esriConfig.defaults.geometryService = new GeomService(AGRC.urls.geometryService);
         },
-        addFeatureLayer: function() {
-            console.info('app.App::App', arguments);
+        initGraphicLayers: function() {
+            // summary:
+            //      creates the feature layer objects
+            //
+            console.log('app.App::initGraphicLayer', arguments);
 
-            var id = 0;
+            var layerId = 0;
 
-            if (id < 0) {
-                return;
-            }
-
-            if (this.editLayer) {
-                this.map.removeLayer(this.editLayer);
-            }
-
-            var url = (config.user) ? AGRC.urls.editLayer : AGRC.urls.viewLayer;
-            this.editLayer = new FeatureLayer(url + id, {
+            var url = AGRC.urls.viewLayer + layerId;
+            this.editLayer = new FeatureLayer(url, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
-                outFields: ['*']
+                outFields: [config.fieldNames.FullAddress],
+                id: 'viewLayer',
+                minScale: 144448
             });
 
-            var symbol = new SimpleMarkerSymbol(
-                SimpleMarkerSymbol.STYLE_CIRCLE, 8,
-                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                    new Color('black'), 1),
-                new Color('aqua')
+            this.labelLayer = new LabelLayer();
+            this.labelLayer.id = 'labelLayer';
+            this.labelLayer.minScale = config.labelsMinScale;
+            this.labelLayer.addFeatureLayer(this.editLayer,
+                new SimpleRenderer(new TextSymbol().setOffset(-17, 3)),
+                '{' + config.fieldNames.FullAddress + '}'
             );
 
-            this.editLayer.setSelectionSymbol(symbol);
+            this.searchGraphics = new GraphicsLayer({
+                id: 'searchGraphics'
+            });
+        },
+        wireEvents: function() {
+            console.log('app.App::wireEvents', arguments);
 
-            this.map.addLayers([this.editLayer]);
+            this.activity.watch('count', lang.hitch(this, function() {
+                if (this.activity.get('count') > 0) {
+                    this.map.showLoader();
+                    return;
+                }
+
+                this.map.hideLoader();
+            }));
+
+            this.identifyTopic = this.map.on('click', lang.hitch(this, function(evt) {
+                topic.publish('app/identify-click', evt);
+            }));
+
+            this.own(
+                this.map.on('load', lang.hitch(this, function() {
+                    this.addGraphicLayers();
+                })),
+                this.identifyTopic,
+                this.zoomCoords.on('zoom', lang.hitch(this, 'showPoint')),
+                topic.subscribe('map-activity', lang.hitch(this, function(difference) {
+                    var currentCount = this.activity.get('count');
+                    var count = currentCount += difference;
+
+                    this.activity.set('count', count);
+                })),
+                on(this.changeRequest, 'drawStart', function() {
+                    console.log('on draw start');
+                    var ddl = $('#suggest-change-dropdown');
+                    ddl.dropdown('toggle');
+                    ddl.blur();
+                    $('.dropdown').blur();
+                }),
+                on(this.changeRequest, 'drawEnd', function() {
+                    $('#suggest-change-dropdown').dropdown('toggle');
+                }),
+                aspect.before(this.sideBar, 'show', function() {
+                    topic.publish('app/state', 'Fill out the address details for this point.');
+                }),
+                aspect.after(this.findAddress, '_done', lang.hitch(this, function() {
+                    $('<div id="find-dropdown"></div>').dropdown('toggle');
+                }))
+            );
         },
         startup: function() {
             // summary:
@@ -311,10 +325,56 @@ define([
 
             this.inherited(arguments);
         },
-        initEditing: function(evt) {
+        addGraphicLayers: function() {
+            console.info('app.App::addGraphicLayers', arguments);
+
+            if (this.editLayer && this.editLayer.getMap()) {
+                this.map.removeLayer(this.editLayer);
+            }
+            if (this.labelLayer && this.labelLayer.getMap()) {
+                this.map.removeLayer(this.labelLayer);
+            }
+
+            this.map.addLayer(this.searchGraphics, 0);
+            this.map.addLayer(this.editLayer, 2);
+            //this.map.addLayer(this.labelLayer, 1);
+        },
+        enableEditingLayer: function() {
+            // summary:
+            //      removes the default viewing layer and adds the editing layer
+            //
+            console.log('app.App::enableEditingLayer', arguments);
+
+            if (this.editLayer && this.editLayer.getMap()) {
+                this.map.removeLayer(this.editLayer);
+            }
+
+            var layerId = 0;
+
+            var url = AGRC.urls.editLayer + layerId;
+            this.editLayer = new FeatureLayer(url, {
+                mode: FeatureLayer.MODE_ONDEMAND,
+                useMapTime: false,
+                outFields: ['*'],
+                id: 'editLayer'
+            });
+
+            var editingSelectionSymbol = new SimpleMarkerSymbol(
+                SimpleMarkerSymbol.STYLE_CIRCLE, 8,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color('black'), 1),
+                new Color('aqua')
+            );
+
+            this.editLayer.setSelectionSymbol(editingSelectionSymbol);
+
+            this.addGraphicLayers();
+            this.initEditing();
+        },
+        initEditing: function() {
             // sumamry:
             //      initializes the editing settings/widget
-            console.info('app.App::App', arguments);
+            console.info('app.App::initEditing', arguments);
 
             if (this.attributeEditor) {
                 this.attributeEditor.destroyRecursive();
@@ -338,15 +398,13 @@ define([
                 );
             }
 
-            this.attributeEditor.initialize(evt.layers[0].layer);
+            this.attributeEditor.initialize(this.editLayer);
         },
         showPoint: function(evt) {
             // summary:
             //      shows the point for a duration and hides the dropdown
             // evt
             console.log('app.App::showPoint', arguments);
-
-            this.graphicsLayer = this.map.graphics;
 
             var symbol = new SimpleMarkerSymbol(
                 SimpleMarkerSymbol.STYLE_CIRCLE, 8,
@@ -356,15 +414,15 @@ define([
             );
 
             this._graphic = new Graphic(evt.point, symbol);
-            this.graphicsLayer.add(this._graphic);
+            this.searchGraphics.add(this._graphic);
 
             domClass.remove(this.zoomDropdown, 'open');
 
             var self = this;
 
-            this.timeout = setTimeout(function(){
+            this.timeout = setTimeout(function() {
                 if (self._graphic) {
-                    self.graphicsLayer.remove(self._graphic);
+                    self.searchGraphics.remove(self._graphic);
                     clearTimeout(self.timeout);
                 }
             }, 5000);
