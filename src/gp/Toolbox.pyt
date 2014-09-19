@@ -147,7 +147,7 @@ class DownloadTool(object):
         arcpy.MakeFeatureLayer_management(location, 'selection', where_clause)
 
     def _get_address_points(self):
-        address_fc = 'AddressPoints'
+        address_fc = 'AddressPointEditing.ADDRESSADMIN.AddressPoints'
         # this might need to be modified on the server to contain db.user info
         # it's picky
         location = self.address + '.sde\\' + address_fc
