@@ -1,5 +1,8 @@
 import arcpy
+import itertools
 import os
+from glob import glob
+from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
 
@@ -17,24 +20,21 @@ class Toolbox(object):
 
 class DownloadTool(object):
 
-    version = '1.0.3'
-    database_connections = None
-    feature_name = 'AddressPoints'
-    county = None
-    file_type = None
-    coordinate_system = None
 
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "Download Address Points"
         self.description = "Download a counties address points."
         self.canRunInBackground = False
+        self.count = None
+        self.file_type = None
+        self.coordinate_system = None
+        self.version = '1.0.4'
+        self.feature_name = 'AddressPoints'
         # these need to be copied to the server occasionally.
         # check for g_ESRI_varialble1 and 2 and make sure paths look ok.
-        self.database_connections = {
-            'addresses': 'Address.sde',
-            'sgid': 'SGID10.sde'
-        }
+        self.address = '.\\Address'
+        self.sgid = '.\\SGID10'
 
     def getParameterInfo(self):
         """Define parameter definitions"""
@@ -48,14 +48,14 @@ class DownloadTool(object):
 
         p1 = arcpy.Parameter(
             displayName='File type',
-            name='f_type',
+            name='format',
             datatype='String',
             parameterType='Required',
             direction='Input')
 
         p2 = arcpy.Parameter(
             displayName='Coordinate System',
-            name='c_system',
+            name='sr',
             datatype='String',
             parameterType='Required',
             direction='Input')
@@ -90,6 +90,34 @@ class DownloadTool(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
+    def _delete_scratch_data(self, directory, types=None):
+        arcpy.AddMessage('--_delete_scratch_data::{}'.format(directory))
+
+        limit = 5000
+        i = 0
+
+        if types is None:
+            types = ['csv', 'zip', 'xlsx', 'gdb', 'cpg', 'dbf', 'xml', 'prj', 'sbn', 'sbx', 'shx', 'shp']
+
+        items_to_delete = map(lambda x: glob(os.path.join(directory, '*.' + x)), types)
+        # flatten [[], []]
+        items_to_delete = list(itertools.chain.from_iterable(items_to_delete))
+
+        def remove(thing):
+            if os.path.isdir(thing):
+                rmtree(thing)
+            else:
+                os.remove(thing)
+
+        while len(filter(os.path.exists, items_to_delete)) > 0 and i < limit:
+            try:
+                map(remove, items_to_delete)
+            except Exception as e:
+                print e
+                i += 1
+
+        return True
+
     def get_extension(self, f):
         file_name, file_extension = os.path.splitext(f)
 
@@ -113,7 +141,7 @@ class DownloadTool(object):
 
     def _get_county(self, county):
         county_fc = 'SGID10.BOUNDARIES.Counties'
-        location = self.database_connections['sgid'] + '\\' + county_fc
+        location = self.sgid + '.sde\\' + county_fc
         where_clause = "NAME = '{}'".format(county)
 
         arcpy.MakeFeatureLayer_management(location, 'selection', where_clause)
@@ -122,7 +150,7 @@ class DownloadTool(object):
         address_fc = 'AddressPoints'
         # this might need to be modified on the server to contain db.user info
         # it's picky
-        location = self.database_connections['addresses'] + '\\' + address_fc
+        location = self.address + '.sde\\' + address_fc
 
         arcpy.MakeFeatureLayer_management(location, 'address_points')
 
@@ -151,6 +179,7 @@ class DownloadTool(object):
         folder_to_zip = output_location
 
         self._create_scratch_folder(output_location)
+        self._delete_scratch_data(output_location)
 
         spatial_reference = {
             'stateplane_south': 3567,

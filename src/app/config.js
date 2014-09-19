@@ -33,10 +33,13 @@ define([
 
         appName: 'addressediting',
 
+        // cache level 13
+        labelsMinScale: 2257,
+
         urls: {
             basemap: '//mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             editLayer: '/arcgis/rest/services/AddressEditor/Editing/FeatureServer/',
-            viewLayer:  '/arcgis/rest/services/AddressEditor/Viewing/MapServer/',
+            viewLayer:  '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
             redline: redlineUrl
@@ -44,7 +47,8 @@ define([
 
         fieldNames: {
             Editor: 'Editor',
-            ModifyDate: 'ModifyDate'
+            ModifyDate: 'ModifyDate',
+            FullAddress: 'FullAdd'
         }
     };
 

@@ -68,3 +68,7 @@ body, html {
 .app .zoom-to-coordinate{
     width: 350px;
 }
+/* map labels */
+#labelLayer_layer text {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+}

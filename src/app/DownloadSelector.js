@@ -210,7 +210,7 @@ define([
             //      validates the download object
             console.log('app.downloadSelector::valid', arguments);
 
-            var props = ['system', 'type', 'county'];
+            var props = ['sr', 'format', 'county'];
             return array.every(props, function(item) {
                 return !!this.downloadFilter[item];
             }, this);
