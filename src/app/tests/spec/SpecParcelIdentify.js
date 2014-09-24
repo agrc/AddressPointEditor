@@ -14,15 +14,6 @@ require([
     describe('app.ParcelIdentify', function() {
         var testWidget;
         var map;
-        var evt = {
-            mapPoint: {
-                x: 415652.65472246887,
-                y: 4447848.04338003,
-                toJson: function() {
-                    return {};
-                }
-            }
-        };
 
         afterEach(function() {
             if (testWidget) {
@@ -35,7 +26,6 @@ require([
         });
 
         beforeEach(function() {
-            map = jasmine.createSpyObj('map', ['on']);
             map = jasmine.createSpyObj('map', ['on']);
             testWidget = new ClassUnderTest({
                 map: map

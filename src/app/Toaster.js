@@ -78,6 +78,9 @@ define([
                     this.set('message', 'Drag the yellow point to where it belongs. ' +
                         'Click <code>Save</code> if you are done.');
                     break;
+                case 'redlining':
+                    this.set('message', 'Please explain the layer and the issue well.');
+                    break;
                 default:
                     this.set('message', message);
             }

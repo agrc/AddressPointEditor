@@ -278,6 +278,7 @@ define([
             }));
 
             this.identifyTopic = this.map.on('click', lang.hitch(this, function(evt) {
+                console.warn('this.map.on.click.topic.publish');
                 topic.publish('app/identify-click', evt);
             }));
 
@@ -293,16 +294,22 @@ define([
 
                     this.activity.set('count', count);
                 })),
-                on(this.changeRequest, 'drawStart', function() {
-                    console.log('on draw start');
+                on(this.changeRequest, 'drawStart', lang.hitch(this, function() {
+                    topic.publish('app/toolbar', 'redlining');
+                    this.identifyTopic.remove();
+                    this.identifyTopic = null;
                     var ddl = $('#suggest-change-dropdown');
                     ddl.dropdown('toggle');
                     ddl.blur();
                     $('.dropdown').blur();
-                }),
-                on(this.changeRequest, 'drawEnd', function() {
+                })),
+                on(this.changeRequest, 'drawEnd', lang.hitch(this, function() {
                     $('#suggest-change-dropdown').dropdown('toggle');
-                }),
+                    var self = this;
+                    this.identifyTopic = this.map.on('click', lang.hitch(self, function(evt) {
+                        topic.publish('app/identify-click', evt);
+                    }));
+                })),
                 aspect.before(this.sideBar, 'show', function() {
                     topic.publish('app/state', 'Fill out the address details for this point.');
                 }),
