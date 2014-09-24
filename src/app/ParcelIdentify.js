@@ -46,7 +46,7 @@ define([
 
         _setParcelIdAttr: function(value) {
             if (!value) {
-                value = 'No Data';
+                value = 'No parcel data.';
             }
 
             this._set('parcelId', value);
@@ -54,7 +54,7 @@ define([
         },
         _setAddressAttr: function(value) {
             if (!value) {
-                value = 'No Data';
+                value = 'No parcel data.';
             }
 
             this._set('address', value);
@@ -62,7 +62,7 @@ define([
         },
         _setCityAttr: function(value) {
             if (!value) {
-                value = 'No Data';
+                value = 'No parcel data.';
             }
 
             this._set('city', value);
@@ -70,7 +70,7 @@ define([
         },
         _setZipAttr: function(value) {
             if (!value) {
-                value = 'No Data';
+                value = 'No parcel data.';
             }
 
             this._set('zip', value);
@@ -78,27 +78,37 @@ define([
         },
         _setOwnershipAttr: function(value) {
             if (!value) {
-                value = 'No Data';
+                value = 'No parcel data.';
             }
 
             this._set('ownership', value);
             this.ownershipNode.innerHTML = value;
         },
-        _setMessageAttr: {
-            node: 'messageNode',
-            type: 'innerHTML'
-        },
-        _setReverseAttr: {
-            node: 'reverseNode',
-            type: 'innerHTML'
+        _setReverseAttr: function(value) {
+            if (!value) {
+                value = 'No address found.';
+            }
+
+            this._set('reverse', value);
+            this.reverseNode.innerHTML = value;
         },
         _setXAttr: function(value) {
-            value = +(Math.round(value + 'e+2') + 'e-2');
+            if (!value) {
+                value = 'No data.';
+            } else {
+                value = +(Math.round(value + 'e+2') + 'e-2');
+            }
+
             this._set('x', value);
             this.xNode.innerHTML = value;
         },
         _setYAttr: function(value) {
-            value = +(Math.round(value + 'e+2') + 'e-2');
+            if (!value) {
+                value = 'No data.';
+            } else {
+                value = +(Math.round(value + 'e+2') + 'e-2');
+            }
+
             this._set('y', value);
             this.yNode.innerHTML = value;
         },
@@ -118,6 +128,7 @@ define([
             //      private
             console.log('app.ParcelIdentify::postCreate', arguments);
 
+            this._reset(null);
             this.setupConnections();
 
             this.api = new WebApi({
@@ -155,31 +166,20 @@ define([
             //      gets the parcel search api result
             // parcelResults
             console.log('app.ParcelIdentify::_setValues', arguments);
+            var parcel = {};
 
-            if (!parcelResults || parcelResults.length < 1) {
-                this._reset('No parcel found');
-                topic.publish('app/identify', this);
-
-                return;
-            }
-
-            var parcel = parcelResults[0].attributes;
-
-            if (!parcel) {
-                this._reset('No parcel found');
-                topic.publish('app/identify', this);
-
-                return;
+            if (parcelResults && parcelResults.length > 0) {
+                parcel = parcelResults[0].attributes;
             }
 
             /*jshint -W106*/
-            this.set('parcelId', parcel.parcel_id);
-            this.set('address', parcel.parcel_add);
-            this.set('city', parcel.parcel_city);
-            this.set('zip', parcel.parcel_zip);
-            this.set('ownership', parcel.own_type);
-            this.set('x', this.mapPoint.x);
-            this.set('y', this.mapPoint.y);
+            this.set('parcelId', parcel.parcel_id || null);
+            this.set('address', parcel.parcel_add || null);
+            this.set('city', parcel.parcel_city || null);
+            this.set('zip', parcel.parcel_zip || null);
+            this.set('ownership', parcel.own_type || null);
+            this.set('x', this.mapPoint.x || null);
+            this.set('y', this.mapPoint.y || null);
             /*jshint +W106*/
 
             topic.publish('app/identify', this);
@@ -244,7 +244,7 @@ define([
             console.log('app.ParcelIdentify::_updateAddress', arguments);
 
             if (!reverseResults || reverseResults.length < 1) {
-                this.set('reverse', 'No address found');
+                this.set('reverse', null);
 
                 return;
             }
@@ -252,7 +252,7 @@ define([
             var address = reverseResults.address;
 
             if (!address) {
-                this.set('reverse', 'No address found');
+                this.set('reverse', null);
 
                 return;
             }
@@ -267,26 +267,27 @@ define([
 
             this._reset('Search Failure. Please try again.' + e || 'There was a problem searching.');
         },
-        _reset: function(message) {
+        _reset: function() {
             // summary:
-            //      reset identify and set message
-            // message
+            //      reset definition list
             console.log('app.ParcelIdentify::_reset', arguments);
 
+            this.set('x', null);
+            this.set('y', null);
             this.set('parcelId', null);
             this.set('address', null);
             this.set('city', null);
             this.set('zip', null);
+            this.set('reverse', null);
             this.set('ownership', null);
-            this.set('message', message);
         },
-        _updateVisibility: function(name, value) {
+        _updateVisibility: function(updating) {
             // summary:
             //      hides and shows empty dt items
-            // name, value
+            // updating: boolean
             console.log('app.ParcelIdentify::_updateVisibility', arguments);
 
-            if (name === 'message' && value) {
+            if (updating) {
                 domClass.replace(this.dlNode, 'hide', 'show');
                 domClass.replace(this.messageNode, 'show', 'hide');
 
@@ -303,17 +304,15 @@ define([
 
             var scoped = this;
             topic.subscribe('app/identify-click', function(e) {
+                scoped._updateVisibility(true);
                 scoped.identify(e);
             });
 
-            this.watch('message', function(name, oldValue, value) {
-                // get the current value from the textbox and set it in the node
-                scoped._updateVisibility(name, value);
-            });
-
-            this.watch('parcelId', function(name, oldValue, value) {
-                // get the current value from the textbox and set it in the node
-                scoped._updateVisibility(name, value);
+            this.watch('x', function(name, oldValue, value) {
+                // there is always a map click event. x shoudl always be set.
+                if(+value > 0){
+                    scoped._updateVisibility(false);
+                }
             });
         }
     });

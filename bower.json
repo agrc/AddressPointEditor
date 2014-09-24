@@ -2,12 +2,12 @@
   "name": "addres_point_editing",
   "version": "1.1.1",
   "dependencies": {
-    "agrc": "agrc-widgets#2.6.1",
+    "agrc": "agrc-widgets#2.7.0",
     "bootstrap": "~3.1",
     "dojo": "1.9",
     "dojox": "1.9",
     "dijit": "1.9",
-    "ijit": "agrc-ijit#2.5.4",
+    "ijit": "agrc-ijit#2.6.0",
     "mustache": "~0",
     "util": "dojo-util#1.9"
   },
