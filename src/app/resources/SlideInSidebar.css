@@ -2,9 +2,8 @@
     overflow: hidden;
 }
 .slide-in-sidebar {
-    height: 100%;
     position: absolute;
-    top: 50px;
+    top: 51px;
     bottom: 0px;
     background-color: white;
     right: -390px;
@@ -21,10 +20,7 @@
     position: absolute;
     right: 10px;
 }
-.slide-in-sidebar .atiButtons {
-    height: 80px;
-}
-.slide-in-sidebar .atiSaveButton, 
+.slide-in-sidebar .atiSaveButton,
 .slide-in-sidebar .atiDeleteButton {
     float: left;
     margin: 0.2em !important;
