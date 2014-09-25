@@ -253,13 +253,16 @@ define([
                 minScale: 144448
             });
 
-            // this.labelLayer = new LabelLayer();
-            // this.labelLayer.id = 'labelLayer';
-            // this.labelLayer.minScale = config.labelsMinScale;
-            // this.labelLayer.addFeatureLayer(this.editLayer,
-            //     new SimpleRenderer(new TextSymbol().setOffset(-17, 3)),
-            //     '{' + config.fieldNames.FullAddress + '}'
-            // );
+            this.labelRenderer = new SimpleRenderer(new TextSymbol()
+                .setOffset(-22, 20)
+                .setAngle(-15)
+                .setHorizontalAlignment('start'));
+            this.labelExpression = '{' + config.fieldNames.FullAddress + '}';
+
+            this.labelLayer = new LabelLayer();
+            this.labelLayer.id = 'labelLayer';
+            this.labelLayer.minScale = config.labelsMinScale;
+            this.labelLayer.addFeatureLayer(this.editLayer, this.labelRenderer, this.labelExpression);
 
             this.searchGraphics = new GraphicsLayer({
                 id: 'searchGraphics'
@@ -336,15 +339,20 @@ define([
             console.info('app.App::addGraphicLayers', arguments);
 
             if (this.editLayer && this.editLayer.getMap()) {
+                if (this.labelLayer.featureLayers.length > 0) {
+                    this.labelLayer.removeFeatureLayer(this.editLayer);
+                }
                 this.map.removeLayer(this.editLayer);
             }
             if (this.labelLayer && this.labelLayer.getMap()) {
                 this.map.removeLayer(this.labelLayer);
             }
 
+            this.labelLayer.addFeatureLayer(this.editLayer, this.labelRenderer, this.labelExpression);
+
             this.map.addLayer(this.searchGraphics, 0);
             this.map.addLayer(this.editLayer, 2);
-            //this.map.addLayer(this.labelLayer, 1);
+            this.map.addLayer(this.labelLayer, 1);
 
             this.initEditing(this.editLayer.id === 'editLayer');
         },
@@ -355,6 +363,9 @@ define([
             console.log('app.App::enableEditingLayer', arguments);
 
             if (this.editLayer && this.editLayer.getMap()) {
+                if (this.labelLayer.featureLayers.length > 0) {
+                    this.labelLayer.removeFeatureLayer(this.editLayer);
+                }
                 this.map.removeLayer(this.editLayer);
             }
 
@@ -365,7 +376,8 @@ define([
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
                 outFields: ['*'],
-                id: 'editLayer'
+                id: 'editLayer',
+                minScale: 144448
             });
 
             var editingSelectionSymbol = new SimpleMarkerSymbol(
