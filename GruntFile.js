@@ -1,35 +1,35 @@
 /* jshint camelcase:false */
 module.exports = function(grunt) {
     var jsFiles = 'src/app/**/*.js',
-    otherFiles = [
-        'src/app/**/*.html',
-        'src/app/**/*.css',
-        'src/index.html',
-        'src/ChangeLog.html'
-    ],
-    gruntFile = 'GruntFile.js',
-    jshintFiles = [jsFiles, gruntFile],
-    bumpFiles = [
-        'package.json',
-        'src/app/package.json',
-        'bower.json',
-        'src/app/config.js'
-    ],
-    deployFiles = [
-        '**',
-        '!build-report.txt',
-        '!util/**',
-        '!jasmine-favicon-reporter/**',
-        '!**/*.uncompressed.js',
-        '!**/*consoleStripped.js',
-        '!**/*.min.*',
-        '!**/tests/**',
-        '!**/bootstrap/test-infra/**',
-        '!**/bootstrap/less/**'
-    ],
-    deployDirProd = 'AddressPointEditor',
-    deployDirStage = 'wwwroot/AddressPointEditor',
-    secrets;
+        otherFiles = [
+            'src/app/**/*.html',
+            'src/app/**/*.css',
+            'src/index.html',
+            'src/ChangeLog.html'
+        ],
+        gruntFile = 'GruntFile.js',
+        jshintFiles = [jsFiles, gruntFile],
+        bumpFiles = [
+            'package.json',
+            'src/app/package.json',
+            'bower.json',
+            'src/app/config.js'
+        ],
+        deployFiles = [
+            '**',
+            '!build-report.txt',
+            '!util/**',
+            '!jasmine-favicon-reporter/**',
+            '!**/*.uncompressed.js',
+            '!**/*consoleStripped.js',
+            '!**/*.min.*',
+            '!**/tests/**',
+            '!**/bootstrap/test-infra/**',
+            '!**/bootstrap/less/**'
+        ],
+        deployDirProd = 'AddressPointEditor',
+        deployDirStage = 'wwwroot/AddressPointEditor',
+        secrets;
     try {
         secrets = grunt.file.readJSON('secrets.json');
     } catch (e) {
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
         bump: {
             options: {
                 files: bumpFiles,
-                commitFiles: bumpFiles,
+                commitFiles: bumpFiles.concat('src/ChangeLog.html'),
                 push: false
             }
         },
