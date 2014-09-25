@@ -248,18 +248,18 @@ define([
             this.editLayer = new FeatureLayer(url, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
-                outFields: [config.fieldNames.FullAddress],
+                outFields: ['*'],
                 id: 'viewLayer',
                 minScale: 144448
             });
 
-            this.labelLayer = new LabelLayer();
-            this.labelLayer.id = 'labelLayer';
-            this.labelLayer.minScale = config.labelsMinScale;
-            this.labelLayer.addFeatureLayer(this.editLayer,
-                new SimpleRenderer(new TextSymbol().setOffset(-17, 3)),
-                '{' + config.fieldNames.FullAddress + '}'
-            );
+            // this.labelLayer = new LabelLayer();
+            // this.labelLayer.id = 'labelLayer';
+            // this.labelLayer.minScale = config.labelsMinScale;
+            // this.labelLayer.addFeatureLayer(this.editLayer,
+            //     new SimpleRenderer(new TextSymbol().setOffset(-17, 3)),
+            //     '{' + config.fieldNames.FullAddress + '}'
+            // );
 
             this.searchGraphics = new GraphicsLayer({
                 id: 'searchGraphics'
@@ -345,6 +345,8 @@ define([
             this.map.addLayer(this.searchGraphics, 0);
             this.map.addLayer(this.editLayer, 2);
             //this.map.addLayer(this.labelLayer, 1);
+
+            this.initEditing(this.editLayer.id === 'editLayer');
         },
         enableEditingLayer: function() {
             // summary:
@@ -376,11 +378,11 @@ define([
             this.editLayer.setSelectionSymbol(editingSelectionSymbol);
 
             this.addGraphicLayers();
-            this.initEditing();
         },
-        initEditing: function() {
+        initEditing: function(isEditable) {
             // sumamry:
             //      initializes the editing settings/widget
+            // isEditable: creates attribute editor in read only mode
             console.info('app.App::initEditing', arguments);
 
             if (this.attributeEditor) {
@@ -405,7 +407,7 @@ define([
                 );
             }
 
-            this.attributeEditor.initialize(this.editLayer);
+            this.attributeEditor.initialize(this.editLayer, isEditable);
         },
         showPoint: function(evt) {
             // summary:

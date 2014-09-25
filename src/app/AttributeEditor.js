@@ -106,7 +106,7 @@ define([
             console.log('app.App::startup', arguments);
 
             var that = this;
-            array.forEach(this.childWidgets, function (widget) {
+            array.forEach(this.childWidgets, function(widget) {
                 that.own(widget);
                 widget.startup();
             });
@@ -178,7 +178,7 @@ define([
                     topic.publish('map-activity', -1);
                 }));
         },
-        initialize: function(layer) {
+        initialize: function(layer, isEditable) {
             console.log('app.attributeEditor::initialize', arguments);
 
             var fieldInfos = [];
@@ -189,11 +189,11 @@ define([
             hideFields[config.fieldNames.Editor] = 1;
             hideFields[config.fieldNames.ModifyDate] = 1;
 
-            array.forEach(layer.fields, function (f) {
+            array.forEach(layer.fields, function(f) {
                 if (!(f.name in hideFields)) {
                     fieldInfos.push({
                         fieldName: f.name,
-                        isEditable: f.editable,
+                        isEditable: isEditable && f.editable,
                         label: f.alias
                     });
                 }
@@ -201,8 +201,9 @@ define([
             var layerInfos = [{
                 featureLayer: layer,
                 showAttachments: false,
-                isEditable: true,
-                fieldInfos: fieldInfos
+                isEditable: isEditable,
+                fieldInfos: fieldInfos,
+                showDeleteButton: isEditable
             }];
 
             this.own(
@@ -214,6 +215,10 @@ define([
                     'class': 'atiSaveButton'
                 })
             );
+
+            if (!isEditable) {
+                return;
+            }
 
             this.saveButton.set('disabled', true);
 
@@ -250,7 +255,7 @@ define([
                 }),
 
                 this.attributeEditor.on('next', function(evt) {
-                    if(!evt || !evt.feature){
+                    if (!evt || !evt.feature) {
                         return;
                     }
                     that.originalFeature = new Graphic(evt.feature.toJson());
