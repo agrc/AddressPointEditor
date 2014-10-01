@@ -24,7 +24,8 @@ define([
     'esri/layers/FeatureLayer',
     'esri/graphic',
 
-    'app/config'
+    'app/config',
+    'app/AttributeCopyPaste'
 ], function(
     declare,
     lang,
@@ -50,7 +51,8 @@ define([
     FeatureLayer,
     Graphic,
 
-    config
+    config,
+    AttributeCopyPaste
 ) {
     // summary:
     //      Handles retrieving and displaying the data in the popup.
@@ -213,6 +215,10 @@ define([
                 this.saveButton = new Button({
                     label: 'Save',
                     'class': 'atiSaveButton'
+                }),
+                this.copyPaste = new AttributeCopyPaste({
+                    featureLayer: layer,
+                    attributeEditor: this.attributeEditor
                 })
             );
 

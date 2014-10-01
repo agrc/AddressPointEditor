@@ -352,7 +352,7 @@ define([
 
             this.map.addLayer(this.searchGraphics, 0);
             this.map.addLayer(this.editLayer, 2);
-            this.map.addLayer(this.labelLayer, 1);
+            //this.map.addLayer(this.labelLayer, 1);
 
             this.initEditing(this.editLayer.id === 'editLayer');
         },
