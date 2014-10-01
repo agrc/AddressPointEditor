@@ -31,7 +31,8 @@ require([
                             }
                         }
                     };
-                }
+                },
+                editButtons: domConstruct.create('div')
             };
             var featureLayer = {
                 on: function() {
@@ -75,11 +76,81 @@ require([
                     expect(widget.get('clipboard')).toEqual(test);
                 }
             });
+            it('removes the ignorefields', function() {
+                widget.set('clipboard', {
+                    'OBJECTID': 1,
+                    'Editor': 'me',
+                    'LoadDate': 123123123,
+                    'ModifyDate': 2342341234,
+                    'AddNum': '123',
+                    'AddNumSuffix': 'E',
+                    'ValidProp': true
+                });
+
+                var actual = widget.get('clipboard');
+
+                var numberOfProps = 0;
+                for (var prop in actual) {
+                    if (actual.hasOwnProperty(prop)) {
+                        numberOfProps = numberOfProps + 1;
+                    }
+                }
+
+                expect(numberOfProps).toEqual(1);
+
+                expect(actual).toEqual({
+                    'ValidProp': true
+                });
+            });
+            it('removes the ignorefields from copy', function() {
+                widget.data = {
+                    'OBJECTID': 1,
+                    'Editor': 'me',
+                    'LoadDate': 123123123,
+                    'ModifyDate': 2342341234,
+                    'AddNum': '123',
+                    'AddNumSuffix': 'E',
+                    'ValidProp': true
+                };
+
+                widget.copy();
+
+                var actual = widget.get('clipboard');
+
+                var numberOfProps = 0;
+                for (var prop in actual) {
+                    if (actual.hasOwnProperty(prop)) {
+                        numberOfProps = numberOfProps + 1;
+                    }
+                }
+
+                expect(numberOfProps).toEqual(1);
+
+                expect(actual).toEqual({
+                    'ValidProp': true
+                });
+            });
         });
 
-        describe('paste', function () {
-            it('pastes the clipboard data into form fields', function () {
+        describe('paste', function() {
+            it('pastes the clipboard data into form fields', function() {
+                spyOn(widget, '_setDijitValue');
+                widget.fieldInfoMap = {
+                    'ValidProp': {}
+                };
+                widget.set('clipboard', {
+                    'OBJECTID': 1,
+                    'Editor': 'me',
+                    'LoadDate': 123123123,
+                    'ModifyDate': 2342341234,
+                    'AddNum': '123',
+                    'AddNumSuffix': 'E',
+                    'ValidProp': true
+                });
+
                 widget.paste();
+
+                expect(widget._setDijitValue).toHaveBeenCalledWith('ValidProp', true);
             });
         });
     });

@@ -28,7 +28,6 @@ define([
     'esri/tasks/query',
 
     'esri/geometry/Extent',
-    'esri/geometry/Point',
 
     'esri/symbols/SimpleMarkerSymbol',
     'esri/symbols/SimpleLineSymbol',
@@ -68,7 +67,6 @@ define([
     Query,
 
     Extent,
-    Point,
 
     SimpleMarkerSymbol,
     SimpleLineSymbol,

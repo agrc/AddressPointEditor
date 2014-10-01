@@ -4,9 +4,7 @@ define([
     'dojo/_base/array',
     'dojo/_base/event',
 
-    'dojo/dom',
     'dojo/on',
-    'dojo/aspect',
     'dojo/dom-class',
     'dojo/dom-construct',
     'dojo/dom-attr',
@@ -28,9 +26,7 @@ define([
     array,
     event,
 
-    dom,
     on,
-    aspect,
     domClass,
     domConstruct,
     domAttr,

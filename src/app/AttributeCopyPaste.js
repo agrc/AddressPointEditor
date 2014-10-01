@@ -3,6 +3,7 @@ define([
 
     'dojo/_base/array',
     'dojo/_base/declare',
+    'dojo/_base/lang',
 
     'dojo/aspect',
     'dojo/on',
@@ -21,6 +22,7 @@ define([
 
     array,
     declare,
+    lang,
 
     aspect,
     on,
@@ -51,6 +53,11 @@ define([
         // the attribute name mapped to it's dijit
         fieldInfoMap: {},
 
+        // ignoreFields: []
+        // summary:
+        //      fields to ignore with copy paste
+        ignoreFields: ['OBJECTID', 'Editor', 'LoadDate', 'ModifyDate', 'AddNum', 'AddNumSuffix'],
+
         // Properties to be sent into constructor
 
         attributeEditor: null,
@@ -61,7 +68,18 @@ define([
         featureLayer: null,
 
         _setClipboardAttr: function(value) {
-            clipboard.data = value;
+            var clone = lang.clone(value);
+
+            for (var prop in clone) {
+                if (clone.hasOwnProperty(prop)) {
+                    if (this.ignoreFields.indexOf(prop) > -1) {
+                        delete clone[prop];
+                    }
+                }
+            }
+            clipboard.data = clone;
+            // this is _clipboard because of the app\clipboard amd module
+            this._set('_clipboard', clone);
         },
 
         _getClipboardAttr: function() {
@@ -108,9 +126,20 @@ define([
 
             aspect.after(this.attributeEditor, '_updateSelection', function() {
                 array.forEach(this.layerInfos[0].fieldInfos, function(item) {
-                    self.fieldInfoMap[item.fieldName] = item.dijit;
+                    if (self.ignoreFields.indexOf(item.fieldName) < 0) {
+                        self.fieldInfoMap[item.fieldName] = item.dijit;
+                    }
                 }, self);
             }, true);
+
+            // this is _clipboard because of the app\clipboard amd module
+            this.watch('_clipboard', lang.hitch(this, function(field, old, value) {
+                if (!value) {
+                    return;
+                }
+
+                this.pasteButton.set('disabled', false);
+            }));
         },
         copy: function() {
             // summary:

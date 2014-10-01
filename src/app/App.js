@@ -5,9 +5,7 @@ define([
     'dojo/_base/lang',
     'dojo/_base/declare',
     'dojo/_base/Color',
-    'dojo/_base/event',
 
-    'dojo/dom',
     'dojo/on',
     'dojo/aspect',
     'dojo/topic',
@@ -19,8 +17,6 @@ define([
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin',
-
-    'dijit/registry',
 
     'agrc/widgets/map/BaseMap',
     'agrc/widgets/locate/FindAddress',
@@ -39,19 +35,18 @@ define([
     'esri/layers/GraphicsLayer',
     'esri/layers/LabelLayer',
     'esri/tasks/GeometryService',
-    'esri/geometry/Extent',
     'esri/symbols/SimpleMarkerSymbol',
     'esri/symbols/SimpleLineSymbol',
     'esri/symbols/TextSymbol',
     'esri/renderers/SimpleRenderer',
 
-    './config',
-    './SlideInSidebar',
-    './DownloadSelector',
-    './Editor',
-    './AttributeEditor',
-    './Toaster',
-    './ParcelIdentify',
+    'app/config',
+    'app/SlideInSidebar',
+    'app/DownloadSelector',
+    'app/Editor',
+    'app/AttributeEditor',
+    'app/Toaster',
+    'app/ParcelIdentify',
 
 
     'bootstrap'
@@ -62,9 +57,7 @@ define([
     lang,
     declare,
     Color,
-    event,
 
-    dom,
     on,
     aspect,
     topic,
@@ -76,8 +69,6 @@ define([
     _WidgetBase,
     _TemplatedMixin,
     _WidgetsInTemplateMixin,
-
-    registry,
 
     BaseMap,
     FindAddress,
@@ -96,7 +87,6 @@ define([
     GraphicsLayer,
     LabelLayer,
     GeomService,
-    Extent,
     SimpleMarkerSymbol,
     SimpleLineSymbol,
     TextSymbol,
