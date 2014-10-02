@@ -4,7 +4,6 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
 
-    'dojo/on',
     'dojo/string',
     'dojo/topic',
 
@@ -23,7 +22,6 @@ define([
     declare,
     lang,
 
-    on,
     string,
     topic,
 

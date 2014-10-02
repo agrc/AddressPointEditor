@@ -3,7 +3,6 @@ define([
     'dojo/_base/lang',
 
     'dojo/Deferred',
-    'dojo/on',
 
     'dijit/_WidgetBase',
 
@@ -18,7 +17,6 @@ define([
     lang,
 
     Deferred,
-    on,
 
     _WidgetBase,
 

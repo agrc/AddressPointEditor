@@ -1,14 +1,8 @@
 define([
     'dojo/_base/declare',
-    'dojo/_base/array',
-    'dojo/_base/lang',
     'dojo/_base/fx',
-    'dojo/_base/window',
 
     'dojo/dom-geometry',
-    'dojo/dom-style',
-
-    'dojo/on',
 
     'dojo/text!app/templates/SlideInSidebar.html',
 
@@ -17,15 +11,9 @@ define([
     'dijit/_WidgetsInTemplateMixin'
 ], function(
     declare,
-    array,
-    lang,
     fx,
-    win,
 
     domGeom,
-    domStyle,
-
-    on,
 
     template,
 
