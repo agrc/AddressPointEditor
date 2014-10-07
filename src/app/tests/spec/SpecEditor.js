@@ -134,9 +134,6 @@ require([
             describe('applyEditTracking', function () {
                 it('adds user name and dates to passed in graphics', function () {
                     var edits = {
-                        adds: [{
-                            attributes: {}
-                        }],
                         updates: [{
                             attributes: {}
                         },{
@@ -150,7 +147,7 @@ require([
 
                     testWidget.applyEditTracking(edits);
 
-                    expect(edits.adds[0].attributes[fn.Editor]).toEqual(email);
+                    expect(edits.updates[0].attributes[fn.Editor]).toEqual(email);
                     expect(edits.updates[1].attributes[fn.ModifyDate]).toBeDefined();
                 });
             });

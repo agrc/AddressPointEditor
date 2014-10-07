@@ -12,6 +12,7 @@
 @import 'Editor.css';
 @import 'Toaster.css';
 @import 'ParcelIdentify.css';
+@import '../../bootstrap/dist/css/bootstrap.css';
 
 body, html {
     overflow: hidden;
