@@ -1,5 +1,5 @@
 /* jshint unused:false */
-(function () {
+(function() {
     // the baseUrl is relavant in source version and while running unit tests.
     // the`typeof` is for when this file is passed as a require argument to the build system
     // since it runs on node, it doesn't have a window object. The basePath for the build system
@@ -9,7 +9,7 @@
             typeof window !== 'undefined' &&
             window.dojoConfig &&
             window.dojoConfig.isJasmineTestRunner
-            ) ? '/src': './',
+        ) ? '/src' : './',
         packages: [
             'agrc',
             'app',
@@ -17,24 +17,23 @@
             'dojo',
             'dojox',
             'esri',
-            'ijit',
-            {
+            'ijit', {
                 name: 'spin',
                 location: 'spinjs',
                 main: 'spin'
-            },{
+            }, {
                 name: 'ladda',
-                location: 'ladda-bootstrap/dist',
-                main: 'ladda'
-            },{
+                location: 'ladda-bootstrap',
+                main: 'dist/ladda'
+            }, {
                 name: 'jquery',
                 location: 'jquery/dist',
                 main: 'jquery'
-            },{
+            }, {
                 name: 'bootstrap',
                 location: 'bootstrap',
                 main: 'dist/js/bootstrap'
-            },{
+            }, {
                 name: 'mustache',
                 location: 'mustache',
                 main: 'mustache'
@@ -53,9 +52,7 @@
 
 
         'dojo/domReady!'
-    ],
-
-    function (
+    ], function(
         $,
 
         App,
@@ -64,7 +61,7 @@
         dom,
 
         esriConfig
-        ) {
+    ) {
         // force api to use CORS on mapserv thus removing the test request on app load
         // e.g. http://mapserv.utah.gov/ArcGIS/rest/info?f=json
         esriConfig.defaults.io.corsEnabledServers.push('mapserv.utah.gov');

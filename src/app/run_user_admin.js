@@ -1,54 +1,53 @@
+/* jshint unused:false */
 (function() {
-    var projectUrl;
-    if (typeof location === 'object') {
-        // running in browser
-        projectUrl = location.pathname.replace(/\/[^\/]+$/, '');
-
-        // running in unit tests
-        projectUrl = (projectUrl === '/') ? '/src/' : projectUrl;
-    } else {
-        // running in build system
-        projectUrl = '';
-    }
     var config = {
-        packagePaths: {},
-        packages: [{
-            name: 'bootstrap',
-            location: projectUrl + '/bootstrap/dist',
-            main: 'js/bootstrap'
-        }, {
-            name: 'jquery',
-            location: projectUrl + '/jquery/dist',
-            main: 'jquery'
-        },{
-                name: 'spin',
-                location: projectUrl + '/spinjs',
-                main: 'spin'
-            },{
+        baseUrl: (typeof window !== 'undefined' &&
+            window.dojoConfig &&
+            window.dojoConfig.isJasmineTestRunner
+        ) ? '/src' : './',
+        packages: [
+            'app',
+            'agrc',
+            'ijit',
+            'dojo',
+            'dijit',
+            'esri',
+            'dgrid',
+            'put-selector',
+            'xstyle', {
+                name: 'bootstrap',
+                location: './bootstrap',
+                main: 'dist/js/bootstrap'
+            }, {
+                name: 'jquery',
+                location: './jquery/dist',
+                main: 'jquery'
+            }, {
                 name: 'ladda',
-                location: projectUrl + '/ladda-bootstrap/dist',
-                main: 'ladda'
-            }]
+                location: './ladda-bootstrap',
+                main: 'dist/ladda'
+            }
+        ]
     };
-    config.packagePaths[projectUrl] = [
-        'app',
-        'agrc',
-        'ijit',
-        'dojo',
-        'dijit'
-    ];
     require(config, [
-            'ijit/widgets/authentication/UserAdmin',
+        'jquery',
 
-            'dojo/domReady!'
-        ],
+        'ijit/widgets/authentication/UserAdmin',
 
-        function(
-            UserAdmin
-        ) {
-            new UserAdmin({
-                title: 'Address Editing',
-                appName: 'addressediting'
-            }, 'widget-div');
-        });
+        'app/config',
+
+
+        'dojo/domReady!'
+    ], function(
+        $,
+
+        UserAdmin,
+
+        config
+    ) {
+        new UserAdmin({
+            title: 'Address Editing',
+            appName: config.appName
+        }, 'widget-div');
+    });
 })();

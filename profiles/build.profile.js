@@ -1,6 +1,6 @@
 /*jshint unused:false */
 
-var amdTag = function (filename, mid) {
+var amdTag = function(filename, mid) {
     return (/.*\.js$/).test(filename);
 };
 
@@ -29,10 +29,18 @@ var profile = {
             boot: true
         },
         'app/run_user_admin': {
-            include: ['app/run_user_admin'],
+            include: [
+                'app/run_user_admin'
+            ],
             exclude: ['dojo/dojo']
         }
     },
+    map: {
+        'ladda': {
+            'spin': 'ladda/dist/spin'
+        }
+    },
+    packages: ['dgrid', 'put-selector', 'xstyle'],
     staticHasFeatures: {
         // The trace & log APIs are used for debugging the loader, so we don’t need them in the build
         'dojo-trace-api': 0,

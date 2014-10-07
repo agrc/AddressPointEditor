@@ -86,8 +86,10 @@ module.exports = function(grunt) {
         },
         copy: {
             main: {
-                src: 'src/ChangeLog.html',
-                dest: 'dist/ChangeLog.html'
+                expand: true,
+                cwd: 'src/',
+                src: ['ChangeLog.html'],
+                dest: 'dist/'
             }
         },
         dojo: {
@@ -167,7 +169,8 @@ module.exports = function(grunt) {
             options: {},
             main: {
                 files: {
-                    'dist/index.html': ['src/index.html']
+                    'dist/index.html': ['src/index.html'],
+                    'dist/user_admin.html': ['src/user_admin.html']
                 }
             }
         },
