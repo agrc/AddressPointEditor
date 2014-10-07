@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/agrc/AddressPointEditor.svg?branch=master)](https://travis-ci.org/agrc/AddressPointEditor)
 Address Point Editor
 ===================================
 
