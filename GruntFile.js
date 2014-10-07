@@ -125,9 +125,7 @@ module.exports = function(grunt) {
                 dest: 'src/esri'
             },
             travis: {
-                options: {
-                    beautify: false
-                }
+                dest: 'src/esri'
             }
         },
         imagemin: {
