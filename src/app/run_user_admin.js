@@ -20,7 +20,15 @@
             name: 'jquery',
             location: projectUrl + '/jquery/dist',
             main: 'jquery'
-        }]
+        },{
+                name: 'spin',
+                location: projectUrl + '/spinjs',
+                main: 'spin'
+            },{
+                name: 'ladda',
+                location: projectUrl + '/ladda-bootstrap/dist',
+                main: 'ladda'
+            }]
     };
     config.packagePaths[projectUrl] = [
         'app',

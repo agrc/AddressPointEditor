@@ -23,6 +23,10 @@
                 location: 'spinjs',
                 main: 'spin'
             },{
+                name: 'ladda',
+                location: 'ladda-bootstrap/dist',
+                main: 'ladda'
+            },{
                 name: 'jquery',
                 location: 'jquery/dist',
                 main: 'jquery'

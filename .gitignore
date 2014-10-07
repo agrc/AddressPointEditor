@@ -23,7 +23,11 @@ src/stubmodule/
 src/util/
 src/mustache/
 src/matchers/
-
+src/spin.js/
+src/dgrid/
+src/xstyle/
+src/ladda-bootstrap/
+src/put-selector/
 
 #################
 ## Eclipse
