@@ -11,9 +11,9 @@ require([
     ) {
         var testWidget;
         // override alert to console
-        window.alert = function(msg) {
-            console.error('ALERT OVERRIDDEN TO LOG: ' + msg);
-        };
+        // window.alert = function(msg) {
+        //     console.error('ALERT OVERRIDDEN TO LOG: ' + msg);
+        // };
 
         describe('app/App', function () {
             beforeEach(function () {

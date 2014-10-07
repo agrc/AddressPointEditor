@@ -9,8 +9,8 @@ var profile = {
     action: 'release',
     cssOptimize: 'comments',
     mini: true,
-    optimize: 'closure',
-    layerOptimize: 'closure',
+    optimize: 'uglify',
+    layerOptimize: 'uglify',
     stripConsole: 'all',
     selectorEngine: 'acme',
     layers: {
