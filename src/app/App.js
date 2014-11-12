@@ -22,6 +22,7 @@ define([
     'agrc/widgets/locate/FindAddress',
     'agrc/widgets/locate/MagicZoom',
     'agrc/widgets/locate/ZoomToCoords',
+    'agrc/widgets/locate/TRSsearch',
 
     'agrc/widgets/map/BaseMapSelector',
 
@@ -74,6 +75,7 @@ define([
     FindAddress,
     MagicZoom,
     ZoomToCoords,
+    TrsSearch,
 
     BaseMapSelector,
 
@@ -202,7 +204,12 @@ define([
                 this.toaster = new Toaster({}, this.toasterNode),
                 this.parcelIdentify = new ParcelIdentify({
                     map: this.map
-                }, this.parcelIdentifyNode)
+                }, this.parcelIdentifyNode),
+                this.trsSearch = new TrsSearch({
+                        map: this.map,
+                        apiKey: AGRC.apiKey
+                    },
+                    this.trsDiv)
             );
 
             this.wireEvents();
