@@ -38,7 +38,13 @@
                 location: 'mustache',
                 main: 'mustache'
             }
-        ]
+        ],
+        map:{
+            'app/AttributeEditor':{
+                'esri/dijit/AttributeInspector':
+                'app/patch/AttributeInspector'
+            }
+        }
     };
     require(config, [
         'jquery',
