@@ -177,7 +177,6 @@ define([
                 }),
                 this.findAddress = new FindAddress({
                     map: this.map,
-                    graphicsLayer: this.searchGraphics,
                     apiKey: AGRC.apiKey
                 }, this.findAddressDiv),
                 this.magicZoom = new MagicZoom({
