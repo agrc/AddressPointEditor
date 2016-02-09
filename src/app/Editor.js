@@ -411,6 +411,20 @@ define([
             console.log('app.editor::saveEditsGeneric::displaying activity');
             topic.publish('map-activity', 1);
 
+            var modifiedError = function(err) {
+                console.log('app.editor::saveEditsGeneric::modified error');
+                var message = '';
+                if (err && err.details && lang.isArray(err.details)) {
+                    message = err.details[0];
+                }
+
+                topic.publish('app/state', 'Unable to save. ' + message);
+
+                if (lang.isFunction(errorBack)) {
+                    errorBack(err);
+                }
+            };
+
             //modify callbacks
             console.log('app.editor::saveEditsGeneric::modifiying activity');
             var modifiedSuccess = function(response) {
@@ -438,20 +452,6 @@ define([
                     }
                 } else {
                     modifiedError(error);
-                }
-            };
-
-            var modifiedError = function(err) {
-                console.log('app.editor::saveEditsGeneric::modified error');
-                var message = '';
-                if (err && err.details && lang.isArray(err.details)) {
-                    message = err.details[0];
-                }
-
-                topic.publish('app/state', 'Unable to save. ' + message);
-
-                if (lang.isFunction(errorBack)) {
-                    errorBack(err);
                 }
             };
 
