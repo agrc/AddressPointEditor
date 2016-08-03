@@ -26,7 +26,8 @@
     "grunt-newer": "^1",
     "grunt-processhtml": "^0",
     "grunt-ssh": "^0",
-    "uglify-js": "^2"
+    "uglify-js": "^2",
+    "load-grunt-tasks": "^3"
   },
   "scripts": {
     "test": "grunt travis --verbose"

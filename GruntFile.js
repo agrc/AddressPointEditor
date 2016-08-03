@@ -1,35 +1,43 @@
-/* jshint camelcase:false */
-module.exports = function(grunt) {
-    var jsFiles = 'src/app/**/*.js',
-        otherFiles = [
-            'src/app/**/*.html',
-            'src/app/**/*.css',
-            'src/index.html',
-            'src/ChangeLog.html'
-        ],
-        gruntFile = 'GruntFile.js',
-        jshintFiles = [jsFiles, gruntFile],
-        bumpFiles = [
-            'package.json',
-            'src/app/package.json',
-            'bower.json',
-            'src/app/config.js'
-        ],
-        deployFiles = [
-            '**',
-            '!build-report.txt',
-            '!util/**',
-            '!jasmine-favicon-reporter/**',
-            '!**/*.uncompressed.js',
-            '!**/*consoleStripped.js',
-            '!**/*.min.*',
-            '!**/tests/**',
-            '!**/bootstrap/test-infra/**',
-            '!**/bootstrap/less/**'
-        ],
-        deployDirProd = 'AddressPointEditor',
-        deployDirStage = 'wwwroot/AddressPointEditor',
-        secrets;
+module.exports = function (grunt) {
+    require('load-grunt-tasks')(grunt);
+
+    var otherFiles = [
+        'src/app/**/*.html',
+        'src/app/**/*.css',
+        'src/index.html',
+        'src/ChangeLog.html',
+        'tests/**/*.js'
+    ];
+    var jsFiles = [
+        'src/app/**/*.js',
+        'profiles/*.js',
+        'GruntFile.js'
+    ];
+    var bumpFiles = [
+        'package.json',
+        'bower.json',
+        'src/app/package.json',
+        'src/app/config.js'
+    ];
+    var deployFiles = [
+        '**',
+        '!**/*.uncompressed.js',
+        '!**/*consoleStripped.js',
+        '!**/bootstrap/less/**',
+        '!**/bootstrap/test-infra/**',
+        '!**/tests/**',
+        '!build-report.txt',
+        '!components-jasmine/**',
+        '!favico.js/**',
+        '!jasmine-favicon-reporter/**',
+        '!jasmine-jsreporter/**',
+        '!stubmodule/**',
+        '!util/**'
+    ];
+    var deployDirProd = 'AddressPointEditor';
+    var deployDirStage = 'wwwroot/AddressPointEditor';
+    var secrets;
+
     try {
         secrets = grunt.file.readJSON('secrets.json');
     } catch (e) {
@@ -42,7 +50,6 @@ module.exports = function(grunt) {
         };
     }
 
-    // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         amdcheck: {
@@ -114,18 +121,12 @@ module.exports = function(grunt) {
                 basePath: './src'
             }
         },
-        esri_slurp: {
+        eslint: {
             options: {
-                version: '3.11'
+                configFile: '.eslintrc'
             },
-            dev: {
-                options: {
-                    beautify: true
-                },
-                dest: 'src/esri'
-            },
-            travis: {
-                dest: 'src/esri'
+            main: {
+                src: jsFiles
             }
         },
         imagemin: {
@@ -149,18 +150,25 @@ module.exports = function(grunt) {
                     vendor: [
                         'src/jasmine-favicon-reporter/vendor/favico.js',
                         'src/jasmine-favicon-reporter/jasmine-favicon-reporter.js',
+                        'src/jasmine-jsreporter/jasmine-jsreporter.js',
                         'src/app/tests/jasmineTestBootstrap.js',
                         'src/dojo/dojo.js',
+                        'src/app/tests/jsReporterSanitizer.js',
                         'src/app/tests/jasmineAMDErrorChecking.js'
                     ],
                     host: 'http://localhost:8000'
                 }
             }
         },
-        jshint: {
-            files: jshintFiles,
+        parallel: {
             options: {
-                jshintrc: '.jshintrc'
+                grunt: true
+            },
+            assets: {
+                tasks: ['eslint:main', 'amdcheck:main', 'jasmine:main:build']
+            },
+            buildAssets: {
+                tasks: ['eslint:main', 'clean:build', 'newer:imagemin:main']
             }
         },
         processhtml: {
@@ -196,13 +204,15 @@ module.exports = function(grunt) {
                 srcBasePath: 'deploy/',
                 username: '<%= secrets.username %>',
                 password: '<%= secrets.password %>',
-                showProgress: true
+                showProgress: true,
+                readyTimeout: 30000
             }
         },
         sshexec: {
             options: {
                 username: '<%= secrets.username %>',
-                password: '<%= secrets.password %>'
+                password: '<%= secrets.password %>',
+                readyTimeout: 30000
             },
             stage: {
                 command: ['cd ' + deployDirStage, 'unzip -oq deploy.zip', 'rm deploy.zip'].join(';'),
@@ -217,47 +227,62 @@ module.exports = function(grunt) {
                 }
             }
         },
+        uglify: {
+            options: {
+                preserveComments: false,
+                sourceMap: true,
+                compress: {
+                    drop_console: true,
+                    passes: 2,
+                    dead_code: true
+                }
+            },
+            stage: {
+                options: {
+                    compress: {
+                        drop_console: false
+                    }
+                },
+                src: ['dist/dojo/dojo.js'],
+                dest: 'dist/dojo/dojo.js'
+            },
+            prod: {
+                files: [{
+                    expand: true,
+                    cwd: 'dist',
+                    src: '**/*.js',
+                    dest: 'dist'
+                }]
+            }
+        },
         watch: {
-            jshint: {
-                files: jshintFiles,
-                tasks: ['jshint', 'jasmine:main:build']
+            eslint: {
+                files: jsFiles,
+                tasks: ['newer:eslint:main', 'jasmine:main:build']
             },
             src: {
-                files: jshintFiles.concat(otherFiles),
-                options: {
-                    livereload: true
-                }
+                files: jsFiles.concat(otherFiles),
+                options: { livereload: true }
             }
         }
     });
 
-    // Loading dependencies
-    for (var key in grunt.file.readJSON('package.json').devDependencies) {
-        if (key !== 'grunt' && key.indexOf('grunt') === 0) {
-            grunt.loadNpmTasks(key);
-        }
-    }
-
-    // Default task.
     grunt.registerTask('default', [
-        'jshint',
-        'amdcheck:main',
-        'if-missing:esri_slurp:dev',
-        'jasmine:main:build',
+        'parallel:assets',
         'connect',
         'watch'
     ]);
     grunt.registerTask('build-prod', [
-        'clean:build',
+        'parallel:buildAssets',
         'dojo:prod',
-        'newer:imagemin:main',
+        'uglify:prod',
         'copy:main',
         'processhtml:main'
     ]);
     grunt.registerTask('build-stage', [
-        'clean:build',
+        'parallel:buildAssets',
         'dojo:stage',
-        'newer:imagemin:main',
+        'uglify:stage',
         'copy:main',
         'processhtml:main'
     ]);
@@ -274,9 +299,7 @@ module.exports = function(grunt) {
         'sshexec:stage'
     ]);
     grunt.registerTask('travis', [
-        'esri_slurp:travis',
-        'jshint',
-        'connect',
-        'jasmine:main'
+        'eslint:main',
+        'build-prod'
     ]);
 };
