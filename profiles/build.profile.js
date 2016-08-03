@@ -1,16 +1,12 @@
-/*jshint unused:false */
-
-var amdTag = function(filename, mid) {
-    return (/.*\.js$/).test(filename);
-};
+/*eslint-disable no-unused-vars*/
 
 var profile = {
     basePath: '../src',
     action: 'release',
     cssOptimize: 'comments',
     mini: true,
-    optimize: 'uglify',
-    layerOptimize: 'uglify',
+    optimize: false,
+    layerOptimize: false,
     stripConsole: 'all',
     selectorEngine: 'acme',
     layers: {
@@ -19,11 +15,14 @@ var profile = {
                 'dojo/i18n',
                 'dojo/domReady',
                 'app/run',
-                'esri/dijit/Attribution',
+                'app/App',
+                'dojox/gfx/filters',
                 'dojox/gfx/path',
                 'dojox/gfx/svg',
+                'dojox/gfx/svgext',
                 'dojox/gfx/shape'
             ],
+            targetStylesheet: 'app/resources/App.css',
             includeLocales: ['en-us'],
             customBase: true,
             boot: true
@@ -35,12 +34,20 @@ var profile = {
             exclude: ['dojo/dojo']
         }
     },
-    map: {
-        'ladda': {
-            'spin': 'ladda/dist/spin'
+    packages: [{
+        name: 'moment',
+        location: 'moment',
+        main: 'moment',
+        trees: [
+           // don't bother with .hidden, tests, min, src, and templates
+           ['.', '.', /(\/\.)|(~$)|(test|txt|src|min|templates)/]
+        ],
+        resourceTags: {
+            amd: function (filename, mid) {
+                return /\.js$/.test(filename);
+            }
         }
-    },
-    packages: ['dgrid', 'put-selector', 'xstyle'],
+    }],
     staticHasFeatures: {
         // The trace & log APIs are used for debugging the loader, so we don’t need them in the build
         'dojo-trace-api': 0,
@@ -58,8 +65,15 @@ var profile = {
         // We aren’t loading tests in production
         'dojo-test-sniff': 0
     },
-    // this is to make sure that the widget templates get built into the layer file.
+    plugins: {
+        'xstyle/css': 'xstyle/build/amd-css'
+    },
     userConfig: {
-        packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri']
+        packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri', 'layer-selector']
+    },
+    map: {
+        '*': {
+            'dojox/dgauges': 'dgauges'
+        }
     }
 };
