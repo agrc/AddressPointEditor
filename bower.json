@@ -2,18 +2,35 @@
   "name": "addres_point_editing",
   "version": "1.4.2",
   "dependencies": {
-    "agrc": "agrc-widgets#2.8.3",
-    "bootstrap": "~3.1",
-    "dojo": "~1.10",
-    "dojox": "~1.10",
-    "dijit": "~1.10",
-    "ijit": "agrc-ijit#3.1.1",
-    "mustache": "~0",
-    "util": "dojo-util#~1.10"
+    "agrc": "agrc-widgets#5.0.0",
+    "bootstrap": "3.3.6",
+    "dojo": "^1",
+    "dojox": "^1",
+    "dijit": "^1",
+    "esri": "arcgis-js-api#^3.17.0",
+    "ijit": "agrc-ijit#3.1.3",
+    "layer-selector": "agrc-layer-selector#^0.4.0",
+    "mustache": "^2",
+    "util": "dojo-util#~1",
+    "dgauges": "*",
+    "moment": "^2.14.1"
   },
   "devDependencies": {
     "matchers": "agrc-jasmine-matchers#~0.1",
     "jasmine-favicon-reporter": "*",
     "stubmodule": "*"
+  },
+  "resolutions": {
+    "mustache": "^2",
+    "dojo": "1.11.2",
+    "dojox": "1.11.2",
+    "dijit": "1.11.2",
+    "dgrid": "0.3.17/esri-3.14.0",
+    "xstyle": "v0.3.2",
+    "util": "1.11.2",
+    "dojo-themes": "1.11.2",
+    "esri": "^3.17.0",
+    "moment": "^2.14.1",
+    "dstore": "v1.1.1"
   }
 }
