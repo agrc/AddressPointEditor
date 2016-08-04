@@ -1,24 +1,17 @@
 define([
-    'dojo/has'
-], function (
-    has
-    ) {
-    var apiKey;
-    var redlineUrl;
+    'dojo/has',
+    'dojo/request/xhr',
 
-    if (has('agrc-api-key') === 'prod') {
-        // addressediting.utah.gov
-        apiKey = 'AGRC-7D48DD3D449390';
-        redlineUrl = 'http://mapserv.utah.gov/chalkdust';
-    } else if (has('agrc-api-key') === 'stage') {
-        // test.mapserv.utah.gov
-        apiKey = 'AGRC-FFCDAD6B933051';
-        redlineUrl = 'http://test.mapserv.utah.gov/chalkdust';
-    } else {
-        // localhost
-        apiKey = 'AGRC-B5D62BD2151902';
-        redlineUrl = 'http://localhost/git/chalkdust/dist/';
-    }
+    'esri/config'
+], function (
+    has,
+    xhr,
+
+    esriConfig
+) {
+    esriConfig.defaults.io.corsEnabledServers.push('mapserv.utah.gov');
+    esriConfig.defaults.io.corsEnabledServers.push('basemaps.utah.gov');
+    esriConfig.defaults.io.corsEnabledServers.push('api.mapserv.utah.gov');
 
     window.AGRC = {
         // app: app.App
@@ -29,8 +22,8 @@ define([
         //      The version number.
         version: '1.4.2',
 
-        //apiKey: 'AGRC-B5D62BD2151902', // localhost
-        apiKey: apiKey,
+        //apiKey: String
+        apiKey: null,
 
         appName: 'addressediting',
 
@@ -43,7 +36,7 @@ define([
             viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
-            redline: redlineUrl
+            redline: null
         },
 
         fieldNames: {
@@ -52,6 +45,28 @@ define([
             FullAddress: 'FullAdd'
         }
     };
+
+    if (has('agrc-api-key') === 'prod') {
+        // addressediting.utah.gov
+        window.AGRC.apiKey = 'AGRC-7D48DD3D449390';
+        window.AGRC.urls.redline = 'http://mapserv.utah.gov/chalkdust';
+    } else if (has('agrc-api-key') === 'stage') {
+        // test.mapserv.utah.gov
+        window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
+        window.AGRC.urls.redline = 'http://test.mapserv.utah.gov/chalkdust';
+        window.AGRC.quadWord = 'opera-event-little-pinball';
+    } else {
+        // localhost
+        xhr(require.baseUrl + 'secrets.json', {
+            handleAs: 'json',
+            sync: true
+        }).then(function (secrets) {
+            window.AGRC.quadWord = secrets.quadWord;
+            window.AGRC.apiKey = secrets.apiKey;
+        }, function () {
+            throw 'Error getting secrets!';
+        });
+    }
 
     return window.AGRC;
 });

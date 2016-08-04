@@ -1,107 +1,98 @@
 /* global $ */
 define([
-    'dojo/text!./templates/App.html',
-
-    'dojo/_base/array',
-    'dojo/_base/lang',
-    'dojo/_base/declare',
-    'dojo/_base/Color',
-
-    'dojo/on',
-    'dojo/aspect',
-    'dojo/topic',
-    'dojo/Stateful',
-
-    'dojo/dom-construct',
-    'dojo/dom-class',
-
-    'dijit/_WidgetBase',
-    'dijit/_TemplatedMixin',
-    'dijit/_WidgetsInTemplateMixin',
-
-    'agrc/widgets/map/BaseMap',
     'agrc/widgets/locate/FindAddress',
     'agrc/widgets/locate/MagicZoom',
-    'agrc/widgets/locate/ZoomToCoords',
     'agrc/widgets/locate/TRSsearch',
+    'agrc/widgets/locate/ZoomToCoords',
+    'agrc/widgets/map/BaseMap',
 
-    'agrc/widgets/map/BaseMapSelector',
+    'app/AttributeEditor',
+    'app/config',
+    'app/DownloadSelector',
+    'app/Editor',
+    'app/ParcelIdentify',
+    'app/SlideInSidebar',
+    'app/Toaster',
 
-    'ijit/widgets/notify/ChangeRequest',
-    'ijit/widgets/authentication/LoginRegister',
+    'dijit/_TemplatedMixin',
+    'dijit/_WidgetBase',
+    'dijit/_WidgetsInTemplateMixin',
+
+    'dojo/aspect',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/on',
+    'dojo/Stateful',
+    'dojo/text!./templates/App.html',
+    'dojo/topic',
+    'dojo/_base/array',
+    'dojo/_base/Color',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
 
     'esri/config',
     'esri/graphic',
-
     'esri/layers/FeatureLayer',
     'esri/layers/GraphicsLayer',
     'esri/layers/LabelLayer',
-    'esri/tasks/GeometryService',
-    'esri/symbols/SimpleMarkerSymbol',
-    'esri/symbols/SimpleLineSymbol',
-    'esri/symbols/TextSymbol',
     'esri/renderers/SimpleRenderer',
+    'esri/symbols/SimpleLineSymbol',
+    'esri/symbols/SimpleMarkerSymbol',
+    'esri/symbols/TextSymbol',
+    'esri/tasks/GeometryService',
 
-    'app/config',
-    'app/SlideInSidebar',
-    'app/DownloadSelector',
-    'app/Editor',
-    'app/AttributeEditor',
-    'app/Toaster',
-    'app/ParcelIdentify',
+    'ijit/widgets/authentication/LoginRegister',
+    'ijit/widgets/notify/ChangeRequest',
 
+    'layer-selector',
 
     'bootstrap'
 ], function (
-    template,
-
-    array,
-    lang,
-    declare,
-    Color,
-
-    on,
-    aspect,
-    topic,
-    Stateful,
-
-    domConstruct,
-    domClass,
-
-    _WidgetBase,
-    _TemplatedMixin,
-    _WidgetsInTemplateMixin,
-
-    BaseMap,
     FindAddress,
     MagicZoom,
-    ZoomToCoords,
     TrsSearch,
+    ZoomToCoords,
+    BaseMap,
 
-    BaseMapSelector,
+    AttributeEditor,
+    config,
+    DownloadSelector,
+    Editor,
+    ParcelIdentify,
+    SlideInSidebar,
+    Toaster,
 
-    ChangeRequest,
-    LoginRegister,
+    _TemplatedMixin,
+    _WidgetBase,
+    _WidgetsInTemplateMixin,
+
+    aspect,
+    domClass,
+    domConstruct,
+    on,
+    Stateful,
+    template,
+    topic,
+    array,
+    Color,
+    declare,
+    lang,
 
     esriConfig,
     Graphic,
-
     FeatureLayer,
     GraphicsLayer,
     LabelLayer,
-    GeomService,
-    SimpleMarkerSymbol,
-    SimpleLineSymbol,
-    TextSymbol,
     SimpleRenderer,
+    SimpleLineSymbol,
+    SimpleMarkerSymbol,
+    TextSymbol,
+    GeomService,
 
-    config,
-    SlideInSidebar,
-    DownloadSelector,
-    Editor,
-    AttributeEditor,
-    Toaster,
-    ParcelIdentify
+    LoginRegister,
+    ChangeRequest,
+
+    LayerSelector
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
@@ -178,15 +169,18 @@ define([
                 }),
                 this.findAddress = new FindAddress({
                     map: this.map,
-                    apiKey: window.AGRC.apiKey
+                    apiKey: window.AGRC.apiKey,
+                    zoomLevel: 17,
+                    wkid: 3857
                 }, this.findAddressDiv),
                 this.magicZoom = new MagicZoom({
                     map: this.map,
-                    mapServiceURL: window.AGRC.urls.basemap,
-                    searchLayerIndex: 3,
-                    searchField: 'Name',
-                    graphicsLayer: this.searchGraphics,
-                    maxResultsToDisplay: 10
+                    apiKey: config.apiKey,
+                    wkid: 3857,
+                    searchField: 'NAME',
+                    placeHolder: 'place name...',
+                    maxResultsToDisplay: 10,
+                    graphicsLayer: this.searchGraphics
                 }, this.magicZoomDiv),
                 this.zoomCoords = new ZoomToCoords({
                     map: this.map
@@ -208,8 +202,7 @@ define([
                 this.trsSearch = new TrsSearch({
                     map: this.map,
                     apiKey: window.AGRC.apiKey
-                },
-                    this.trsDiv)
+                }, this.trsDiv)
             );
 
             this.wireEvents();
@@ -220,14 +213,17 @@ define([
             console.info('app.App::initMap', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
-                useDefaultBaseMap: false
+                useDefaultBaseMap: false,
+                showAttribution: false
             });
 
             this.childWidgets.push(
-                new BaseMapSelector({
+                new LayerSelector({
                     map: this.map,
                     id: 'claro',
-                    position: 'TR'
+                    position: 'TR',
+                    quadWord: config.quadWord,
+                    baseLayers: ['Terrain', 'Lite', 'Hybrid', 'Topo', 'Color IR']
                 })
             );
 

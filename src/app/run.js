@@ -20,10 +20,6 @@
             'put-selector',
             'xstyle',
             {
-                name: 'highcharts',
-                location: './highcharts-release',
-                main: 'highcharts'
-            },{
                 name: 'bootstrap',
                 location: './bootstrap',
                 main: 'dist/js/bootstrap'
@@ -56,6 +52,7 @@
             }
         }
     };
+
     require(config, ['dojo/parser', 'jquery', 'dojo/domReady!'], function (parser) {
         parser.parse();
     });
