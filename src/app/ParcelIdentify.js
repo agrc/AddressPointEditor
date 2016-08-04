@@ -307,11 +307,9 @@ define([
                 scoped.identify(e);
             });
 
-            this.watch('x', function (name, oldValue, value) {
+            this.watch('x', function () {
                 // there is always a map click event. x shoudl always be set.
-                if (+value > 0) {
-                    scoped._updateVisibility(false);
-                }
+                scoped._updateVisibility(false);
             });
         }
     });
