@@ -278,6 +278,10 @@ define([
                 topic.publish('app/identify-click', evt);
             }));
 
+            if (this.map.loaded) {
+                this.addGraphicLayers();
+            }
+
             this.own(
                 this.map.on('load', lang.hitch(this, function () {
                     this.addGraphicLayers();
