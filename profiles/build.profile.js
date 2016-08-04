@@ -20,7 +20,8 @@ var profile = {
                 'dojox/gfx/path',
                 'dojox/gfx/svg',
                 'dojox/gfx/svgext',
-                'dojox/gfx/shape'
+                'dojox/gfx/shape',
+                'ladda/dist/spin'
             ],
             targetStylesheet: 'app/resources/App.css',
             includeLocales: ['en-us'],
@@ -74,6 +75,10 @@ var profile = {
     map: {
         '*': {
             'dojox/dgauges': 'dgauges'
+        },
+        'app/AttributeEditor': {
+            'esri/dijit/AttributeInspector':
+            'app/patch/AttributeInspector'
         }
     }
 };
