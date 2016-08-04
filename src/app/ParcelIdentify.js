@@ -232,7 +232,8 @@ define([
             console.log('app.ParcelIdentify::_reverseGeocode', arguments);
 
             return this.api.reverseGeocode(point.x, point.y, {
-                distance: 50
+                distance: 50,
+                spatialReference: this.map.spatialReference.wkid
             });
         },
         _updateAddress: function (reverseResults) {
