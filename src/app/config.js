@@ -20,7 +20,7 @@ define([
 
         // version.: String
         //      The version number.
-        version: '1.4.2',
+        version: '2.0.0',
 
         //apiKey: String
         apiKey: null,
