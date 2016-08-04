@@ -285,7 +285,6 @@ define([
             }));
 
             this.identifyTopic = this.map.on('click', lang.hitch(this, function (evt) {
-                console.warn('this.map.on.click.topic.publish');
                 topic.publish('app/identify-click', evt);
             }));
 
