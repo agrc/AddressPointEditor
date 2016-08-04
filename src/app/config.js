@@ -31,7 +31,6 @@ define([
         labelsMinScale: 2257,
 
         urls: {
-            basemap: '//mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             editLayer: '/arcgis/rest/services/AddressEditor/Editing/FeatureServer/',
             viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
@@ -57,6 +56,7 @@ define([
         window.AGRC.urls.redline = 'http://test.mapserv.utah.gov/chalkdust';
         window.AGRC.quadWord = 'opera-event-little-pinball';
     } else {
+        window.AGRC.urls.redline = 'http://mapserv.utah.gov/chalkdust';
         // localhost
         xhr(require.baseUrl + 'secrets.json', {
             handleAs: 'json',
