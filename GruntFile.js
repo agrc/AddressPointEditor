@@ -243,8 +243,10 @@ module.exports = function (grunt) {
                         drop_console: false
                     }
                 },
-                src: ['dist/dojo/dojo.js'],
-                dest: 'dist/dojo/dojo.js'
+                files: {
+                    'dist/dojo/dojo.js': ['dist/dojo/dojo.js'],
+                    'dist/app/run_user_admin.js': ['dist/app/run_user_admin.js']
+                }
             },
             prod: {
                 files: [{
