@@ -46,6 +46,7 @@ define([
 
     'layer-selector',
 
+
     'bootstrap'
 ], function (
     FindAddress,
@@ -160,6 +161,43 @@ define([
 
             this.initGraphicLayers();
 
+            this.findAddress = new FindAddress({
+                map: this.map,
+                apiKey: window.AGRC.apiKey,
+                zoomLevel: 17,
+                wkid: 3857
+            }, this.findAddressDiv),
+            this.magicZoom = new MagicZoom({
+                map: this.map,
+                apiKey: config.apiKey,
+                wkid: 3857,
+                searchField: 'NAME',
+                placeHolder: 'place name...',
+                maxResultsToDisplay: 10,
+                graphicsLayer: this.searchGraphics
+            }, this.magicZoomDiv),
+            this.zoomCoords = new ZoomToCoords({
+                map: this.map
+            }, this.coordDiv),
+            this.changeRequest = new ChangeRequest({
+                map: this.map,
+                redliner: config.urls.redline,
+                toIds: [3, 5, 6]
+            }, this.suggestChangeDiv),
+            this.downloadWizard = new DownloadSelector({},
+                this.downloadDiv),
+            this.sideBar = new SlideInSidebar({
+                map: this.map
+            }, this.sideBarNode),
+            this.toaster = new Toaster({}, this.toasterNode),
+            this.parcelIdentify = new ParcelIdentify({
+                map: this.map
+            }, this.parcelIdentifyNode),
+            this.trsSearch = new TrsSearch({
+                map: this.map,
+                apiKey: window.AGRC.apiKey
+            }, this.trsDiv)
+
             this.childWidgets.push(
                 new LoginRegister({
                     appName: config.appName,
@@ -167,42 +205,15 @@ define([
                     showOnLoad: false,
                     securedServicesBaseUrl: config.urls.editLayer
                 }),
-                this.findAddress = new FindAddress({
-                    map: this.map,
-                    apiKey: window.AGRC.apiKey,
-                    zoomLevel: 17,
-                    wkid: 3857
-                }, this.findAddressDiv),
-                this.magicZoom = new MagicZoom({
-                    map: this.map,
-                    apiKey: config.apiKey,
-                    wkid: 3857,
-                    searchField: 'NAME',
-                    placeHolder: 'place name...',
-                    maxResultsToDisplay: 10,
-                    graphicsLayer: this.searchGraphics
-                }, this.magicZoomDiv),
-                this.zoomCoords = new ZoomToCoords({
-                    map: this.map
-                }, this.coordDiv),
-                this.changeRequest = new ChangeRequest({
-                    map: this.map,
-                    redliner: config.urls.redline,
-                    toIds: [3, 5, 6]
-                }, this.suggestChangeDiv),
-                this.downloadWizard = new DownloadSelector({},
-                    this.downloadDiv),
-                this.sideBar = new SlideInSidebar({
-                    map: this.map
-                }, this.sideBarNode),
-                this.toaster = new Toaster({}, this.toasterNode),
-                this.parcelIdentify = new ParcelIdentify({
-                    map: this.map
-                }, this.parcelIdentifyNode),
-                this.trsSearch = new TrsSearch({
-                    map: this.map,
-                    apiKey: window.AGRC.apiKey
-                }, this.trsDiv)
+                this.findAddress,
+                this.magicZoom,
+                this.zoomCoords,
+                this.changeRequest,
+                this.downloadWizard,
+                this.sideBar,
+                this.toaster,
+                this.parcelIdentify,
+                this.trsSearch
             );
 
             this.wireEvents();
