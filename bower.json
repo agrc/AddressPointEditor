@@ -2,7 +2,7 @@
   "name": "addres_point_editing",
   "version": "1.4.2",
   "dependencies": {
-    "agrc": "agrc-widgets#5.0.0",
+    "agrc": "agrc-widgets#5.0.1",
     "bootstrap": "3.3.6",
     "dojo": "^1",
     "dojox": "^1",
@@ -28,9 +28,7 @@
     "dgrid": "0.3.17/esri-3.14.0",
     "xstyle": "v0.3.2",
     "util": "1.11.2",
-    "dojo-themes": "1.11.2",
     "esri": "^3.17.0",
-    "moment": "^2.14.1",
-    "dstore": "v1.1.1"
+    "moment": "^2.14.1"
   }
 }
