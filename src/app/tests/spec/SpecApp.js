@@ -1,10 +1,10 @@
 require([
-        'app/App',
+    'app/App',
 
-        'dojo/dom-construct'
-    ],
+    'dojo/dom-construct'
+],
 
-    function(
+    function (
         App,
 
         domConstruct

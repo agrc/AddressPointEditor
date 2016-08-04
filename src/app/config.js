@@ -1,9 +1,10 @@
 define([
     'dojo/has'
-], function(
+], function (
     has
     ) {
-    var apiKey, redlineUrl;
+    var apiKey;
+    var redlineUrl;
 
     if (has('agrc-api-key') === 'prod') {
         // addressediting.utah.gov
@@ -39,7 +40,7 @@ define([
         urls: {
             basemap: '//mapserv.utah.gov/ArcGIS/rest/services/BaseMaps/Vector/MapServer',
             editLayer: '/arcgis/rest/services/AddressEditor/Editing/FeatureServer/',
-            viewLayer:  '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
+            viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
             redline: redlineUrl

@@ -1,3 +1,4 @@
+/* global $ */
 define([
     'dojo/text!./templates/App.html',
 
@@ -51,7 +52,7 @@ define([
 
 
     'bootstrap'
-], function(
+], function (
     template,
 
     array,
@@ -136,7 +137,7 @@ define([
         //      the graphics layer to be used with the find address task
         searchGraphics: null,
 
-        constructor: function() {
+        constructor: function () {
             // summary:
             //      first function to fire after page loads
             console.info('app.App::constructor', arguments);
@@ -145,14 +146,14 @@ define([
 
             this.childWidgets = [];
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      Fires when
             console.log('app.App::postCreate', arguments);
 
             // needs to happen here since remember me race condition
             var that = this;
-            topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function(result) {
+            topic.subscribe(LoginRegister.prototype.topics.signInSuccess, function (result) {
                 window.AGRC.user = result.user;
                 that.identifyTopic.remove();
                 that.enableEditingLayer();
@@ -177,11 +178,11 @@ define([
                 }),
                 this.findAddress = new FindAddress({
                     map: this.map,
-                    apiKey: AGRC.apiKey
+                    apiKey: window.AGRC.apiKey
                 }, this.findAddressDiv),
                 this.magicZoom = new MagicZoom({
                     map: this.map,
-                    mapServiceURL: AGRC.urls.basemap,
+                    mapServiceURL: window.AGRC.urls.basemap,
                     searchLayerIndex: 3,
                     searchField: 'Name',
                     graphicsLayer: this.searchGraphics,
@@ -205,15 +206,15 @@ define([
                     map: this.map
                 }, this.parcelIdentifyNode),
                 this.trsSearch = new TrsSearch({
-                        map: this.map,
-                        apiKey: AGRC.apiKey
-                    },
+                    map: this.map,
+                    apiKey: window.AGRC.apiKey
+                },
                     this.trsDiv)
             );
 
             this.wireEvents();
         },
-        initMap: function() {
+        initMap: function () {
             // summary:
             //      Sets up the map
             console.info('app.App::initMap', arguments);
@@ -230,9 +231,9 @@ define([
                 })
             );
 
-            esriConfig.defaults.geometryService = new GeomService(AGRC.urls.geometryService);
+            esriConfig.defaults.geometryService = new GeomService(window.AGRC.urls.geometryService);
         },
-        initGraphicLayers: function() {
+        initGraphicLayers: function () {
             // summary:
             //      creates the feature layer objects
             //
@@ -240,7 +241,7 @@ define([
 
             var layerId = 0;
 
-            var url = AGRC.urls.viewLayer + layerId;
+            var url = window.AGRC.urls.viewLayer + layerId;
             this.editLayer = new FeatureLayer(url, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
@@ -264,10 +265,10 @@ define([
                 id: 'searchGraphics'
             });
         },
-        wireEvents: function() {
+        wireEvents: function () {
             console.log('app.App::wireEvents', arguments);
 
-            this.activity.watch('count', lang.hitch(this, function() {
+            this.activity.watch('count', lang.hitch(this, function () {
                 if (this.activity.get('count') > 0) {
                     this.map.showLoader();
                     return;
@@ -276,24 +277,24 @@ define([
                 this.map.hideLoader();
             }));
 
-            this.identifyTopic = this.map.on('click', lang.hitch(this, function(evt) {
+            this.identifyTopic = this.map.on('click', lang.hitch(this, function (evt) {
                 console.warn('this.map.on.click.topic.publish');
                 topic.publish('app/identify-click', evt);
             }));
 
             this.own(
-                this.map.on('load', lang.hitch(this, function() {
+                this.map.on('load', lang.hitch(this, function () {
                     this.addGraphicLayers();
                 })),
                 this.identifyTopic,
                 this.zoomCoords.on('zoom', lang.hitch(this, 'showPoint')),
-                topic.subscribe('map-activity', lang.hitch(this, function(difference) {
+                topic.subscribe('map-activity', lang.hitch(this, function (difference) {
                     var currentCount = this.activity.get('count');
                     var count = currentCount += difference;
 
                     this.activity.set('count', count);
                 })),
-                on(this.changeRequest, 'drawStart', lang.hitch(this, function() {
+                on(this.changeRequest, 'drawStart', lang.hitch(this, function () {
                     topic.publish('app/toolbar', 'redlining');
                     this.identifyTopic.remove();
                     this.identifyTopic = null;
@@ -302,28 +303,28 @@ define([
                     ddl.blur();
                     $('.dropdown').blur();
                 })),
-                on(this.changeRequest, 'drawEnd', lang.hitch(this, function() {
+                on(this.changeRequest, 'drawEnd', lang.hitch(this, function () {
                     $('#suggest-change-dropdown').dropdown('toggle');
                     var self = this;
-                    this.identifyTopic = this.map.on('click', lang.hitch(self, function(evt) {
+                    this.identifyTopic = this.map.on('click', lang.hitch(self, function (evt) {
                         topic.publish('app/identify-click', evt);
                     }));
                 })),
-                aspect.before(this.sideBar, 'show', function() {
+                aspect.before(this.sideBar, 'show', function () {
                     topic.publish('app/state', 'Fill out the address details for this point.');
                 }),
-                aspect.after(this.findAddress, '_done', lang.hitch(this, function() {
+                aspect.after(this.findAddress, '_done', lang.hitch(this, function () {
                     $('<div id="find-dropdown"></div>').dropdown('toggle');
                 }))
             );
         },
-        startup: function() {
+        startup: function () {
             // summary:
             //      Fires after postCreate when all of the child widgets are finished laying out.
             console.log('app.App::startup', arguments);
 
             var that = this;
-            array.forEach(this.childWidgets, function(widget) {
+            array.forEach(this.childWidgets, function (widget) {
                 console.log('widget.declaredClass', widget.declaredClass);
                 that.own(widget);
                 widget.startup();
@@ -331,7 +332,7 @@ define([
 
             this.inherited(arguments);
         },
-        addGraphicLayers: function() {
+        addGraphicLayers: function () {
             console.info('app.App::addGraphicLayers', arguments);
 
             if (this.editLayer && this.editLayer.getMap()) {
@@ -352,7 +353,7 @@ define([
 
             this.initEditing(this.editLayer.id === 'editLayer');
         },
-        enableEditingLayer: function() {
+        enableEditingLayer: function () {
             // summary:
             //      removes the default viewing layer and adds the editing layer
             //
@@ -367,7 +368,7 @@ define([
 
             var layerId = 0;
 
-            var url = AGRC.urls.editLayer + layerId;
+            var url = window.AGRC.urls.editLayer + layerId;
             this.editLayer = new FeatureLayer(url, {
                 mode: FeatureLayer.MODE_ONDEMAND,
                 useMapTime: false,
@@ -387,7 +388,7 @@ define([
 
             this.addGraphicLayers();
         },
-        initEditing: function(isEditable) {
+        initEditing: function (isEditable) {
             // sumamry:
             //      initializes the editing settings/widget
             // isEditable: creates attribute editor in read only mode
@@ -417,7 +418,7 @@ define([
 
             this.attributeEditor.initialize(this.editLayer, isEditable);
         },
-        showPoint: function(evt) {
+        showPoint: function (evt) {
             // summary:
             //      shows the point for a duration and hides the dropdown
             // evt
@@ -437,7 +438,7 @@ define([
 
             var self = this;
 
-            this.timeout = setTimeout(function() {
+            this.timeout = setTimeout(function () {
                 if (self._graphic) {
                     self.searchGraphics.remove(self._graphic);
                     clearTimeout(self.timeout);

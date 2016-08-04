@@ -9,7 +9,7 @@ define([
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin'
-], function(
+], function (
     declare,
     fx,
 
@@ -28,10 +28,10 @@ define([
         templateString: template,
         baseClass: 'slide-in-sidebar',
 
-        constructor: function() {
+        constructor: function () {
             console.log('app.SlideInSidebar::constructor', arguments);
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      dom is ready
             console.log('app.SlideInSidebar::postCreate', arguments);
@@ -56,19 +56,19 @@ define([
                 }
             });
         },
-        wireEvents: function() {
+        wireEvents: function () {
             // param: type or return: type
             console.log('app.SlideInSidebar::wireEvents', arguments);
 
         },
-        show: function() {
+        show: function () {
             // summary:
             //      description
             console.log('app.SlideInSidebar::show', arguments);
 
             this.showAni.play();
         },
-        hide: function() {
+        hide: function () {
             // summary:
             //      description
             console.log('app.SlideInSidebar::hide', arguments);

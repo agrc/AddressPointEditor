@@ -4,18 +4,18 @@ require([
     'dojo/dom-class',
 
     'stubmodule'
-], function(
+], function (
     ClassUnderTest,
 
     domClass,
 
     stubmodule
 ) {
-    describe('app.ParcelIdentify', function() {
+    describe('app.ParcelIdentify', function () {
         var testWidget;
         var map;
 
-        afterEach(function() {
+        afterEach(function () {
             if (testWidget) {
                 if (testWidget.destroy) {
                     testWidget.destroy();
@@ -25,21 +25,21 @@ require([
             }
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
             map = jasmine.createSpyObj('map', ['on']);
             testWidget = new ClassUnderTest({
                 map: map
             });
         });
 
-        describe('Sanity', function() {
-            it('should create a Identify', function() {
+        describe('Sanity', function () {
+            it('should create a Identify', function () {
                 expect(testWidget).toEqual(jasmine.any(ClassUnderTest));
                 expect(testWidget.map).toBe(map);
             });
         });
-        describe('getters and setters', function() {
-            beforeEach(function() {
+        describe('getters and setters', function () {
+            beforeEach(function () {
                 testWidget._set('x', 1.23456);
                 testWidget._set('y', 1.23456);
                 testWidget._set('parcelId', 'blah');
@@ -49,11 +49,11 @@ require([
                 testWidget._set('ownership', 'blah');
                 testWidget._set('reverse', 'blah');
             });
-            it('rounds utms to 2 decimal places', function() {
+            it('rounds utms to 2 decimal places', function () {
                 expect(('' + testWidget.get('x')).split('.').length).toBe(2);
                 expect(('' + testWidget.get('y')).split('.').length).toBe(2);
             });
-            it('_reset all values', function() {
+            it('_reset all values', function () {
                 testWidget._reset('reset');
 
                 expect(testWidget.get('x')).toEqual('No data.');
@@ -66,14 +66,14 @@ require([
                 expect(testWidget.get('reverse')).toEqual('No address found.');
             });
         });
-        describe('_setValues', function() {
+        describe('_setValues', function () {
             beforeEach(function () {
                 testWidget.mapPoint = {
                     x: 1,
                     y: 2
                 };
             });
-            it('handles null return', function() {
+            it('handles null return', function () {
                 testWidget._setValues(null);
 
                 expect(testWidget.get('x')).toEqual(1);
@@ -85,7 +85,7 @@ require([
                 expect(testWidget.get('ownership')).toEqual('No parcel data.');
                 expect(testWidget.get('reverse')).toEqual('No address found.');
             });
-            it('handles empty array return', function() {
+            it('handles empty array return', function () {
                 testWidget._setValues([]);
 
                 expect(testWidget.get('x')).toEqual(1);
@@ -97,7 +97,7 @@ require([
                 expect(testWidget.get('ownership')).toEqual('No parcel data.');
                 expect(testWidget.get('reverse')).toEqual('No address found.');
             });
-            it('handles empty array return', function() {
+            it('handles empty array return', function () {
                 testWidget._setValues([]);
 
                 expect(testWidget.get('x')).toEqual(1);
@@ -109,7 +109,7 @@ require([
                 expect(testWidget.get('ownership')).toEqual('No parcel data.');
                 expect(testWidget.get('reverse')).toEqual('No address found.');
             });
-            it('handles valid return', function() {
+            it('handles valid return', function () {
                 /*jshint -W106*/
                 testWidget._setValues([{
                     attributes: {
@@ -148,10 +148,10 @@ require([
                 expect(domClass.contains(testWidget.messageNode, 'hide'));
             });
         });
-        describe('getReverseGeocode', function() {
-            xit('passes the point to the request', function(done) {
+        describe('getReverseGeocode', function () {
+            xit('passes the point to the request', function (done) {
                 var point = {
-                    toJson: function() {
+                    toJson: function () {
                         return {
                             a: 'a'
                         };
@@ -159,11 +159,11 @@ require([
                 };
                 var request = jasmine.createSpy('request')
                     .and.returnValue({
-                        then: function() {}
+                        then: function () {}
                     });
                 stubmodule('app/ParcelIdentify', {
                     'dojo/request': request
-                }).then(function(StubbedModule) {
+                }).then(function (StubbedModule) {
                     var testWidget2 = new StubbedModule({
                         map: map
                     });

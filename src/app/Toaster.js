@@ -10,8 +10,7 @@ define([
 
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin'
-
-], function(
+], function (
     template,
 
     declare,
@@ -35,13 +34,13 @@ define([
             type: 'innerHTML'
         },
 
-        constructor: function() {
+        constructor: function () {
             // summary:
             //      duh
             console.log('app.toaster::constructor', arguments);
 
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      setup
             console.log('app.toaster::postCreate', arguments);
@@ -54,7 +53,7 @@ define([
                 topic.subscribe('app/identify', lang.hitch(this, 'showIdentify'))
             );
         },
-        updateMessage: function(message) {
+        updateMessage: function (message) {
             // summary:
             //      sets the toaster text
             // message: string to display
@@ -85,7 +84,7 @@ define([
                     this.set('message', message);
             }
         },
-        showIdentify: function(identifyWidget) {
+        showIdentify: function (identifyWidget) {
             // summary:
             //      makes sure the toaster displays itself
             // identifyNode
@@ -104,14 +103,14 @@ define([
             this.messageNode.appendChild(identifyWidget.domNode);
             domClass.replace(this.domNode, 'show', 'hide');
         },
-        remove: function() {
+        remove: function () {
             // summary:
             //      description
             console.log('app.toaster::remove', arguments);
 
             this._hide();
         },
-        _hide: function() {
+        _hide: function () {
             // summary:
             //      hide's the toaster.
             //

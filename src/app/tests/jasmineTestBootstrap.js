@@ -1,5 +1,5 @@
-/* global JasmineFaviconReporter */
-/*jshint unused:false*/
+/* global JasmineFaviconReporter, jasmineRequire */
+/* eslint-disable no-unused-vars */
 var dojoConfig = {
     // isDebug: false,
     isJasmineTestRunner: true,
@@ -18,3 +18,4 @@ var dojoConfig = {
 
 // for jasmine-favicon-reporter
 jasmine.getEnv().addReporter(new JasmineFaviconReporter());
+jasmine.getEnv().addReporter(new jasmineRequire.JSReporter2());

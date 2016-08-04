@@ -1,45 +1,39 @@
 define([
-    'dojo/_base/declare',
-    'dojo/_base/lang',
-    'dojo/_base/array',
-    'dojo/_base/event',
-
-    'dojo/on',
-    'dojo/dom-class',
-    'dojo/dom-construct',
-    'dojo/dom-attr',
-
-    'dijit/_WidgetBase',
-    'dijit/_TemplatedMixin',
-    'dijit/layout/StackContainer',
-    'dijit/layout/ContentPane',
-    'dijit/_WidgetsInTemplateMixin',
-
-    'dojo/text!app/templates/DownloadSelector.html',
-
     'app/data/counties',
 
-    'esri/tasks/Geoprocessor'
-], function(
-    declare,
-    lang,
-    array,
-    event,
+    'dijit/_TemplatedMixin',
+    'dijit/_WidgetBase',
+    'dijit/_WidgetsInTemplateMixin',
 
-    on,
-    domClass,
-    domConstruct,
-    domAttr,
+    'dojo/dom-attr',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/text!app/templates/DownloadSelector.html',
+    'dojo/_base/array',
+    'dojo/_base/declare',
+    'dojo/_base/event',
+    'dojo/_base/lang',
 
-    _WidgetBase,
+    'esri/tasks/Geoprocessor',
+
+
+    'dijit/layout/ContentPane',
+    'dijit/layout/StackContainer'
+], function (
+    counties,
+
     _TemplatedMixin,
-    StackContainer,
-    ContentPane,
+    _WidgetBase,
     _WidgetsInTemplateMixin,
 
+    domAttr,
+    domClass,
+    domConstruct,
     template,
-
-    counties,
+    array,
+    declare,
+    event,
+    lang,
 
     Geoprocessor
 ) {
@@ -64,10 +58,10 @@ define([
             type: 'attribute',
             attribute: 'href'
         },
-        constructor: function() {
+        constructor: function () {
             console.info('app.downloadSelector::constructor', arguments);
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      dom is ready
             console.info('app.downloadSelector::postCreate', arguments);
@@ -84,12 +78,12 @@ define([
 
             this.initGp();
         },
-        initGp: function() {
+        initGp: function () {
             // summary:
             //      description
             console.info('app.downloadSelector::initGp', arguments);
 
-            this.gp = new Geoprocessor(AGRC.urls.downloadGp);
+            this.gp = new Geoprocessor(window.AGRC.urls.downloadGp);
             //this.gp.on('onError', 'onJobError'),
 
             this.own(
@@ -99,7 +93,7 @@ define([
                 this.gp.on('job-cancel', lang.hitch(this, 'jobCancelled'))
             );
         },
-        showNextPage: function() {
+        showNextPage: function () {
             console.info('app.downloadSelector::showNextPage', arguments);
 
             if (this.currentPage < 0) {
@@ -117,7 +111,7 @@ define([
 
             this.sc.selectChild(this.pages[this.currentPage]);
         },
-        back: function() {
+        back: function () {
             console.info('app.downloadSelector::back', arguments);
 
             if (this.currentPage > 0) {
@@ -130,12 +124,12 @@ define([
 
             this.sc.selectChild(this.pages[this.currentPage]);
         },
-        setDownloadFilter: function(evt) {
+        setDownloadFilter: function (evt) {
             console.info('app.downloadSelector::setDownloadFilter', arguments);
 
-            var node = evt.target,
-                prop = node.getAttribute('data-prop'),
-                value = null;
+            var node = evt.target;
+            var prop = node.getAttribute('data-prop');
+            var value = null;
 
             value = node.getAttribute('data-' + prop);
 
@@ -148,7 +142,7 @@ define([
 
             this.showSubmitButton();
         },
-        showSubmitButton: function() {
+        showSubmitButton: function () {
             console.info('app.downloadSelector::showSubmitButton', arguments);
 
             if (!this.valid()) {
@@ -162,11 +156,11 @@ define([
             domClass.remove(this.submitButton, 'hidden');
             domAttr.set(this.submitButton, 'disabled', false);
         },
-        hydrateCountySelect: function() {
+        hydrateCountySelect: function () {
             console.log('app.downloadSelector::hydrateCountySelect', arguments);
 
             var countyNames = counties.sort(
-                function(a, b) {
+                function (a, b) {
                     a = a;
                     b = b;
 
@@ -181,16 +175,16 @@ define([
                 });
 
             array.forEach(countyNames,
-                function(v) {
+                function (v) {
                     domConstruct.create('option', {
                         value: v,
-                        innerHTML: v.replace(/\w\S*/g, function(txt) {
+                        innerHTML: v.replace(/\w\S*/g, function (txt) {
                             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
                         })
                     }, this.countySelect);
                 }, this);
         },
-        validate: function(evt) {
+        validate: function (evt) {
             console.info('app.downloadSelector::validate', arguments);
 
             if (!this.valid()) {
@@ -201,17 +195,17 @@ define([
                 return;
             }
         },
-        valid: function() {
+        valid: function () {
             // summary:
             //      validates the download object
             console.log('app.downloadSelector::valid', arguments);
 
             var props = ['sr', 'format', 'county'];
-            return array.every(props, function(item) {
+            return array.every(props, function (item) {
                 return !!this.downloadFilter[item];
             }, this);
         },
-        submitJob: function() {
+        submitJob: function () {
             // summary:
             //      sends the download filter to the gp service
             console.log('app.downloadSelector::submitJob', arguments);
@@ -237,21 +231,21 @@ define([
             domAttr.set(this.downloadButton, 'disabled', null);
             domClass.remove(this.downloadButton, 'hidden');
         },
-        cancelJob: function() {
+        cancelJob: function () {
             // summary:
             //      cancels the download job
             console.log('app.downloadSelector::cancelJob', arguments);
 
             this.gp.cancelJob(this.jobId);
         },
-        jobCancelled: function() {
+        jobCancelled: function () {
             // summary:
             //      successful cancel
             console.log('app.downloadSelector::jobCancelled', arguments);
 
 
         },
-        statusUpdate: function(status) {
+        statusUpdate: function (status) {
             // summary:
             //      status updates from the gp service
             // jobinfo: esri/tasks/JobInfo
@@ -272,7 +266,7 @@ define([
                     break;
             }
         },
-        gpComplete: function(status) {
+        gpComplete: function (status) {
             // summary:
             //      description
             // status: esri/tasks/JobInfo
@@ -315,7 +309,7 @@ define([
             }
 
         },
-        displayLink: function(response) {
+        displayLink: function (response) {
             // summary:
             //      sets the download link's href
             // data: the esri/tasks/ParameterInfo object

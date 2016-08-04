@@ -1,13 +1,12 @@
 require([
-        'dojo/dom-construct',
-        'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/dom-class',
 
-        'app/Editor',
-        'app/config'
+    'app/Editor',
+    'app/config'
+],
 
-    ],
-
-    function(
+    function (
         domConstruct,
         domClass,
 
@@ -20,19 +19,19 @@ require([
             loaded: true
         };
         var mockFeaturelayer = {
-            applyEdits: function() {
+            applyEdits: function () {
                 return true;
             }
         };
         var mockGraphic = {
-            setGeometry: function() {
+            setGeometry: function () {
                 return true;
             },
-            setAttributes: function() {
+            setAttributes: function () {
                 return true;
             },
             geometry: {
-                toJson: function() {
+                toJson: function () {
                     return '';
                 }
             }

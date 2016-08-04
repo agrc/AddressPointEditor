@@ -2,7 +2,7 @@
   "name": "address_point_editor",
   "version": "1.4.2",
   "main": "main",
-  "description": "Broadband Address Point Editing",
-  "homepage": "https://github.com/agrc/AGRCJavaScriptProjectBoilerPlate",
+  "description": "Address Point Editing",
+  "homepage": "https://github.com/agrc/addresspointediting",
   "dojoBuild": "app.profile.js"
 }

@@ -1,40 +1,31 @@
 define([
-    'dojo/text!./templates/AttributeCopyPaste.html',
+    'app/clipboard',
 
+    'dijit/_TemplatedMixin',
+    'dijit/_WidgetBase',
+    'dijit/_WidgetsInTemplateMixin',
+
+    'dojo/aspect',
+    'dojo/dom-construct',
+    'dojo/text!./templates/AttributeCopyPaste.html',
     'dojo/_base/array',
     'dojo/_base/declare',
     'dojo/_base/lang',
 
-    'dojo/aspect',
-    'dojo/on',
-
-    'dojo/dom-construct',
-
-    'dijit/_WidgetBase',
-    'dijit/_TemplatedMixin',
-    'dijit/_WidgetsInTemplateMixin',
-
-    'app/clipboard',
-
     'dijit/form/Button'
-], function(
-    template,
+], function (
+    clipboard,
 
-    array,
-    declare,
-    lang,
-
-    aspect,
-    on,
-
-    domConstruct,
-
-    _WidgetBase,
     _TemplatedMixin,
-
+    _WidgetBase,
     _WidgetsInTemplateMixin,
 
-    clipboard
+    aspect,
+    domConstruct,
+    template,
+    array,
+    declare,
+    lang
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // description:
@@ -67,7 +58,7 @@ define([
         //      the feature layer used in the attribute editor
         featureLayer: null,
 
-        _setClipboardAttr: function(value) {
+        _setClipboardAttr: function (value) {
             var clone = lang.clone(value);
 
             for (var prop in clone) {
@@ -82,11 +73,11 @@ define([
             this._set('_clipboard', clone);
         },
 
-        _getClipboardAttr: function() {
+        _getClipboardAttr: function () {
             return clipboard.data;
         },
 
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      Overrides method of same name in dijit._Widget.
             // tags:
@@ -98,7 +89,7 @@ define([
 
             domConstruct.place(this.domNode, this.attributeEditor.editButtons);
         },
-        setupConnections: function() {
+        setupConnections: function () {
             // summary:
             //      wire events, and such
             //
@@ -107,7 +98,7 @@ define([
             var self = this;
 
             // selects the first feature
-            this.featureLayer.on('selection-complete', function(evt) {
+            this.featureLayer.on('selection-complete', function (evt) {
                 if (!evt || !evt.features || evt.features.length < 1) {
                     return;
                 }
@@ -116,7 +107,7 @@ define([
             });
 
             // updates the feature as the user uses the next buttons
-            this.attributeEditor.on('next', function(evt) {
+            this.attributeEditor.on('next', function (evt) {
                 if (!evt || !evt.feature) {
                     return;
                 }
@@ -124,8 +115,8 @@ define([
                 self.data = evt.feature.attributes;
             });
 
-            aspect.after(this.attributeEditor, '_updateSelection', function() {
-                array.forEach(this.layerInfos[0].fieldInfos, function(item) {
+            aspect.after(this.attributeEditor, '_updateSelection', function () {
+                array.forEach(this.layerInfos[0].fieldInfos, function (item) {
                     if (self.ignoreFields.indexOf(item.fieldName) < 0) {
                         self.fieldInfoMap[item.fieldName] = item.dijit;
                     }
@@ -133,7 +124,7 @@ define([
             }, true);
 
             // this is _clipboard because of the app\clipboard amd module
-            this.watch('_clipboard', lang.hitch(this, function(field, old, value) {
+            this.watch('_clipboard', lang.hitch(this, function (field, old, value) {
                 if (!value) {
                     return;
                 }
@@ -141,7 +132,7 @@ define([
                 this.pasteButton.set('disabled', false);
             }));
         },
-        copy: function() {
+        copy: function () {
             // summary:
             //      copies whatever is in this.data to app.clipboard
             //
@@ -149,7 +140,7 @@ define([
 
             this.set('clipboard', this.data);
         },
-        paste: function() {
+        paste: function () {
             // summary:
             //      pastes the form data from the `attributeEditor`
             console.log('app.AttributeCopyPaste::paste', arguments);
@@ -167,14 +158,14 @@ define([
                 }
             }
         },
-        _setDijitValue: function(fieldName, value) {
+        _setDijitValue: function (fieldName, value) {
             // summary:
             //      updates the field info dijit
             // fieldName - the data attribute field name
             // value - the string value to set as the new value
             console.log('app.AttributeCopyPaste::_setDijitValue', arguments);
 
-            array.forEach(this.attributeEditor.layerInfos[0].fieldInfos, function(item) {
+            array.forEach(this.attributeEditor.layerInfos[0].fieldInfos, function (item) {
                 if (item.fieldName === fieldName) {
                     item.dijit.set('value', value);
                 }

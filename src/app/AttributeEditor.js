@@ -26,7 +26,7 @@ define([
 
     'app/config',
     'app/AttributeCopyPaste'
-], function(
+], function (
     declare,
     lang,
     array,
@@ -86,12 +86,12 @@ define([
         // childWidgets: _WidgetBase[]
         childWidgets: null,
 
-        constructor: function() {
+        constructor: function () {
             console.info('app.attributeEditor::constructor', arguments);
 
             this.childWidgets = [];
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      dom is ready
             console.info('app.attributeEditor::postCreate', arguments);
@@ -102,26 +102,26 @@ define([
 
             this.wireEvents();
         },
-        startup: function() {
+        startup: function () {
             // summary:
             //      Fires after postCreate when all of the child widgets are finished laying out.
             console.log('app.App::startup', arguments);
 
             var that = this;
-            array.forEach(this.childWidgets, function(widget) {
+            array.forEach(this.childWidgets, function (widget) {
                 that.own(widget);
                 widget.startup();
             });
 
             this.inherited(arguments);
         },
-        wireEvents: function() {
+        wireEvents: function () {
             // summary:
             //      sets up the events for this widget
             console.log('app.attributeEditor::wireEvents', arguments);
 
             this.own(
-                this.map.on('click', lang.hitch(this, function(evt) {
+                this.map.on('click', lang.hitch(this, function (evt) {
                     if (this.activeToolbar === 'navigation') {
                         topic.publish('app/identify-click', evt);
                         this.sideBar.hide();
@@ -129,7 +129,7 @@ define([
                     }
                 })),
                 this.editLayer.on('click', lang.hitch(this, 'buildQuery')),
-                aspect.before(this, 'buildQuery', function() {
+                aspect.before(this, 'buildQuery', function () {
                     topic.publish('map-activity', 1);
                 }, true),
                 topic.subscribe('app/toolbar', lang.hitch(this, 'notifyToolbarActivation')),
@@ -142,7 +142,7 @@ define([
                 );
             }
         },
-        buildQuery: function(mouseEvt) {
+        buildQuery: function (mouseEvt) {
             // summary:
             //      builds the query to pass to the select features method
             // evt: the click event
@@ -154,7 +154,7 @@ define([
 
             evt.stop(mouseEvt);
         },
-        selectFeature: function(selectQuery) {
+        selectFeature: function (selectQuery) {
             // summary:
             //      selects the feature
             // selectQuery: the query to find the feature
@@ -165,7 +165,7 @@ define([
             }
 
             this.editLayer.selectFeatures(selectQuery, FeatureLayer.SELECTION_NEW, lang.hitch(this,
-                function(features) {
+                function (features) {
                     if (features.length > 0) {
                         this.updateFeature = features[0];
                         this.originalFeature = new Graphic(features[0].toJson());
@@ -180,7 +180,7 @@ define([
                     topic.publish('map-activity', -1);
                 }));
         },
-        initialize: function(layer, isEditable) {
+        initialize: function (layer, isEditable) {
             console.log('app.attributeEditor::initialize', arguments);
 
             var fieldInfos = [];
@@ -191,7 +191,7 @@ define([
             hideFields[config.fieldNames.Editor] = 1;
             hideFields[config.fieldNames.ModifyDate] = 1;
 
-            array.forEach(layer.fields, function(f) {
+            array.forEach(layer.fields, function (f) {
                 if (!(f.name in hideFields)) {
                     fieldInfos.push({
                         fieldName: f.name,
@@ -232,20 +232,20 @@ define([
             var that = this;
 
             this.own(
-                this.saveButton.on('click', function() {
+                this.saveButton.on('click', function () {
                     that.saveButton.set('disabled', true);
                     that.attributeEditor.deleteBtn.set('disabled', true);
 
                     that.saveButton.set('innerHTML', 'Saving Edits.');
 
                     topic.publish('app/save-edits', 'update', {
-                            adds: null,
-                            updates: [that.updateFeature],
-                            deletes: null,
-                            news: that.updateFeature,
-                            original: that.originalFeature
-                        },
-                        function() {
+                        adds: null,
+                        updates: [that.updateFeature],
+                        deletes: null,
+                        news: that.updateFeature,
+                        original: that.originalFeature
+                    },
+                        function () {
                             that.attributeEditor.deleteBtn.set('disabled', false);
                             that.saveButton.set('innerHTML', 'Save');
                         },
@@ -253,14 +253,14 @@ define([
                         null);
                 }),
 
-                this.attributeEditor.on('attribute-change', function(evt) {
+                this.attributeEditor.on('attribute-change', function (evt) {
                     that.updateFeature.attributes[evt.fieldName] = evt.fieldValue;
                     console.log('attribute-change');
 
                     that.saveButton.set('disabled', false);
                 }),
 
-                this.attributeEditor.on('next', function(evt) {
+                this.attributeEditor.on('next', function (evt) {
                     if (!evt || !evt.feature) {
                         return;
                     }
@@ -268,7 +268,7 @@ define([
                     that.updateFeature = evt.feature;
                 }),
 
-                this.attributeEditor.on('delete', function(evt) {
+                this.attributeEditor.on('delete', function (evt) {
                     topic.publish('map-activity', 1);
                     var feature = evt.feature;
                     that.originalFeature = null;
@@ -278,13 +278,13 @@ define([
                     that.attributeEditor.deleteBtn.set('innerHTML', 'Deleting');
 
                     topic.publish('app/save-edits', 'delete', {
-                            adds: null,
-                            updates: null,
-                            deletes: [feature],
-                            news: evt.grahpic,
-                            original: null
-                        },
-                        function() {
+                        adds: null,
+                        updates: null,
+                        deletes: [feature],
+                        news: evt.grahpic,
+                        original: null
+                    },
+                        function () {
                             if (that.editLayer.getSelectedFeatures().length === 0) {
                                 that.sideBar.hide();
                             }
@@ -296,7 +296,7 @@ define([
                         null);
                 }));
         },
-        saveEdits: function(response) {
+        saveEdits: function (response) {
             // summary:
             //      saves the edits from the attribute inspector
             // response: the edits-complete event from the attribute/inspector
@@ -312,9 +312,9 @@ define([
             };
 
             array.forEach(fieldsDefiningSuccess,
-                function(prop) {
+                function (prop) {
                     array.forEach(response[prop],
-                        function(status) {
+                        function (status) {
                             if (!status && !status.success) {
                                 return;
                             }
@@ -327,7 +327,7 @@ define([
 
             //if success send basic edit info to tracking service
         },
-        notifyToolbarActivation: function(toolbar) {
+        notifyToolbarActivation: function (toolbar) {
             // summary:
             //      lets the applicaiton know what toolbars are active
             // toolbar: string "drawing" or "editing" or "navigation"
@@ -341,7 +341,7 @@ define([
 
             this.activeToolbar = toolbar;
         },
-        _screenPointToEnvelope: function(evt) {
+        _screenPointToEnvelope: function (evt) {
             console.log('app.attributeEditor::_screenPointToEnvelope', arguments);
 
             var centerPoint = new Point(evt.mapPoint.x, evt.mapPoint.y, evt.mapPoint.spatialReference);

@@ -4,25 +4,25 @@ require([
     'esri/dijit/AttributeInspector',
 
     'dojo/dom-construct'
-], function(
+], function (
     WidgetUnderTest,
 
     AttributeInspector,
 
     domConstruct
 ) {
-    describe('app/AttributeCopyPaste', function() {
+    describe('app/AttributeCopyPaste', function () {
         var widget;
-        var destroy = function(widget) {
+        var destroy = function (widget) {
             widget.destroyRecursive();
             widget = null;
         };
-        var create = function() {
+        var create = function () {
             var attributeEditor = {
-                on: function() {
+                on: function () {
 
                 },
-                next: function() {
+                next: function () {
                     return {
                         feature: {
                             attributes: {
@@ -35,7 +35,7 @@ require([
                 editButtons: domConstruct.create('div')
             };
             var featureLayer = {
-                on: function() {
+                on: function () {
 
                 }
             };
@@ -46,24 +46,24 @@ require([
             }, domConstruct.create('div', null, document.body));
         };
 
-        beforeEach(function() {
+        beforeEach(function () {
             create();
         });
 
-        afterEach(function() {
+        afterEach(function () {
             if (widget) {
                 destroy(widget);
             }
         });
 
-        describe('Sanity', function() {
-            it('should create a AttributeCopyPaste', function() {
+        describe('Sanity', function () {
+            it('should create a AttributeCopyPaste', function () {
                 expect(widget).toEqual(jasmine.any(WidgetUnderTest));
             });
         });
 
-        describe('clipboard', function() {
-            it('values survive the widget being destroyed', function() {
+        describe('clipboard', function () {
+            it('values survive the widget being destroyed', function () {
                 var test = 'something';
 
                 widget.set('clipboard', test);
@@ -76,7 +76,7 @@ require([
                     expect(widget.get('clipboard')).toEqual(test);
                 }
             });
-            it('removes the ignorefields', function() {
+            it('removes the ignorefields', function () {
                 widget.set('clipboard', {
                     'OBJECTID': 1,
                     'Editor': 'me',
@@ -102,7 +102,7 @@ require([
                     'ValidProp': true
                 });
             });
-            it('removes the ignorefields from copy', function() {
+            it('removes the ignorefields from copy', function () {
                 widget.data = {
                     'OBJECTID': 1,
                     'Editor': 'me',
@@ -132,8 +132,8 @@ require([
             });
         });
 
-        describe('paste', function() {
-            it('pastes the clipboard data into form fields', function() {
+        describe('paste', function () {
+            it('pastes the clipboard data into form fields', function () {
                 spyOn(widget, '_setDijitValue');
                 widget.fieldInfoMap = {
                     'ValidProp': {}

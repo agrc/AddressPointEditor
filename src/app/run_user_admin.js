@@ -1,5 +1,4 @@
-/* jshint unused:false */
-(function() {
+((function () {
     var config = {
         baseUrl: (typeof window !== 'undefined' &&
             window.dojoConfig &&
@@ -38,7 +37,7 @@
 
 
         'dojo/domReady!'
-    ], function(
+    ], function (
         $,
 
         UserAdmin,
@@ -50,4 +49,4 @@
             appName: config.appName
         }, 'widget-div');
     });
-})();
+})());

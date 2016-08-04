@@ -9,7 +9,7 @@ define([
     'esri/layers/InheritedDomain',
 
     'esri/dijit/AttributeInspector'
-], function(
+], function (
     declare,
 
     domConstruct,
@@ -24,7 +24,7 @@ define([
     // summary:
     //      Handles retrieving and displaying the data in the popup.
     return declare([AttributeInspector], {
-        _createDomainField: function(a, b, c, d) {
+        _createDomainField: function (a, b, c, d) {
             console.log('app.patch.AttributeInspector::createDomainField ', arguments);
             b = a.domain;
             if (c && c.domains && c.domains[a.name] &&

@@ -38,7 +38,7 @@ define([
     'esri/dijit/editing/Update',
 
     'app/config'
-], function(
+], function (
     declare,
     lang,
     Color,
@@ -154,7 +154,7 @@ define([
 
             this.childWidgets = [];
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      dom is ready
             console.info('app.editor::postCreate', arguments);
@@ -203,30 +203,30 @@ define([
 
             this.wireEvents();
         },
-        wireEvents: function() {
+        wireEvents: function () {
             // summary:
             //      sets up the events for this widget
             console.log('app.editor::wireEvents', arguments);
 
             //This assists the application to know what toolbar is active.
             this.own(
-                aspect.after(this.drawingToolbar, 'deactivate', function() {
+                aspect.after(this.drawingToolbar, 'deactivate', function () {
                     topic.publish('app/toolbar', 'navigation');
                 }),
-                aspect.after(this.drawingToolbar, 'activate', function() {
+                aspect.after(this.drawingToolbar, 'activate', function () {
                     topic.publish('app/toolbar', 'drawing');
                 }),
-                aspect.after(this.editingToolbar, 'deactivate', function() {
+                aspect.after(this.editingToolbar, 'deactivate', function () {
                     topic.publish('app/toolbar', 'navigation');
                 }),
-                aspect.after(this.editingToolbar, 'activate', function() {
+                aspect.after(this.editingToolbar, 'activate', function () {
                     topic.publish('app/toolbar', 'editing');
                 })
             );
 
             //Prelogic for activateEditing.
             this.own(
-                aspect.before(this, 'activateEditing', function() {
+                aspect.before(this, 'activateEditing', function () {
                     this.drawingToolbar.deactivate();
                 })
             );
@@ -235,7 +235,7 @@ define([
                 this.drawingToolbar.on('draw-end', lang.hitch(this, 'saveNewPoint')),
 
                 //Prelogic for saveNewPoint
-                aspect.before(this, 'saveNewPoint', function() {
+                aspect.before(this, 'saveNewPoint', function () {
                     this.isDrawing = false;
                     this.drawingToolbar.deactivate();
                     this.editLayer.clearSelection();
@@ -256,7 +256,7 @@ define([
                 this.editingToolbar.on('deactivate', lang.hitch(this, 'saveMoveEdits'))
             );
         },
-        startup: function() {
+        startup: function () {
             // summary:
             //      Fires after postCreate when all of the child widgets are finished laying out.
             console.log('app.App::startup', arguments);
@@ -269,7 +269,7 @@ define([
 
             this.inherited(arguments);
         },
-        saveNewPoint: function(evt) {
+        saveNewPoint: function (evt) {
             // summary:
             //      applies the edits to the feature layer
             console.log('app.editor::saveNewPoint', arguments);
@@ -283,25 +283,25 @@ define([
             var context = this;
 
             topic.publish('app/save-edits', 'add', {
-                    adds: [this.newGraphic],
-                    updates: null,
-                    deletes: null,
-                    news: this.newGraphic,
-                    original: null
-                },
-                function() {
+                adds: [this.newGraphic],
+                updates: null,
+                deletes: null,
+                news: this.newGraphic,
+                original: null
+            },
+                function () {
                     console.log('app.editor::saveNewPoint::success');
                     topic.publish('app/selectFeature', selectQuery);
                 },
                 null,
-                function() {
+                function () {
                     console.log('app.editor::saveNewPoint::always');
                     context.map.graphics.remove(context.newGraphic);
                     context.newGraphic = null;
                 }
             );
         },
-        activatePointDrawing: function() {
+        activatePointDrawing: function () {
             // summary:
             //      enables the toolbar to edit points
             console.log('app.editor::activatePointDrawing', arguments);
@@ -314,7 +314,7 @@ define([
             this.isDrawing = true;
             this.drawingToolbar.activate(Draw.POINT);
         },
-        activateEditing: function(/*evt*/ ) {
+        activateEditing: function (/*evt*/) {
             // summary:
             //      sets up the evetns on the layer
             // layer: the layer added to the map that is going to be edited
@@ -344,7 +344,7 @@ define([
                 this.editingSignal = this.editLayer.on('mouse-over', lang.hitch(this, 'editPoint'))
             );
         },
-        updateMovingGraphic: function(evt) {
+        updateMovingGraphic: function (evt) {
             // summary:
             //      updates the location of an editing point graphic
             // evt: the mouse event from grahpic-move-stop
@@ -352,7 +352,7 @@ define([
 
             this.updatedGraphic = evt.graphic;
         },
-        editPoint: function(evt) {
+        editPoint: function (evt) {
             // summary:
             //      handles the selection of points and enables/removes the editing functionality
             // evt: mouse event from the editingLayer's mouse-over evetn
@@ -380,7 +380,7 @@ define([
                 this.originalGraphic = new Graphic(evt.graphic.toJson());
             }
         },
-        saveEditsGeneric: function(type, edits, successBack, errorBack, alwaysBack) {
+        saveEditsGeneric: function (type, edits, successBack, errorBack, alwaysBack) {
             // summary:
             //      saves edits
             // type: string: update, edit or delete
@@ -411,7 +411,7 @@ define([
             console.log('app.editor::saveEditsGeneric::displaying activity');
             topic.publish('map-activity', 1);
 
-            var modifiedError = function(err) {
+            var modifiedError = function (err) {
                 console.log('app.editor::saveEditsGeneric::modified error');
                 var message = '';
                 if (err && err.details && lang.isArray(err.details)) {
@@ -427,7 +427,7 @@ define([
 
             //modify callbacks
             console.log('app.editor::saveEditsGeneric::modifiying activity');
-            var modifiedSuccess = function(response) {
+            var modifiedSuccess = function (response) {
                 console.log('app.editor::saveEditsGeneric::modified success');
 
                 var error;
@@ -455,7 +455,7 @@ define([
                 }
             };
 
-            var modifiedAlways = function(response) {
+            var modifiedAlways = function (response) {
                 console.log('app.editor::saveEditsGeneric::modified always');
                 topic.publish('map-activity', -1);
 
@@ -486,14 +486,14 @@ define([
 
             var addAttributes = function (features) {
                 array.forEach(features, function (f) {
-                    f.attributes[config.fieldNames.Editor] = AGRC.user.email;
+                    f.attributes[config.fieldNames.Editor] = window.AGRC.user.email;
                     f.attributes[config.fieldNames.ModifyDate] = Date.now();
                 });
             };
 
             addAttributes(edits.updates);
         },
-        saveMoveEdits: function() {
+        saveMoveEdits: function () {
             // summary:
             //      determines what edits to send to the server
             console.log('app.editor::saveMoveEdits', arguments);
@@ -501,18 +501,18 @@ define([
             topic.publish('map-activity', 1);
 
             topic.publish('app/save-edits', 'update', {
-                    adds: null,
-                    updates: [this.updatedGraphic],
-                    deletes: null,
-                    news: this.updatedGraphic,
-                    original: this.originalGraphic
-                },
+                adds: null,
+                updates: [this.updatedGraphic],
+                deletes: null,
+                news: this.updatedGraphic,
+                original: this.originalGraphic
+            },
                 null,
                 null,
                 null
             );
         },
-        addUndoState: function(operationType, graphic, original) {
+        addUndoState: function (operationType, graphic, original) {
             // summary:
             //      handles edit operations/add/delete/update
             // operationType: string: add, update, delete
@@ -548,7 +548,7 @@ define([
             domClass.remove(this.undoNode, 'disabled');
             this.updateUndoRedoCounts();
         },
-        undo: function(/*evt*/ ) {
+        undo: function (/*evt*/) {
             // summary:
             //      undo edit operation
             // evt: the mouse click event
@@ -566,7 +566,7 @@ define([
             this.undoManager.undo();
             this.updateUndoRedoCounts();
         },
-        redo: function(/*evt*/ ) {
+        redo: function (/*evt*/) {
             // summary:
             //      redo operations
             // evt: the mouse click event
@@ -584,7 +584,7 @@ define([
             this.undoManager.redo();
             this.updateUndoRedoCounts();
         },
-        updateUndoRedoCounts: function() {
+        updateUndoRedoCounts: function () {
             // summary:
             //      updates the count bubbles next to the undo and redo buttons
             console.log('app.editor::updateUndoRedoCounts', arguments);
@@ -605,7 +605,7 @@ define([
                 domClass.remove(this.undoNode, 'disabled');
             }
         },
-        _screenPointToEnvelope: function(geom) {
+        _screenPointToEnvelope: function (geom) {
             console.log('app.attributeEditor::_screenPointToEnvelope', arguments);
 
             //Build tolerance envelope and set it as the query geometry

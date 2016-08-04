@@ -16,7 +16,7 @@ define([
     'agrc/modules/String',
 
     'app/config'
-], function(
+], function (
     template,
 
     declare,
@@ -42,7 +42,7 @@ define([
         templateString: template,
         baseClass: 'parcel-identify',
 
-        _setParcelIdAttr: function(value) {
+        _setParcelIdAttr: function (value) {
             if (!value) {
                 value = 'No parcel data.';
             }
@@ -50,7 +50,7 @@ define([
             this._set('parcelId', value);
             this.parcelIdNode.innerHTML = value;
         },
-        _setAddressAttr: function(value) {
+        _setAddressAttr: function (value) {
             if (!value) {
                 value = 'No parcel data.';
             }
@@ -58,7 +58,7 @@ define([
             this._set('address', value);
             this.addressNode.innerHTML = value;
         },
-        _setCityAttr: function(value) {
+        _setCityAttr: function (value) {
             if (!value) {
                 value = 'No parcel data.';
             }
@@ -66,7 +66,7 @@ define([
             this._set('city', value);
             this.cityNode.innerHTML = value;
         },
-        _setZipAttr: function(value) {
+        _setZipAttr: function (value) {
             if (!value) {
                 value = 'No parcel data.';
             }
@@ -74,7 +74,7 @@ define([
             this._set('zip', value);
             this.zipNode.innerHTML = value;
         },
-        _setOwnershipAttr: function(value) {
+        _setOwnershipAttr: function (value) {
             if (!value) {
                 value = 'No parcel data.';
             }
@@ -82,7 +82,7 @@ define([
             this._set('ownership', value);
             this.ownershipNode.innerHTML = value;
         },
-        _setReverseAttr: function(value) {
+        _setReverseAttr: function (value) {
             if (!value) {
                 value = 'No address found.';
             }
@@ -90,7 +90,7 @@ define([
             this._set('reverse', value);
             this.reverseNode.innerHTML = value;
         },
-        _setXAttr: function(value) {
+        _setXAttr: function (value) {
             if (!value) {
                 value = 'No data.';
             } else {
@@ -100,7 +100,7 @@ define([
             this._set('x', value);
             this.xNode.innerHTML = value;
         },
-        _setYAttr: function(value) {
+        _setYAttr: function (value) {
             if (!value) {
                 value = 'No data.';
             } else {
@@ -119,7 +119,7 @@ define([
         // reference to the map
         map: null,
 
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      Overrides method of same name in dijit._Widget.
             // tags:
@@ -135,7 +135,7 @@ define([
 
             this.inherited(arguments);
         },
-        identify: function(evt) {
+        identify: function (evt) {
             // summary:
             //      sends a request to the web api
             //
@@ -147,10 +147,10 @@ define([
 
             this._reset(null);
 
-            var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint)),
-                setValues = lang.hitch(this, this._setValues),
-                updateAddress = lang.hitch(this, this._updateAddress),
-                networkError = lang.hitch(this, this._networkError);
+            var getParcel = lang.hitch(this, lang.partial(this._getParcelInfo, apiPoint));
+            var setValues = lang.hitch(this, this._setValues);
+            var updateAddress = lang.hitch(this, this._updateAddress);
+            var networkError = lang.hitch(this, this._networkError);
 
             this._reverseGeocode(evt.mapPoint)
                 .then(updateAddress);
@@ -159,7 +159,7 @@ define([
                 .then(getParcel)
                 .then(setValues, networkError);
         },
-        _setValues: function(parcelResults) {
+        _setValues: function (parcelResults) {
             // summary:
             //      gets the parcel search api result
             // parcelResults
@@ -182,7 +182,7 @@ define([
 
             topic.publish('app/identify', this);
         },
-        _getParcelInfo: function(apiPoint, countyResult) {
+        _getParcelInfo: function (apiPoint, countyResult) {
             // summary:
             //      gets the parcel information from the search api
             // apiPoint, county
@@ -213,7 +213,7 @@ define([
                 spatialReference: this.map.spatialReference.wkid
             });
         },
-        _getCounty: function(apiPoint) {
+        _getCounty: function (apiPoint) {
             // summary:
             //      gets the county name from the search api
             // apiPoint - the string x,y formatted for the searcha pi
@@ -225,7 +225,7 @@ define([
                 spatialReference: this.map.spatialReference.wkid
             });
         },
-        _reverseGeocode: function(point) {
+        _reverseGeocode: function (point) {
             // summary:
             //      description
             // point
@@ -235,7 +235,7 @@ define([
                 distance: 50
             });
         },
-        _updateAddress: function(reverseResults) {
+        _updateAddress: function (reverseResults) {
             // summary:
             //      sets the value
             // apiPoint
@@ -257,7 +257,7 @@ define([
 
             this.set('reverse', address.street);
         },
-        _networkError: function(e) {
+        _networkError: function (e) {
             // summary:
             //      handles xhr errors
             // e
@@ -265,7 +265,7 @@ define([
 
             this._reset('Search Failure. Please try again.' + e || 'There was a problem searching.');
         },
-        _reset: function() {
+        _reset: function () {
             // summary:
             //      reset definition list
             console.log('app.ParcelIdentify::_reset', arguments);
@@ -279,7 +279,7 @@ define([
             this.set('reverse', null);
             this.set('ownership', null);
         },
-        _updateVisibility: function(updating) {
+        _updateVisibility: function (updating) {
             // summary:
             //      hides and shows empty dt items
             // updating: boolean
@@ -295,20 +295,20 @@ define([
             domClass.replace(this.messageNode, 'hide', 'show');
             domClass.replace(this.dlNode, 'show', 'hide');
         },
-        setupConnections: function() {
+        setupConnections: function () {
             // summary:
             //      wire events, and such
             console.log('app.ParcelIdentify::setupConnections', arguments);
 
             var scoped = this;
-            topic.subscribe('app/identify-click', function(e) {
+            topic.subscribe('app/identify-click', function (e) {
                 scoped._updateVisibility(true);
                 scoped.identify(e);
             });
 
-            this.watch('x', function(name, oldValue, value) {
+            this.watch('x', function (name, oldValue, value) {
                 // there is always a map click event. x shoudl always be set.
-                if(+value > 0){
+                if (+value > 0) {
                     scoped._updateVisibility(false);
                 }
             });

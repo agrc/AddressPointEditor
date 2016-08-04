@@ -12,7 +12,7 @@ define([
     'mustache',
 
     'esri/request'
-], function(
+], function (
     declare,
     lang,
 
@@ -44,10 +44,10 @@ define([
         //drowpdown content node
         contentNode: null,
 
-        constructor: function() {
+        constructor: function () {
             console.log('app.leaderboard::constructor', arguments);
         },
-        postCreate: function() {
+        postCreate: function () {
             // summary:
             //      dom is ready
             console.log('app.leaderboard::postCreate', arguments);
@@ -58,7 +58,7 @@ define([
             this.miniTemplate = mustache.compile(leaderBoardMiniTemplate);
 
             this.getLeaderboard().then(lang.hitch(this,
-                function(content) {
+                function (content) {
                     this.set('link', content.mini);
                     this.set('dropdown', content.expanded);
                 }));
@@ -71,7 +71,7 @@ define([
             node: 'contentNode',
             type: 'innerHTML'
         },
-        getLeaderboard: function() {
+        getLeaderboard: function () {
             console.log('app.leaderboard::getLeaderboard', arguments);
 
             this.xhrDeferred = new Deferred();
@@ -91,7 +91,7 @@ define([
 
             return this.xhrDeferred;
         },
-        onRequestComplete: function(json) {
+        onRequestComplete: function (json) {
             // summary:
             //      callback for request
             // json: Object
@@ -100,7 +100,7 @@ define([
             this.data = json;
 
             if (this.data && this.data.standings) {
-                this.data.standings.sort(function(a, b) {
+                this.data.standings.sort(function (a, b) {
                     if (a.editCount > b.editCount) {
                         return -1;
                     }
@@ -111,9 +111,9 @@ define([
                 });
 
                 this.data.standings = this.data.standings.slice(0, 3);
-                var places = ['gold', 'silver', 'bronze'],
-                    counter = 0;
-                this.data.standingCss = function() {
+                var places = ['gold', 'silver', 'bronze'];
+                var counter = 0;
+                this.data.standingCss = function () {
                     // note that counter is in the enclosing scope
                     return places[counter++];
                 };
@@ -124,7 +124,7 @@ define([
                 expanded: this.boardTemplate(this.data)
             });
         },
-        onRequestFail: function(err) {
+        onRequestFail: function (err) {
             // summary:
             //      fail callback for ajax request
             // err: Error
