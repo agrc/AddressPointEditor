@@ -50,6 +50,7 @@ define([
         // addressediting.utah.gov
         window.AGRC.apiKey = 'AGRC-7D48DD3D449390';
         window.AGRC.urls.redline = 'http://mapserv.utah.gov/chalkdust';
+        window.AGRC.quadWord = 'panther-avatar-neutral-grille'
     } else if (has('agrc-api-key') === 'stage') {
         // test.mapserv.utah.gov
         window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
