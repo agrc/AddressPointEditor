@@ -302,6 +302,8 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask('travis', [
         'eslint:main',
-        'build-prod'
+        'build-prod',
+        'connect',
+        'jasmine:main'
     ]);
 };
