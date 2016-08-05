@@ -1,10 +1,13 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "4"
 before_install:
+  - npm install -g npm
   - npm install -g grunt-cli
   - npm install -g bower
   - bower install
 notifications:
   email:
-    on_success: never
+    on_success: change
+    on_failure: change
+sudo: false
