@@ -35,6 +35,7 @@ define([
     'esri/layers/FeatureLayer',
     'esri/layers/GraphicsLayer',
     'esri/layers/LabelLayer',
+    'esri/layers/VectorTileLayer',
     'esri/renderers/SimpleRenderer',
     'esri/symbols/SimpleLineSymbol',
     'esri/symbols/SimpleMarkerSymbol',
@@ -45,7 +46,6 @@ define([
     'ijit/widgets/notify/ChangeRequest',
 
     'layer-selector',
-
 
     'bootstrap'
 ], function (
@@ -84,6 +84,7 @@ define([
     FeatureLayer,
     GraphicsLayer,
     LabelLayer,
+    VectorTileLayer,
     SimpleRenderer,
     SimpleLineSymbol,
     SimpleMarkerSymbol,
@@ -133,8 +134,6 @@ define([
             // summary:
             //      first function to fire after page loads
             console.info('app.App::constructor', arguments);
-
-            esriConfig.app = this;
 
             this.childWidgets = [];
         },
@@ -234,7 +233,13 @@ define([
                     id: 'claro',
                     position: 'TR',
                     quadWord: config.quadWord,
-                    baseLayers: ['Terrain', 'Lite', 'Hybrid', 'Topo', 'Color IR']
+                    baseLayers: ['Terrain', 'Lite', 'Hybrid', 'Topo', 'Color IR'],
+                    overlays: [{
+                        Factory: VectorTileLayer,
+                        url: config.urls.parcelsService,
+                        id: 'Parcels',
+                        minScale: config.parcelsMinScale
+                    }]
                 })
             );
 

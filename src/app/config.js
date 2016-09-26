@@ -30,12 +30,15 @@ define([
         // cache level 13
         labelsMinScale: 2257,
 
+        parcelsMinScale: 10000,
+
         urls: {
             editLayer: '/arcgis/rest/services/AddressEditor/Editing/FeatureServer/',
             viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
-            redline: null
+            redline: null,
+            parcelsService: 'https://tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/StatewideParcels/VectorTileServer'
         },
 
         fieldNames: {
