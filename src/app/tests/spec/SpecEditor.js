@@ -20,7 +20,9 @@ require([
         };
         var mockFeaturelayer = {
             applyEdits: function () {
-                return true;
+                return {
+                    then: function () {}
+                };
             }
         };
         var mockGraphic = {
