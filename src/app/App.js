@@ -181,7 +181,7 @@ define([
             this.changeRequest = new ChangeRequest({
                 map: this.map,
                 redliner: config.urls.redline,
-                toIds: [3, 5, 6]
+                toIds: [3, 5, 6, 7, 12]
             }, this.suggestChangeDiv),
             this.downloadWizard = new DownloadSelector({},
                 this.downloadDiv),
