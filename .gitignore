@@ -36,6 +36,8 @@ src/spinjs
 src/stubmodule/
 src/util/
 src/xstyle/
+src/dgrid1/
+src/dijit-themes/
 
 #################
 ## Eclipse
