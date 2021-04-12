@@ -35,7 +35,7 @@ var profile = {
             exclude: ['dojo/dojo']
         }
     },
-    packages: [{
+    packages: ['dgrid1', 'dstore', {
         name: 'moment',
         location: 'moment',
         main: 'moment',
@@ -73,9 +73,6 @@ var profile = {
         packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri', 'layer-selector']
     },
     map: {
-        '*': {
-            'dojox/dgauges': 'dgauges'
-        },
         'app/AttributeEditor': {
             'esri/dijit/AttributeInspector':
             'app/patch/AttributeInspector'

@@ -2,11 +2,11 @@
   "name": "address_point_editor",
   "version": "2.0.0",
   "homepage": "https://addressediting.utah.gov",
-   "repository": {
-     "type": "git",
-     "url": "https://github.com/agrc/addresspointeditor.git"
-   },
-   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agrc/addresspointeditor.git"
+  },
+  "license": "MIT",
   "devDependencies": {
     "dojo": "^1",
     "grunt": "^1",

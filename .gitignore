@@ -12,7 +12,6 @@ src/agrc-jasmine-matchers/
 src/agrc/
 src/bootstrap/
 src/components-jasmine/
-src/dgauges/
 src/dgrid/
 src/dijit/
 src/dojo-themes/
@@ -36,6 +35,8 @@ src/spinjs
 src/stubmodule/
 src/util/
 src/xstyle/
+src/dgrid1/
+src/dijit-themes/
 
 #################
 ## Eclipse

@@ -8,7 +8,6 @@
         packages: [
             'agrc',
             'app',
-            'dgauges',
             'dgrid',
             'dijit',
             'dojo',
