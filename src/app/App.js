@@ -180,9 +180,8 @@ define([
             }, this.coordDiv),
             this.changeRequest = new ChangeRequest({
                 map: this.map,
-                redliner: config.urls.redline,
-                toIds: [3],//, 5, 6, 7, 12],
-                emailServiceConfiguration: 'dev'
+                toIds: [3, 5, 6, 7, 12],
+                emailServiceConfiguration: window.AGRC.configuration
             }, this.suggestChangeDiv),
             this.downloadWizard = new DownloadSelector({},
                 this.downloadDiv),
