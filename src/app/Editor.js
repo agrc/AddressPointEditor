@@ -289,17 +289,16 @@ define([
                 news: this.newGraphic,
                 original: null
             },
-                function () {
-                    console.log('app.editor::saveNewPoint::success');
-                    topic.publish('app/selectFeature', selectQuery);
-                },
-                null,
-                function () {
-                    console.log('app.editor::saveNewPoint::always');
-                    context.map.graphics.remove(context.newGraphic);
-                    context.newGraphic = null;
-                }
-            );
+            function () {
+                console.log('app.editor::saveNewPoint::success');
+                topic.publish('app/selectFeature', selectQuery);
+            },
+            null,
+            function () {
+                console.log('app.editor::saveNewPoint::always');
+                context.map.graphics.remove(context.newGraphic);
+                context.newGraphic = null;
+            });
         },
         activatePointDrawing: function () {
             // summary:
@@ -507,9 +506,9 @@ define([
                 news: this.updatedGraphic,
                 original: this.originalGraphic
             },
-                null,
-                null,
-                null
+            null,
+            null,
+            null
             );
         },
         addUndoState: function (operationType, graphic, original) {

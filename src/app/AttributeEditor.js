@@ -245,12 +245,10 @@ define([
                         news: that.updateFeature,
                         original: that.originalFeature
                     },
-                        function () {
-                            that.attributeEditor.deleteBtn.set('disabled', false);
-                            that.saveButton.set('innerHTML', 'Save');
-                        },
-                        null,
-                        null);
+                    function () {
+                        that.attributeEditor.deleteBtn.set('disabled', false);
+                        that.saveButton.set('innerHTML', 'Save');
+                    }, null, null);
                 }),
 
                 this.attributeEditor.on('attribute-change', function (evt) {
@@ -284,16 +282,16 @@ define([
                         news: evt.grahpic,
                         original: null
                     },
-                        function () {
-                            if (that.editLayer.getSelectedFeatures().length === 0) {
-                                that.sideBar.hide();
-                            }
+                    function () {
+                        if (that.editLayer.getSelectedFeatures().length === 0) {
+                            that.sideBar.hide();
+                        }
 
-                            that.attributeEditor.deleteBtn.set('disabled', false);
-                            that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
-                        },
-                        null,
-                        null);
+                        that.attributeEditor.deleteBtn.set('disabled', false);
+                        that.attributeEditor.deleteBtn.set('innerHTML', 'Delete');
+                    },
+                    null,
+                    null);
                 }));
         },
         saveEdits: function (response) {
