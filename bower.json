@@ -6,7 +6,7 @@
     "bootstrap": "3.3.6",
     "dijit-themes": "https://github.com/dojo/dijit-themes.git#1.14.0",
     "esri": "arcgis-js-api#^3.35.0",
-    "ijit": "agrc-ijit#3.2.3-rc.1",
+    "ijit": "agrc-ijit#3.2.4",
     "layer-selector": "agrc-layer-selector#^0.4.0",
     "mustache": "^2"
   },

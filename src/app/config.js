@@ -30,6 +30,8 @@ define([
 
         appName: 'addressediting',
 
+        configuration: 'dev',
+
         // cache level 13
         labelsMinScale: 2257,
 
@@ -54,7 +56,8 @@ define([
     if (has('agrc-api-key') === 'prod') {
         // addressediting.utah.gov
         window.AGRC.apiKey = 'AGRC-7D48DD3D449390';
-        window.AGRC.quadWord = 'panther-avatar-neutral-grille'
+        window.AGRC.quadWord = 'panther-avatar-neutral-grille';
+        window.AGRC.configuration = 'prod';
     } else if (has('agrc-api-key') === 'stage') {
         // test.mapserv.utah.gov
         window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
