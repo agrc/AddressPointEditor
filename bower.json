@@ -20,9 +20,9 @@
     "mustache": "^2",
     "dgrid": "0.3.17/esri-3.20.0",
     "xstyle": "0.3.2",
-    "dojo": "v1.14.2/esri-3.28.0",
+    "dojo": "v1.16.3/esri-3.36.0",
     "dojox": "v1.14.2/esri-3.28.0",
-    "dijit": "v1.14.2/esri-3.28.0",
+    "dijit": "v1.16.3/esri-3.36.0",
     "dstore": "1.1.2",
     "util": "v1.14.2/esri-3.28.0"
   }

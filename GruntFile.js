@@ -35,7 +35,7 @@ module.exports = function (grunt) {
         '!util/**'
     ];
     var deployDirProd = 'AddressPointEditor';
-    var deployDirStage = 'wwwroot/AddressPointEditor';
+    var deployDirStage = 'wwwroot/address-point-editor';
     var secrets;
 
     try {
