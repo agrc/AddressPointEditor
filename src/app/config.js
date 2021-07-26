@@ -12,6 +12,9 @@ define([
     esriConfig.defaults.io.corsEnabledServers.push('mapserv.utah.gov');
     esriConfig.defaults.io.corsEnabledServers.push('basemaps.utah.gov');
     esriConfig.defaults.io.corsEnabledServers.push('api.mapserv.utah.gov');
+    esriConfig.defaults.io.corsEnabledServers.push('us-central1-ut-dts-agrc-chalkdust-dev.cloudfunctions.net');
+    esriConfig.defaults.io.corsEnabledServers.push('us-central1-ut-dts-agrc-chalkdust-prod.cloudfunctions.net');
+
 
     window.AGRC = {
         // app: app.App
@@ -37,7 +40,7 @@ define([
             viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
-            redline: null,
+            redline: 'https://chalkdust.ugrc.utah.gov',
             parcelsService: 'https://tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/StatewideParcels/VectorTileServer'
         },
 
@@ -51,15 +54,12 @@ define([
     if (has('agrc-api-key') === 'prod') {
         // addressediting.utah.gov
         window.AGRC.apiKey = 'AGRC-7D48DD3D449390';
-        window.AGRC.urls.redline = 'https://mapserv.utah.gov/chalkdust';
         window.AGRC.quadWord = 'panther-avatar-neutral-grille'
     } else if (has('agrc-api-key') === 'stage') {
         // test.mapserv.utah.gov
         window.AGRC.apiKey = 'AGRC-FFCDAD6B933051';
-        window.AGRC.urls.redline = 'https://test.mapserv.utah.gov/chalkdust';
         window.AGRC.quadWord = 'opera-event-little-pinball';
     } else {
-        window.AGRC.urls.redline = 'https://mapserv.utah.gov/chalkdust';
         // localhost
         xhr(require.baseUrl + 'secrets.json', {
             handleAs: 'json',
