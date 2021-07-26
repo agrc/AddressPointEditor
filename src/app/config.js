@@ -42,7 +42,6 @@ define([
             viewLayer: '/arcgis/rest/services/AddressEditor/Viewing/FeatureServer/',
             geometryService: '/arcgis/rest/services/Geometry/GeometryServer',
             downloadGp: '/arcgis/rest/services/AddressEditor/DownloadTool/GPServer/Download%20Address%20Points',
-            redline: 'https://chalkdust.ugrc.utah.gov',
             parcelsService: 'https://tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/StatewideParcels/VectorTileServer'
         },
 
