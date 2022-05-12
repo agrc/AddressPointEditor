@@ -140,7 +140,7 @@ class DownloadTool(object):
                     z.write(absfn, zfn)
 
     def _get_county(self, county):
-        county_fc = 'SGID10.BOUNDARIES.Counties'
+        county_fc = 'SGID.BOUNDARIES.Counties'
         location = self.sgid + '.sde\\' + county_fc
         where_clause = "NAME = '{}'".format(county)
 
