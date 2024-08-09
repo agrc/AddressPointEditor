@@ -1,3 +1,5 @@
+# NOTE: This app's bundle has been edited directly on the server several times. Any future updates should be done there.
+
 # Address Point Editor
 
 ### Stage Location
